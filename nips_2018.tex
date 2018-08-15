@@ -1,0 +1,170 @@
+\documentclass{article}
+
+% if you need to pass options to natbib, use, e.g.:
+% \PassOptionsToPackage{numbers, compress}{natbib}
+% before loading nips_2018
+
+% ready for submission
+% \usepackage[nonatbib]{nips_2018}
+
+\usepackage[numbers]{natbib}
+
+% to compile a preprint version, e.g., for submission to arXiv, add
+% add the [preprint] option:
+\usepackage[preprint]{nips_2018}
+
+% to compile a camera-ready version, add the [final] option, e.g.:
+% \usepackage[final]{nips_2018}
+
+% to avoid loading the natbib package, add option nonatbib:
+% \usepackage[nonatbib]{nips_2018
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{bbm}
+\usepackage{enumerate}
+\usepackage{fancyvrb}
+% \usepackage{unicode-math}
+% }
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{amsthm}
+
+% \usepackage{algpseudocode}
+% \usepackage{algorithmicx}
+\usepackage[ruled]{algorithm2e}
+
+\usepackage{xargs}                      % Use more than one optional parameter in a new commands
+\usepackage[pdftex,dvipsnames]{xcolor}  % Coloured text etc.
+
+\usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+\usepackage{pmboxdraw}
+
+% \usepackage[bordercolor=white,backgroundcolor=gray!30,linecolor=black,colorinlistoftodos]{todonotes}
+\newcommand{\rework}[1]{\todo[color=yellow,inline]{Rework: #1}}
+\newcommandx{\unsure}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
+\newcommandx{\change}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
+\newcommandx{\info}[2][1=]{\todo[linecolor=OliveGreen,backgroundcolor=OliveGreen!25,bordercolor=OliveGreen,#1]{#2}}
+\newcommandx{\improvement}[2][1=]{\todo[linecolor=Plum,backgroundcolor=Plum!25,bordercolor=Plum,#1]{#2}}
+\newcommandx{\thiswillnotshow}[2][1=]{\todo[disable,#1]{#2}}
+
+
+
+\DeclareMathOperator{\curry}{curry}
+\DeclareMathOperator{\Bool}{Bool}
+\DeclareMathOperator{\cond}{cond}
+\DeclareMathOperator{\lift}{lift}
+\DeclareMathOperator{\rcd}{rcd}
+\DeclareMathOperator{\rid}{rid}
+\DeclareMathOperator{\randcond}{rcd}
+\DeclareMathOperator{\iid}{iid}
+\DeclareMathOperator{\ciid}{ciid}
+
+\DeclareMathOperator{\fix}{fix}
+\DeclareMathOperator{\soft}{soft}
+\DeclareMathOperator{\rand}{rand}
+
+
+\DeclareMathOperator{\bern}{Bernoulli}
+\DeclareMathOperator{\unif}{Uniform}
+\DeclareMathOperator{\rade}{Rademacher}
+\DeclareMathOperator{\normal}{\mathcal{N}}
+\DeclareMathOperator{\ee}{\mathbb{E}}
+
+% \DeclareMathOperator{\bern}{bern}
+
+\theoremstyle{definition} % amsthm only
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{algowizm}{Algorithm}
+
+\newcommand{\g}{\,\vert\,}
+\newcommand{\cM}{{\cal M}}
+
+\newcommand{\lifted}[1] {\tilde{#1}}
+\newcommand{\mean}[1] {\ee[#1]}
+\newcommand{\lmean}[1] {\lifted{\ee}{[#1]}}
+% \newcommand{\conds}[2] {#1_{\mid #2}}
+\newcommand{\conds}[2] {#1  \mid #2}
+% \newcommand{\rcdxy}[2] {#1\und  erset{\rcd}{\vert}#2}
+% \newcommand{\rcdxy}[2] {#1 \tilde{\mid} #2}
+\newcommand{\rcdxy}[2] {#1 \parallel #2}
+\newcommand{\ridxy}[2] {#1 \parallel \fix(#2)}
+
+\title{Omega: Probabilistic Programming with Declarative and Generative Models}
+% \title{Generative, Declarative Probabilistic Inference}
+
+
+% The \author macro works with any number of authors. There are two
+% commands used to separate the names and addresses of multiple
+% authors: \And and \AND.
+%
+% Using \And between authors leaves it to LaTeX to determine where to
+% break the lines. Using \AND forces a line break at that point. So,
+% if LaTeX puts 3 of 4 authors names on the first line, and the last
+% on the second line, try using \AND instead of \And before the third
+% author name.
+
+\author{
+  Zenna Tavares\\
+  MIT\\
+  \texttt{zenna@mit.edu}\\
+  %% examples of more authors
+  \And
+  Edgar Minasyan \\
+  MIT \\
+  \texttt{minasyan@mit.edu} \\
+  \And
+  Javier Burroni \\
+  UMass Amherst \\
+  \texttt{jburroni@cs.umass.edu} \\
+  \And
+  Armando Solar Lezama \\
+  MIT \\
+  \texttt{asolar@csail.mit.edu}\\
+  \And
+  Rajesh Ranganath \\
+  NYU \\
+  \texttt{rajeshr@cims.nyu.edu} \\
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+  %% \And
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+  %% \And
+  %% Coauthor \\
+  %% Affiliation \\
+  %% Address \\
+  %% \texttt{email} \\
+}
+
+\begin{document}
+% \nipsfinalcopy is no longer used
+
+\maketitle
+
+\begin{abstract}
+\input{abstract}
+\end{abstract}
+
+\input{main}
+
+\bibliographystyle{apalike}
+{
+\bibliography{bib}
+}
+% \input{app}
+\end{document}

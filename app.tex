@@ -1,0 +1,38 @@
+\appendix
+\section{RNN for Glucose Model}
+\label{app:glucose-code}
+Model to create a recurrent neural network to predict the glucose trajectories of a patient. The first patient is conditioned on the full trajectory of $20$ steps, while the second patient is conditioned only on $3$ time steps. In addition to the condition on data, simulations are conditioned to be closed on their first and second moments. 
+%\begin{center}
+\begin{minipage}{5cm}
+\begin{Verbatim}[fontsize=\small]
+function model(nsteps, h1, h2; npatients = 2)
+  function F_(omega, i)
+  	RNN(h1, h2, init_weights= omega)
+  end
+
+  # Create one network per person sampling random weights 
+  fs = [iid(F_, i) for i = 1:npatients]
+
+  # Create one simulation RandVar for each patient
+  sims = [iid(rnn_, f, nsteps, h1_size) for f in fs]
+
+  # Take average over time
+  meansims = mean.(sims)
+  sigmas = std.(sims)
+  sims, meansims, sigmas
+end
+
+function datacond(sim, personid, nsteps)
+  obvglucose, range = filtereddata(data(), personid, nsteps)
+  sim[range] == obvglucose
+end
+
+sims, meansims, \sigmas = model(20, 10, 30; npatients = 2)
+ties = d(meansims[1], meansims[2]) < delta1
+ties = ties & d(sigmas[1], sigmas[2]) < delta2
+y1 = datacond(sims[1], 1, nsteps=20)
+y2 = datacond(sims[2], 2, nsteps=3)
+samples = rand(defaultomega(), y1 & y2 & ties)
+\end{Verbatim}
+\end{minipage}
+%\end{center}

@@ -1,0 +1,47 @@
+\subsection{Efficient Construction of the Random Conditional Distributions}
+
+Each outcome of a random conditional distribution is a conditional random variable which, in the general setting, can be a challenge to sample from.
+In this section we demonstrate how to efficiently construct the random conditional distribution in a wide class of scenarios.
+
+Recall that $(\rcdxy{X}{\Theta})(\omega) = \conds{X}{\Theta = \Theta(\omega)}$.
+A realization $\conds{X}{\Theta = \Theta_c}$ of $\rcdxy{X}{\Theta}$ is a conditional random variable which may be difficult to sample from.
+Instead, under modest conditions (theorem \ref{thm:path}) it is permissible to use a different distribution which is easier to construct:  $\ridxy{X}{\Theta}$ which \emph{fixes} rather than conditions $\Theta$:
+\begin{equation}\label{eq:rid}
+(\ridxy{X}{\Theta})(\omega) = \conds{X}{\Theta^a = \Theta^a(\omega) \text{ for all } \Theta^a \in \{ \Theta \} \cup \text{ancestors of } \Theta}
+\end{equation} 
+$\rcdxy{X}{\Theta}$ is distinct from $\ridxy{X}{\Theta}$ because in the former the parents of $\Theta$ are not fixed and hence for some realization $\conds{X}{\Theta = \Theta_c}$ we must consider all the possible scenarios which would result in $\Theta = \Theta_c$.
+In contrast, 
+$\ridxy{X}{\Theta}$ is always efficient to construct:
+
+\begin{algorithm} 
+\end{algorithm}
+
+It is permissible to use $\ridxy{X}{\Theta}$ as a substitute for $\rcdxy{X}{\Theta}$ when they are equivalent, which is not always the case, consider:
+\begin{align*}
+\alpha &= \rade(0.5) \\
+\beta &= \bern(0.5) * \alpha \\
+\gamma &= \bern(0.5) + \alpha + \beta
+\end{align*}
+
+Random conditional distributions (such as $\rcdxy{\gamma}{\beta}$) can be induced from this model which are not equal to the corresponding "fixed" random conditional distribution: $\ridxy{\gamma}{\beta}$.
+For example the distribution over expectations $\lmean{\rcdxy{\gamma}{\beta}}$ and $\lmean{\ridxy{\gamma}{\beta}}$ do not even have the same support.
+However in other scenarions they are the same, e.g. $\rcdxy{\gamma}{\alpha} = \ridxy{\gamma}{\alpha}$.
+
+Verifying equivalence of two random variables (let alone two random distributions) is undecidable in theory \ref{} and intractable in practice, putting us at risk of swapping one hard problem for a harder one.
+Fortunately, the causal structure of the model provides sufficient (but not neccesary)ee conditions to determine if $\ridxy{X}{\Theta} = \rcdxy{X}{\Theta}$:
+% Intuitively, the first result can be substitued because it sucks, while the seon dosn't suck.
+
+\todo{Maybe use d-separation. $\Theta$ d-separates $X$ from its ancestors}
+\begin{theorem} $\rcdxy{X}{\Theta} = \ridxy{X}{\Theta}$ when all paths from the ancestors $\Theta$ to $X$ pass through $\Theta$
+\end{theorem}
+\begin{proof}
+To prove this theorem, it is crucial to formalize the structural assumption. The ancestors of $\Theta$ have no path to $X$ that doesn't pass through $\Theta$. This means that conditioned on $\Theta$, any ancestor of $\Theta$, $\Theta^a$, is independent from $X$, i.e.
+\begin{equation*}
+\conds{X}{\Theta, \Theta^a} = \conds{X}{\Theta} \quad \text{for all } \Theta^a \in \text{ancestors of } \Theta
+\end{equation*}
+Therefore, using \eqref{eq:rid} we obtain the following identity for all $\omega$
+\begin{equation*}
+(\ridxy{X}{\Theta})(\omega) = (\conds{X}{\Theta = \Theta(\omega), \Theta^a = \Theta^a(\omega) \text{ for all } \Theta^a \in \text{ancestors of } \Theta}) = \conds{X}{\Theta = \Theta(\omega)}
+\end{equation*}
+which concludes the proof that $\rcdxy{X}{\Theta} = \ridxy{X}{\Theta}$.
+\end{proof}

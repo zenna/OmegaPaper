@@ -1,0 +1,5 @@
+We introduce a method to augment probabilistic generative models with declarative knowledge and perform inference in these models.
+Mathematically, conditioning on a predicate is sufficient to encode many kinds of declarative knowledge, but existing probabilistic programming systems limit statements that can be conditioned on to avoid intractable likelihoods.
+We view a probabilistic program as a deterministic transformation of random inputs, and conditioning as a restriction to the subset of these inputs consistent with a predicate. For inference, we automatically replace all Boolean functions (e.g., $=, <, >, \neg, \land, \lor$), which constitute random variables, with softened counterparts defined on the unit interval.  This induces an energy function over the random input space which assigns mass only to the inputs consistent with our conditions.
+We then perform inference by constructing a Markov Chain over this energy function.
+We build these concepts into a probabilistic programming system, and evaluate our approach on a number of examples.
