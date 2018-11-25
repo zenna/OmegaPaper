@@ -1,0 +1,174 @@
+\usepackage{wrapfig}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{stmaryrd}
+\usepackage{graphicx}
+\usepackage{fancyvrb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{bm}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{proof}
+
+
+\theoremstyle{definition} % amsthm only
+\newtheorem{definition}{Definition}
+\newtheorem{example}{Example}
+\newtheorem{proposition}{Proposition}
+\newtheorem{algowizm}{Algorithm}
+\newtheorem{theorem}{Theorem}
+\graphicspath{{figures/}}
+
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\DeclareMathOperator{\clip}{clip}
+\DeclareMathOperator{\abs}{abs}
+\DeclareMathOperator{\dupl}{dupl}
+\DeclareMathOperator{\sqr}{sqr}
+\DeclareMathOperator{\mean}{mean}
+\DeclareMathOperator{\gathernd}{gather}
+\DeclareMathOperator{\scatter}{scatter}
+\DeclareMathOperator{\reshape}{reshape}
+
+\newcommand{\ciidg}[1]{\textrm{ciidgroup}({#1})}
+
+\newcommand{\card}[1]{\left\vert {#1} \right\vert}
+\newcommand{\apinv}[1]{\widetilde{#1}^{-1}}
+\newcommand{\norm}[1]{\left\|{{#1}}\right\|}
+% \newcommand{\pre}[1]{{#1}^{\leftarrow}}
+\newcommand{\pre}[2]{{#1}^\leftarrow[#2]}
+\newcommand*\wc{{\mkern 2mu\cdot\mkern 2mu}}
+
+\newcommand{\inlinecode}{\texttt}
+\newcommand{\alio}{Ali\=o}
+\newcommand{\invmap}{\inlinecode{invmap}}
+\newcommand*\vmn{{_{m}v_{n}}}
+
+\newcommand*\equ{\overset {\underset {\mathrm {def} }{}}{=}}
+
+% commands to define functions in algorithmic
+
+
+\DeclareMathOperator{\hire}{offer}
+
+\DeclareMathOperator{\Real}{Real}
+\DeclareMathOperator{\Int}{Int}
+\DeclareMathOperator{\Bool}{Bool}
+\DeclareMathOperator{\cond}{cond}
+\DeclareMathOperator{\lift}{lift}
+\DeclareMathOperator{\rcd}{rcd}
+\DeclareMathOperator{\uw}{uw}
+\DeclareMathOperator{\rid}{rid}
+\DeclareMathOperator{\iid}{iid}
+\DeclareMathOperator{\ciid}{ciid}
+\DeclareMathOperator{\fix}{fix}
+\DeclareMathOperator{\doo}{do}
+\DeclareMathOperator{\soft}{soft}
+\DeclareMathOperator{\rand}{rand}
+\DeclareMathOperator{\true}{true}
+\DeclareMathOperator{\false}{false}
+\DeclareMathOperator{\uid}{newid}
+\DeclareMathOperator{\uuid}{uid}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\guid}{newid}
+\DeclareMathOperator{\pair}{mix}
+\DeclareMathOperator{\var}{Var}
+
+\DeclareMathOperator{\bern}{Bernoulli}
+\DeclareMathOperator{\unif}{Uniform}
+
+\DeclareMathOperator{\stdunif}{unif}
+\DeclareMathOperator{\sumunif}{sumunif}
+\DeclareMathOperator{\rade}{Rademacher}
+\DeclareMathOperator{\normal}{\mathcal{N}}
+\DeclareMathOperator{\ee}{\mathbb{E}}
+\DeclareMathOperator{\prob}{\mathbb{P}}
+\DeclareMathOperator{\rv}{rv}
+\DeclareMathOperator{\RV}{RV}
+\DeclareMathOperator{\ro}{rand\Omega}
+
+\DeclareMathOperator{\erra}{error}
+\DeclareMathOperator{\dq}{:=}
+\DeclareMathOperator{\mrg}{merge}
+\DeclareMathOperator{\der}{derivation}
+\DeclareMathOperator{\ance}{ancestors}
+
+\newcommand{\pushenv}[2]{\Gamma, #1 : #2}
+\newcommand{\eto}[2]{#1 \mapsto #2}
+\newcommand{\ceto}[3]{#1,  #2 \mapsto #3}
+\newcommand{\crv}[3]{(#1, #2, #3)}
+\newcommand{\crvv}[2]{\langle#1, #2\rangle}
+
+% Substitute 1 for 2 in 3
+\newcommand{\sub}[3]{#3[#1 / #2]}
+
+
+\newcommand{\RVT}[1]{\RV #1}
+
+% \DeclareMathOperator{\bern}{bern}
+
+% \theoremstyle{definition} % amsthm only
+% \newtheorem{definition}{Definition}
+% \newtheorem{example}{Example}
+% \newtheorem{proposition}{Proposition}
+% \newtheorem{theorem}{Theorem}
+% \newtheorem{algowizm}{Algorithm}
+
+
+\newcommand{\indep}{\perp \!\!\!\perp}
+\newcommand{\deq}{\stackrel {d}{=}}
+\newcommand{\g}{\,\vert\,}
+\newcommand{\cM}{{\mathcal{M}}}
+\newcommand{\omegalang}{\textsc{Omega}}
+\newcommand{\ite}[3]{\text{ if } #1 \text{ then } #2 \text{ else } #3}
+\newcommand{\lifted}[1] {\tilde{#1}}
+\newcommand{\amean}[1] {\ee[#1]}
+\newcommand{\lmean}[1] {\lifted{\ee}{(#1)}}
+% \newcommand{\conds}[2] {#1_{\mid #2}}
+\newcommand{\conds}[2] {#1  \mid #2}
+\newcommand{\cnd}[2] {#1  \mid #2}
+% \newcommand{\rcdxy}[2] {#1\und  erset{\rcd}{\vert}#2}
+% \newcommand{\rcdxy}[2] {#1 \tilde{\mid} #2}
+\newcommand{\rcdxy}[2] {#1 \parallel #2}
+\newcommand{\ridxy}[2] {#1 \parallel \doo(#2)}
+
+\newcommand{\ciidset}[2]{\left[#1\right]_{\indep \mid #2}}
+
+
+\newcommand{\rom}{\rand_\omega}
+
+% TODO
+\usepackage[colorinlistoftodos,prependcaption,textsize=tiny]{todonotes}
+\usepackage{xargs} % Use more than one optional parameter in a new commands
+
+% \usepackage[bordercolor=white,backgroundcolor=gray!30,linecolor=black,colorinlistoftodos]{todonotes}
+\newcommand{\rework}[1]{\todo[color=yellow,inline]{Rework: #1}}
+% \newcommand{\wtp}[1]{\todo[color=cyan,inline]{Write about: #1}}
+
+\newcommandx{\unsure}[2][1=]{\todo[linecolor=red,backgroundcolor=red!25,bordercolor=red,#1]{#2}}
+\newcommandx{\change}[2][1=]{\todo[linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
+\newcommandx{\info}[2][1=]{\todo[linecolor=OliveGreen,backgroundcolor=OliveGreen!25,bordercolor=OliveGreen,#1]{#2}}
+\newcommandx{\improvement}[2][1=]{\todo[linecolor=Plum,backgroundcolor=Plum!25,bordercolor=Plum,#1]{#2}}
+\newcommandx{\wtp}[2][1=]{\todo[linecolor=orange,backgroundcolor=orange!25,bordercolor=orange,#1]{#2}}
+\newcommandx{\thiswillnotshow}[2][1=]{\todo[disable,#1]{#2}}
+
+
+\newenvironment{code}
+{\begin{figure}[H]
+\centering
+\begin{BVerbatim}}
+{\end{BVerbatim}
+\end{figure}}
+
+% \newenvironment{code}{start}{stop}
+
+\newcommand{\bigcomment}[2]{
+  \begin{center}
+  \fbox{\begin{minipage}{\linewidth}{\bf #1:} {\rm #2}\end{minipage}}
+  \end{center}
+}
+
+\newcommand{\XZ}[1]{\bigcomment{XZ}{#1}}
