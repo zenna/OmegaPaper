@@ -1,5 +1,34 @@
-We introduce a method to augment probabilistic generative models with declarative knowledge and perform inference in these models.
-Mathematically, conditioning on a predicate is sufficient to encode many kinds of declarative knowledge, but existing probabilistic programming systems limit statements that can be conditioned on to avoid intractable likelihoods.
-We view a probabilistic program as a deterministic transformation of random inputs, and conditioning as a restriction to the subset of these inputs consistent with a predicate. For inference, we automatically replace all Boolean functions (e.g., $=, <, >, \neg, \land, \lor$), which constitute random variables, with softened counterparts defined on the unit interval.  This induces an energy function over the random input space which assigns mass only to the inputs consistent with our conditions.
-We then perform inference by constructing a Markov Chain over this energy function.
-We build these concepts into a probabilistic programming system, and evaluate our approach on a number of examples.
+% We introduce a method to augment probabilistic generative models with declarative knowledge and perform inference in these models.
+
+% Mathematically, conditioning on a predicate is sufficient to encode many kinds of declarative knowledge, but existing probabilistic programming systems limit statements that can be conditioned on to avoid intractable likelihoods.
+
+% We view a probabilistic program as a deterministic transformation of random inputs, and conditioning as a restriction to the subset of these inputs consistent with a predicate. 
+
+% For inference, we automatically replace all Boolean functions (e.g., $=, <, >, \neg, \land, \lor$), which constitute random variables, with softened counterparts defined on the unit interval.  
+
+% This induces an energy function over the random input space which assigns mass only to the inputs consistent with our conditions.
+
+% We then perform inference by constructing a Markov Chain over this energy function.
+
+% We build these concepts into a probabilistic programming system, and evaluate our approach on a number of examples.
+
+Probabilistic modeling relies on knowledge. The most common
+knowledge comes from observing a variable in the probabilistic model.
+However alternative forms of knowledge can be provided to
+probabilistic models in the form of predicates. For example,
+we may know estimates of human physiologic variables within a person
+can only vary minimally across the population. We may also know
+that a probabilistic render will only be used as a model
+for non-intersecting objects. In the same way that conditioning
+on data creates a new "posterior model", conditioning on predicates
+creates a new model that respects the predicates. Conditioning on
+arbitrary predicates requires new kinds of inference. We develop
+a new likelihood free inference algorithm that operates on the
+measure space that underlies the probability model.
+This inference algorithm automatically replaces 
+all Boolean functions (e.g., $=, <, >, \neg, \land, \lor$), which 
+constitute random variables, with softened counterparts defined on the 
+unit interval and samples from the induced energy function with a Markov
+Chain. As softening does not directly respect the constraints, we introduce
+a replica exchange step between different levels of the softened constraint.
+We build this likelihood-free inference algorithm into a probabilistic programming system, and evaluate our approach on a number of examples. 
