@@ -1,0 +1,236 @@
+
+\subsection{Inference}
+In general it is easy to construct a transformation of a random variable 
+and simulate from it, but intractable to compute the corresponding transformed mass or density function. 
+% In Omega one can define and condition on arbitrary transformations of random variables with intractable  likelihood and as a result, more often than not we will be in the regime where computation of the likelihood is intractable and hence we develop a likelihood-free inference method
+To support conditioning on arbitrary transformations of random variables we develop a method of inference that avoids computing the likelihood all together.
+In particular, the inferential task we address is to sample from the conditional distribution $\conds{X}{Y}$, constructed with \texttt{cond(x,y)} in Omega.
+We:
+\begin{enumerate}
+	\item Reframe the problem. Rather than sample from the random variable $\conds{X}{Y}$ directly, we aim to first sample from the \emph{conditional set} $C(Y) = \{ \omega \in \Omega \mid Y(\omega) = 1 \}$. 
+With a conditional sample in $\Omega$, a conditional sample from $X$ is straightforward to compute by forward execution of the function defining $X$, i.e. $X(\omega)$.
+\item Sampling $\omega \in C(Y)$ is often intractable, as it can require the inversion of a complex, nonlinear function.
+We instead approximate $Y$ with an unnormalized density function $U_Y: \Omega \to [0, 1]$, which is constructed to be consistent with $Y$ on values of $\omega \in C(Y)$, but smoothly degrade to zero on $\omega$ outside the conditioning set,  
+\item Perform inference on $U_Y$.  The softening of the constraint on $\Omega$ to a density allows us to apply inference algorithms.  In particular, we construct a Markov Chain exploring $\Omega$ whose stationary distribution is $U_Y$.  Intuitively, this is constructing a random walk through the random inputs of a probabilistic program to find those which satisfy specified conditions. At the end of this section we will describe how other inference techniques can be used as well.
+\end{enumerate}
+
+There are three desiderata which govern how the unnormalized density -- or simply energy -- function  $U_Y$ approximates $Y$.  First, we would like $U_Y$ to have a temperature parameter $\alpha$ that controls the fidelity
+of the approximation. In particular, we want $U_Y$ to converge to $Y$ as $\alpha \to 0$, and to converge to a flat surface as $\alpha \to \infty$. Second, temperature should vary monotonically with the fidelity of the approximation, parameterizing a tradeoff between accuracy of samples and ease of inference. Third, we want to preserve consistency with $Y$. That is $Y(\omega) = U_Y(\omega)$ when $\omega \in C(Y)$, at all temperatures.  This consistency is one-sided; we do not, and could not, require it also hold at 0 and preserve the other desiderata.
+
+% The family of approximations of the predicate $Y$ is parameterized through a temperature $\alpha$ that controls the smoothness of the approximation. In particular, $U_Y$ with $\alpha \to 0$ converges to $Y$ itself while increasing values of $\alpha$ yield smoother approximations eventually giving a flat surface when $\alpha \to \infty$. Moreover, the set of conditional samples $C(Y) = \{ \omega \in \Omega \text{ } | \text{ } Y(\omega) = 1 \}$ are assigned a value of $1$ in $U_Y$ for all temperatures. 
+
+In most scenarios $U_Y$ is induced by defining a distance function on random variables in the model. 
+For example if $X_1$ and $X_2$ are real valued random variables, then replace the predicate $X_1 = X_2$ with the energy function $U_Y = e^{-\rho(X_1, X_2) / \alpha}$ where $\rho$ is a distance function on the outcome space of $X_1$ and $X_2$.
+This satisfies the desiderata outlined above.  We then call $U_Y$ a permissible approximation $Y$
+% To construct a $U_Y$ with such properties, we let $Y$ be the following predicate $a=b$ for standard Gaussians $a, b \sim \mathcal{N}(0, 1)$. We choose a distance
+% $\rho(a, b)$ to indicate how close our sample is to $C(Y)$. To meet the desiderata
+% of having $C(Y)$ be $1$ over the constraint set and to ensure the constraint becomes
+% smoother with large $\alpha$, we use a function $k : [0, \infty] \to [0, 1]$ parameterized by $\alpha$ to wrap the distance $\rho(a, b)$. A simple choice for such a function is $k(d; \alpha) = e^{-d / \alpha}$ that provides the desired properties to $U_Y$ (see Appendix). The formal definition of $U_Y$ is as follows.
+
+\begin{definition}
+The function $U_Y : \Omega \to [0, 1]$ parameterized by $\alpha$ is an approximation of a predicate $Y$ if:
+\begin{enumerate}[label=(\roman*)]
+	\label{def:temp}
+	\item For all $\omega \in \Omega$, the limits $\lim_{\alpha \to 0}U_Y(\omega; \alpha) = Y(\omega)$ and $\lim_{\alpha \to \infty}U_Y(\omega; \alpha) = 1$ hold.
+    \item For all $\alpha \in [0, \infty)$ and  $\omega \in C(Y)$, $U_Y(\omega; \alpha) = 1$.
+    \item The increasing fidelity is characterized by entropy, i.e. the entropy $H(U_Y(\omega; \alpha))$ of the unnormalized density $U_Y$ is an increasing function of $\alpha$.\footnote
+    {By compactness, it is integrable for all $\alpha$, when $\Omega$ has finite dimension}
+\end{enumerate}
+\end{definition}
+
+We derive $U_Y$ from $Y$ semi-automatically. 
+Recall that a probabilistic model $\mathcal{M}$ is a collection of random variables on a shared probability space, and that a predicate $Y \in \mathcal{M}$ is generally a composition of these variables.
+We derive $U_Y$ from $Y$ by replacing all predicates (Boolean valued functions) in $Y$ with corresponding relaxations defined on $\mathbb{R}$.
+In programming language terminology this is a nonstandard execution of $Y$ and can be implemented by a source to source transformation of the code which comprises $Y$.
+In Omega we achieve the same result through use of the multi-method dispatch, which is similar to operator overloading by allowing multiple methods to use the same name if distinguished by type.  That is, we define a distinct type for primitive types (such as $\mathbb{R}$), and redefine Boolean operators on these types to their softened counterparts.
+
+Probabilistic models are compositions of a small number of primitive operations, hence the burden of constructing softened predicates need only be done once.
+Generally our soft predicates $\tilde{z} = \soft(z)$ take the form $k(\rho(a, b); \alpha)$.
+Here the function $\rho(\cdot, \cdot)$ is a distance metric between two points (or with abuse of notation set of points).
+% On the other hand, $k : [0, \infty] \to [0, 1]$ parameterized by the temperature $\alpha$ maps a distance to the relaxation of the predicate such that $d = 0 \Longleftrightarrow k(d; \alpha) = 1$.
+
+\begin{center}
+\begin{tabular}{ l | c | c | c | c |r }
+  \hline		
+  $z$ & $a = b$ & $a > b$ & $a < b$ & $a \land b$ & $a \lor b$  \\
+  $\tilde{z}$ & $k(\rho(a, b))$ & $k(\rho(a, [b, \infty]))$ & $k(\rho(a, [-\infty, b]))$ & $\min(\tilde{a}, \tilde{b})$ & $\max(\tilde{a}, \tilde{b})$\\
+  \hline  
+\end{tabular}
+\end{center}
+
+
+% The formal choice for $k(\cdot ; \cdot)$ that satisfies the conditions in Definition \ref{def:temp} is given by $k(d; \alpha) = \mathbbm{1}_{d=0} e^{-d \alpha} + \mathbbm{1}_{d \neq 0} e^{-d / \alpha}$ (see Appendix). 
+% Practically, we never encounter $\alpha = 0$ so we replace the aforementioned function with the equivalent and simpler $k(d; \alpha) = e^{-d / \alpha}$. 
+% Adjusting the value of the temperature $\alpha$ from $\infty$ to $0$ illustrates the fundamental tradeoff between ease of inference and accuracy of samples.
+
+\paragraph{Negation}
+Negation as an operation requires special treatment.
+The most obvious choice for defining relaxation for negation of a predicate $a$ is $\overset{\sim}{\neg a} = 1 - \tilde{a}$.
+This however leads to a collapse of the aforementioned desiderata for $U_Y$.
+In particular, the relaxation satisfies $\tilde{a}(\omega) = 1$ whenever $a(\omega) = 1$. If we use the given definition of soft predicate negation, then $\overset{\sim}{\neg a}(\omega) = 1$ whenever $\neg a(\omega) = 1$, i.e. $\tilde{a}(\omega) = 0$ whenever $a(\omega) = 0$. This means that $\tilde{a}$ has no relaxation part since it's always equal to $a$. To overcome this challenge, we simply keep two counterparts of relaxation: $\tilde{a}$ defined above, and $\tilde{a}'$ defined the same way but for the conditional set $a(\omega) = 0$. Keeping track of $\tilde{a}'$ is completely analogous to the same process for $\tilde{a}$ but when negating we switch the roles of the relaxations, i.e. $\overset{\sim}{\neg a} = 1 - \tilde{a}'$ and $(\overset{\sim}{\neg a})' = 1 - \tilde{a}$. Such construction of negation ensures the invariance of the properties stated in Definition \ref{def:temp}.
+
+The temperature parameter trades off between tractability of inference and fidelity of the approximation.
+Too high and $U_Y$ will diverge too greatly from $Y$, too low and convergence will be slow.
+Several methods for controlling temperature such as parallel tempering \citep{swendsen1986replica}, simulated annealing \citep{kirkpatrick1983optimization}, Adiabatic Monte Carlo \citep{betancourt2014adiabatic} could provide sophisticated mechanisms to control the temperature, potentially dynamically through time.
+Heuristically, we look for the the lowest temperature which yields a reasonable acceptance rate. 
+
+% \paragraph{Implementations in Other Systems.} Energy functions are related to noise models, which means that this behavior can be implemented in standard probabilistic programming languages as WebPPL or Anglican. Using an exponential kernel with euclidean distance over $a, b$ and temperature $\alpha$ is equivalent to say that the difference between $a$ and $b$ is equal to a Gaussian noise centered around zero with variance equal to $\alpha/2$. Therefore, you could write the following helper in Anglican for using \texttt{softeq}.
+
+% \begin{center}
+% \begin{minipage}{5cm}
+% \begin{Verbatim}[fontsize=\small]
+% (let [kernel (fn [alpha]
+%                (fn [a, b]
+%                  let [n (normal 0 (/ alpha 2))]
+%                  (observe (n (- a b)))))
+%        softeq (kernel 1.0)]
+%   (softeq x y))
+% \end{Verbatim}
+% \end{minipage}
+% \end{center}
+
+% Our method relies on a choice of $\rho$: a types-specific distance between objects.
+% The choice of a suitable distance function can only be made in relation to a corresponding inference procedure, because the inference procedure will be making moves based on the distance.
+% For example with Hamiltonian Monte Carlo we want the distance function to be continuous and differentiable.
+
+% For primitive types such as $\mathbb{R}$
+% Min Max are not only valid choice, what is the desiderata?
+
+\subsection{MCMC Inference through Sample Space}
+An Omega model is completely distinct from any particular inference procedure, but in practice we perform inference using variants of Markov Chain Monte Carlo.
+We construct a Markov chain through the states of $\Omega$ to sample from the unnormalized target density, $U_Y$.  The simplest form of the algorithm applicable to any model is influenced by the approach of \citep{wingate2011lightweight, milch20071} to MCMC that mutates a database of named random variables:
+\begin{enumerate}
+\item Sample a random initial starting state $\omega_1$.
+\item Uniformly sample a random dimension $d$ of $\omega_i$, and construct a proposal $\omega^*_i$.
+\item Accept the proposal with probability $\min(1, U_Y(\omega_i) / U_Y(\omega^*_i))$.
+\end{enumerate}
+
+An unusual property of this form of MCMC is that it becomes unnecessary to compute the density of the data. Indeed, even though we are essentially sampling from the conditional distribution $\conds{X}{Y}$, at no point during the inference are we required to compute the density of $X$. The samples of $X$ are simply obtained via the forward execution of the samples from $\Omega$, i.e. $x_i = X(\omega_i)$ for $i = 1, 2, \dots$ The cost of this added flexibility lies in the definition of a distance function. When random variables are high dimensional objects, defining a useful distance can be very difficult.
+
+This scenario closely resembles the reparameterization trick \citep{Kingma:2014, rezende2014stochastic} where one resorts to include all the uncertainty of a random variable $z$ in a simple, easy-to-sample, parameter-free noise source such as $\epsilon \sim \mathcal{N}(\mathbf{0}, I)$. The actual random variable $z$ is then obtained through a parametric transformation of the noise, $z = f(\epsilon; \theta)$. Both methods separate the 
+uncertainty of a random variable from the deterministic transformation that results in a complex density. However, in the reparameterization trick the noise source is constant and controlled while the parametric transformation is meant to infer the structure of the resulting random variable. Conversely, our forward model -- deterministic transformation -- is constant and controlled, hence we simply transfer our inference problem to a much simpler space of $\Omega$.
+
+There is also connection to approximate Bayesian computation (ABC) methods~\citep{beaumont2002approximate} in that ABC methods 
+sample using a distance function to induce a data likelihood. Our method differs in that conditionals can be any predicate not just
+one for an observed random variable.
+Finally for inference, with the soft predicates we define, we
+can use modern likelihood-free variational inference algorithms
+that construct an approximation to a conditional with only samples
+from the joint and samples from the conditional approximation~\citep{tran2017hierarchical}.
+
+% Given a random variable $X$, the simplest inference procedure is rejection sampling: unconditionally simulate $X$, and accept the sample if some condition $Y$ holds, otherwise try again.
+
+% Rejection sampling is correct because it assigns zero measure to all events that are disjoint from the conditioning set $Y^{-1}(1)$, while preserving the original same measure on all events in the conditioning set.
+% % samples from the conditional measure $\mu_Y$  observes the measure theoretic semantics has straightforward semantics, which lead directly to the approximations used in this approach.
+% % With the objective of sampling from $X$ given $Y$, in measure theoretic terms we can first forget about $X$ and instead focus on generating $\omega$ such that $Y(\omega) = 1$.
+% Rejection sampling does not scale to high dimensions because 
+% Approximate bayesian computation (ABC) is a class of methods which approximate the rejection sampling approach by replacing equalities with bounds.
+% Rather than condition on $X = c$, we condition on $\rho(\tilde{D},D) \leq \epsilon$.
+% - 
+% \subsection{Implementation}
+
+
+% The role of the sample space $\Omega$ in probability theory closely resembles the global random number generator data structure found in most programming language, which leads directly to a metho implementation  for inference.
+% If inference as described in section $X$ is the problem of finding values in the measure space which are consistent with our observations, and that measure space is in one to one correspondance with the space on which the random number generator is defined.
+% And if for the MCMC procedures we need to construct a random walk throughg this space.
+% Our approach is to overload the random number generator.
+
+
+% \begin{figure}[h]
+% \centering
+% \begin{minipage}[t]{5cm}
+% 	\vspace{0pt}  
+
+% 	\begin{algorithm}[H]
+% 	\SetAlgoLined
+% 	\KwResult{Write here the result }
+% 	 initialization\;
+% 	 \While{While condition}{
+% 		instructions\;
+% 		\eIf{condition}{
+% 		 instructions1\;
+% 		 instructions2\;
+% 		 }{
+% 		 instructions3\;
+% 		}
+% 	 }
+% 	 \caption{Single Site Metropolis Hastings}
+% 	\end{algorithm}
+% \end{minipage}%
+% \begin{minipage}[t]{5cm}
+% 	\begin{algorithm}[H]
+% 	\SetAlgoLined
+% 	\KwResult{Write here the result }
+% 	 initialization\;
+% 	 \While{While condition}{
+% 		instructions\;
+% 		\eIf{condition}{
+% 		 instructions1\;
+% 		 instructions2\;
+% 		 }{
+% 		 instructions3\;
+% 		}
+% 	 }
+% 	 \caption{Hamiltonian Monte Carlo}
+% 	\end{algorithm}
+% \end{minipage}
+% \end{figure}
+
+%% I like this, but at this point the reader wants results.
+% \subsection{Generalized Model Contruction with Conditioning}
+
+% \paragraph{Encoding Prior Beliefs.}
+% The kinds of knowledge we described were fixed predicates the random variables need
+% to satisfy. This allowed for the construction of a wide array of models with complex random
+% variables without having to alter the definitions of the random variables. However 
+% directly transforming models via conditioning does not allow for the expression
+% of beliefs that are uncertain. That is instead of ruling out that $X_1 \leq 0$ by conditioning
+% on $X_1 > 0$, we would like to express that a priori $X_1 < 0$ is l.
+
+% To build new models that declare probabilistic beliefs rather than only
+% hard knowledge, we expand the probability space. Take a model 
+% $(\Omega, {\cal H}, {\cal P})$, $X_1,...X_n$, then create a new
+% probability space with an extra independent uniform
+% dimension $(\Omega^*, {\cal H}^*, {\cal P}^*)$. Similar
+% to conditioning, adding a dimension can be done without altering 
+% random variables,
+% \begin{align*}
+% X(\omega^*) = X(\omega, \omega^{extra}) = X(\omega).
+% \end{align*}
+% The random variables ignore the added dimension to the sample space.
+
+% With this added dimension, the belief $b$ over a predicate $d$ 
+% can be expressed as a simple fixed predicate of above. 
+% First, define an additional random variable $X^*$,
+% \begin{align*}
+% X^*(\omega^*) = 1 \textrm{ if } d(X_1, ..., X_n) = 1, \\
+% X^*(\omega^*) = \omega^{extra} > b \textrm{ if } d(X_1, ..., X_n) = 0.
+% \end{align*}
+% Then given this random variable, we can build new models $\cM^*$ by
+% conditioning on the predicate $X^* = 1$ as in the previous section. 
+% If the belief $b$ is one, the new model
+% $M^*$ enforces the predicate $d$ is always true. If $b < 1$, then
+% $M^*$ allows for the predicate to be false with probability $1 - b$.
+% This also means if the belief in the predicate is zero, $M^* = M$.
+
+% The pullback measure on $\omega$ induced by conditioning on $X^* = 1$,
+% gets reweighed because $\omega$ where the predicate $d$ is true maintain
+% their mass, while $\omega$ where the predicate $d$ is false have their mass
+% reduced by $1-b$.
+
+% \paragraph{General Conditioning.}
+% Conditioning has the ability to morph one model into
+% almost any other model if we condition on flexible enough
+% extra dimensions. Let $\beta$ be an independent random
+% variable, then let $f_\beta(X_{1}, ..., X_{n})$
+% be an arbitrary function. Then let $\sigma$ is the sigmoid function,
+% and define an additional random variable $X^*$ as 
+% \begin{align*}
+% X^* \sim \textrm{Poisson}(\exp(f_\beta(X_{1}, ..., X_{n}))).
+% \end{align*}
+% The model family generated by conditioning on $X^* = 0$, 
+% has prior support over any joint distribution whose Radon-Nikodym
+% derivative difference with respect to a dominating measure  
+% with that of the model $M$ can be represented as $f_\beta$.
+% This follows since $f_\beta$ can arbitrarily reweight the pullback
+% measure.

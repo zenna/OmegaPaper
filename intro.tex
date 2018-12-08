@@ -1,0 +1,63 @@
+\section{Introduction}
+
+Generative probabilistic models are specifies probabilistic models through two mechanisms.
+First, one constructs probability distributions by specifying algorithms that simulates the data generating process.
+Second, one specifies assertions that condition distributions in the model.
+Although the kinds of model that can be specified constructively has increased dramatically over time, whereas the kinds of statement that one can condition a model on has not.
+
+The kinds of statement that one can condition a model on is in practice limited to a restricted form of observation of data.
+In Bayesian networks, one observes a node to be a value.
+While the specifics vary by formalism, the general limitation is that (i) random variables that can be conditioned must be primitive, and not derived, and (ii)
+
+% The value of probabilistic programming systems hinges on how easily a practitioner can encode domain knowledge into a model. Existing probabilistic programming systems support two main mechanisms for encoding knowledge: implicitly in the generative model, and explicitly by conditioning on observations. There are many contexts, however, for which neither of these two mechanisms are sufficient to encode the knowledge that practitioners have about a process.
+These limitations impose stringent limitations of the kinds of models that we can express.
+For example, consider the problem of modeling the evolution of glucose levels over time~\citep{levine2017offline}. Using existing approaches, a scientist could define a generative model that captures prior knowledge of how glucose levels evolve over time---for example, the model may use latent variables to identify when a person eats and the glycemic loads of the meals a person consumes, and encode some physiological knowledge of how those meals will affect glucose levels. A scientist could also condition the model on concrete observations of glucose measurements on a given patient to infer the values of the latent variables in the model for that patient. However, explicitly conditioning on properties of the distribution such as ``human glucose curves are similar across patients'' is surprisingly challenging even in the most expressive probabilistic programming systems. 
+
+In some cases it is possible to manually encode declarative knowledge constructively into a generative model.
+For example, one may specify a truncated normal distribution by conditioning a normal distribution to be bounded, or constructively using the inverse transform method.
+However, in most cases there is no straightforward means.
+Continuing the glucose example, we may attempt to tie parameters by drawing the parameters for each patient from a shared stochastic process.
+However, this increases the complexity of the generative model and requires significant expertise to ensure that the new generative model indeed captures the high-level constraint without unnecessarily constraining the model in unwanted ways.
+% Moreover if the model is composed of flexible, potentially nonparametric parts, encoding anything but the simplest of constraints into the generative process becomes virtually impossible.
+
+The primary contribution of this paper is an inference proecdure for sampling of distributioned conditioned on a larger class of statements.
+To support this, in Omega we develop a new set of inference methods that work by softening predicates
+over the entire probability space while preserving the distribution for those variables that meet the
+constraint.
+
+The rest of the paper proceeds as follows:
+\begin{itemize}
+\item We first formalize the concept of a probabilistic model as a collection of random variables defined on a shared probability space, and show how conditioning creates new probability models by chaining the probability space.  Next we define Omega: a system for building models by composing and conditioning random variables.
+\item Following this, we describe our approach to inference, which softens the hard constraints as defined in measure theoretic probability to admit tractable inference in a broader set of scenarios.
+\item  We demonstrate our approach on a number of examples, with experiments on toy data and experiments on medical models by enriching them with declarative knowledge to learn from limited data.
+\end{itemize}
+
+\section{Related Work}
+Probabilistic programming systems~\citep{milch20071, wood2014new,mansinghka2014venture,goodman2008church,carpenter2017stan} provide a formalism
+for declaring probabilistic models and performing inference
+in them. Traditional probabilistic programming approaches support model definition by simulation thereby, hiding the underlying probability space. 
+One exception to this is Blog \citep{milch20071} 
+that defines models in terms of the generating functions.
+
+In contrast, Omega exposes the underlying probability space and performs inference in this space as well. The value of the approach Omega takes lies in that complex random variables, functions of the probability space, can be reused to build different models by changing the underlying probability space. The exposure of the probability space incurs a cost: it is hard to compute likelihoods of random variables because they can be arbitrary transformations of fixed randomness. This means for inference in Omega we have to use likelihood-free techniques. These methods can be less efficient than their likelihood-based counterparts. Given the completeness of many probabilistic programming systems, the formalism of Omega can be implemented inside them.
+
+Omega relates to smooth interpretation of programs \citep{chaudhuri2010smooth}.
+As traditional computer programs are collections of predicates, the techniques used to soften predicates for inference in Omega can also be used to build systematic smooth approximations of these programs. Similarly, tools from smooth interpretation can be used to build new kinds of inference algorithms.
+
+% \begin{itemize}
+% 	\item Probability is important
+%     \item Using probability can be hard (e.g., posterior computation)
+%     \item Important for widespread probabiltiy, mental model needs to match formal semantics
+%     \item Systems like Stan have made things easier, but the notion of conditioning and expressing weak knowledge requires the user to bake into  a generative process
+%     \item Contrast constructive generative model with declarative knowldege you condition on
+%     \item "Conditioning is declaring knowledge sentence you have" 
+%     \item Motivating examples \textbf{Need to think about simplest example}
+%  	\item We formalize the notion of declarative knowledge
+%     \item We provide a syntex and sematics
+%     \item We develop inference algorithms for both when the knowledge is hard and when it's soft (either for compute or because there's uncertainty about the knowledge)
+%     \item Just like inference can be abstracted, model building can be as well
+% \end{itemize}
+
+\input{declarative-knowledge}
+%\input{rcd}
+

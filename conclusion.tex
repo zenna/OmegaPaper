@@ -1,0 +1,70 @@
+
+\section{Conclusion}
+There are two ways to build models. Fix the probability space and change the definitions of random variables or change the probability space and keep random variables fixed. Both can represent a broad class of models. However the latter can 
+reuse complex random variables like stochastic simulators to build new models without having to alter them.
+
+We build new models by chaining the probability space via
+conditioning. We demonstrated how conditioning on predicates can be
+used to define new models that respect the knowledge given by the predicate.We developed Omega, a system that treats the underlying probability
+space as a first class object. Omega relies on three primitives:
+rand to create new probability spaces, functions to define new random variables, and a conditioning operator for general predicates. With these primitives, we can take a model and declare knowledge by conditioning. 
+
+Sampling from models conditioned on arbitrary predicates poses a challenge. To address this challenge, we develop a generic scheme to soften predicates that makes them amenable to powerful MCMC algorithms like HMC. Unlike most inference algorithms, our inference algorithms operate on the abstract probability space rather than the output random variable space. 
+We demonstrate Omega on many examples including models of glucose and renders.
+
+% \section{Notation Glossary (to remove)}
+
+% \begin{itemize}
+% \item $\lift$
+% \item $X$ some arbitrary random variable of type $T$
+% \item $Y$ Boolean valued random variable
+% \item $X_{\mid Y}$ conditional random variable of $X$ given $Y$ is true
+% \item $\mean{X \mid C}$ conditional expectation of $X$ - distribution of expectations
+% \end{itemize}
+
+
+% \subsection*{Distributions over Random Variables}
+% In some instances we want to construct to construct distributions over random variables.
+% Consider the following model expressed in standard statistical notation:
+% \begin{align*}
+% \theta \sim \mathcal{U}(0, 1)\\
+% X \sim \mathcal{N}(\theta, 1)
+% \end{align*}
+
+% $X$ is a real valued random variable.
+% If instead, wish to define a distribution $\tilde{X}$ over normally distributed random variables parameterized by $\theta$ there is no standard notation.
+% Treating random variables explicitly as functions, we can express the model as
+% \begin{align*}
+% \theta(\omega_1) &= \mathcal{U}_{0, 1}(\omega_1)\\
+% X(\omega_1, \omega_2) &= \mathcal{N}_{0,1}(\omega_2) + \theta(\omega_1)
+% \end{align*}
+
+% The distribution $\tilde{X}$ over random variables can is then:
+% $$
+% \tilde{X}(\omega_1) =  \omega_2 \mapsto \mathcal{N}_{0,1}(\omega_2) + \theta(\omega_1)
+% $$
+
+% $\curry$ is the operator which constructs $\tilde{X}$.
+% The full model is then:
+
+% \begin{align*}
+% \theta &= \mathcal{N}(0, 1)\\
+% X &= \mathcal{N}(\theta, 1)\\
+% \tilde{X} &= \curry(X, \theta)\\
+% \tilde{X} &= \curry(\mathcal{N}(\theta, 1), \theta)
+% \end{align*}
+
+% Curry corresponds closely to the notion of \emph{currying} in functional programming.
+% Let $\Omega$ be composed of several dimensions and  $X(\omega_1, \omega_2)$ be a random variable that maps from two components of $\Omega$.
+% Consider a new partially applied random variable $X_{\omega_1}(\omega_2)$ that takes only one argument where the other fixed to a constant, defined as:
+% $$
+% X_{\omega_1}(\omega_2) = X(\omega_1, \omega_2)
+% $$
+% We can then define $\tilde{X}$ which constructs $X_{\omega_1}$ from $\omega_1$
+% $$
+% \tilde{X}(\omega_1) = \omega_1 \mapsto X_{\omega_1}
+% $$
+% Note that $\tilde{X}$ is a random variable.
+% In programming language terminology $\tilde{X}$ is the result of currying $X$.
+
+% $\curry(X, Y)$ curries $X$ on all the input dimensions of $Y$

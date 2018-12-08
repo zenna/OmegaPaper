@@ -1,0 +1,11 @@
+\section{Related Work}
+Probabilistic programming systems~\citep{milch20071, wood2014new,mansinghka2014venture,goodman2008church,carpenter2017stan} provide a formalism
+for declaring probabilistic models and performing inference
+in them. Traditional probabilistic programming approaches support model definition by simulation thereby, hiding the underlying probability space. 
+One exception to this is Blog \citep{milch20071} 
+that defines models in terms of the generating functions.
+
+In contrast, Omega exposes the underlying probability space and performs inference in this space as well. The value of the approach Omega takes lies in that complex random variables, functions of the probability space, can be reused to build different models by changing the underlying probability space. The exposure of the probability space incurs a cost: it is hard to compute likelihoods of random variables because they can be arbitrary transformations of fixed randomness. This means for inference in Omega we have to use likelihood-free techniques. These methods can be less efficient than their likelihood-based counterparts. Given the completeness of many probabilistic programming systems, the formalism of Omega can be implemented inside them.
+
+Omega relates to smooth interpretation of programs \citep{chaudhuri2010smooth}.
+As traditional computer programs are collections of predicates, the techniques used to soften predicates for inference in Omega can also be used to build systematic smooth approximations of these programs. Similarly, tools from smooth interpretation can be used to build new kinds of inference algorithms.
