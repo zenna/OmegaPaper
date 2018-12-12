@@ -1,71 +1,80 @@
 \section{Introduction}
 
-% WTP: Simulation based models are plentiful, but do not permit tractable likelihoods 
-For a variety of phenomena in physics, biology, simulation is unique in its ability to capture the 
+% WTP: What are simulation based models, what is bayesian inference in them.  Why is it necessary. 
+% Mechanistic knowledge is well modeled through simulation, whereby values, states, and transitions in the execution of a program correspond to aspects of the process being modeled. 
+% Even when equational laws that govern a system are known, simulation models are still useful as an algorithm that computes a solution.
 
-Simulation models can accurately represent many phenomena in physics, biology, and artificial intelligence but are resistant to analytical treatment.
-This presents both promise and peril for Bayesian inference problems; often simulation is uniquely capable of expressing complex probabilistic models
-
-The expressiveness of simulation based models renders them to several analysis.
-Bayesian inference offers a principled solution to this problem 
-by quantifying all unknown values as probability distributions.
-The posterior distribution expresses what we should believe having observed the output of the simulation, and is uniquely determined by the rules of probability, eliminating any ambiguity.
-In practice however, the vast majority of tractable methods for Bayesian inference depend upon a tractable likelihood function.
+Particularly in the sciences, many phenomena are readily modeled through simulation.
+A simulation models a domain as an algorithm which solves the equations which govern it. Values, states, and transitions in the execution of the algorithm correspond to entities in the domain.
+Typically, this execution flows causally in the sense that if $a$ causes $b$ in the domain, $b$ is computed from $a$ in simulation.
+Inference problems, on the other hand, demand the inverse.
+Often we have observed the result of the simulation, and want to infer likely causes.
 
 
-% Running the simulation then requires random numbers to simulate sampling from the distribution.
-% In such models, it is generally easy to simulate the model in the forward direction, but the objective is the inverse: to sample values of parameters that are consistent with observations.
-% - Observations are constraints of the form X = x, where X is n unknown quantity and and x is data
+% % WTP: 
+% Many phenomena, particularly in the sciences, are understood mechanistically and hence well modeled through simulation.
+% A simulation model is a program, whereby values constructed in its execution correspond to components of the process being modeled. 
+% Simulation models generally have forward causal direction; they are executed to produce output from a given input.
+% Probability theory 
+% % Simulation models express generative processes that construct observable data, and are unique in their ability to capture complex phenomena across a variety of domains, particularly in the sciences.
+% Unfortunately, the very flexibility that allows simulation models renders them resistant to many kinds of analysis.
+% In particular, the vast majority of algorithms which perform Bayesian inference in probabilistic models -- that is, sample likely values of latent variables given  observed data -- rely on computing the likelihood function, which is not explicitly represented in a simulation model, and more often than not is intractable to compute.
 
+% WTP: What are likelihood functions, why are they use useful, and why are they intractable
+The Bayesian approach quantifies all uncertainty with probabilities and as a result uniquely specifies the posterior distribution over latent variables.
+% Bayesian inference is a principled framework for inferring probable causes of observed values, but relies on terms which are often intractable.
+Most algorithms which draw samples from posterior distributions rely on
+% Bayes theorem dictates that the posterior distribution over latent variables given observations is is proportional to the product of the likelihood function and prior.
+the likelihood function, which quantifies the extent to which values of latent variables are consistent with observations.
+Whereas many probabilistic models are specified explicitly by their likelihood functions, likelihoods are implicit to simulation models and often intractable, i.e., defined by an integral or summation that lacks a closed form solution or is computationally intractable.
+This can occur, for example, when non-latent variables are unobserved, since they must be margainalized out.
+Alternatively, conditioning deterministic transformations of densities are produces integrals change of variables.
+Simulation based models can apply arbitrary, non-injective transformations to their input, and hence induce intractable likelihoods for any or all of these reasons.
 
-% % WTP: The Problem: There are several kinds of statements we would like to condition our probabilistic models on, but no inference algorithm supports them.
-% Samples are a fundamental representation of uncertainty.
-% They are applicable to probability distributions of any kind, and several other properties such as expectation and variance can be approximated from them.
-% Whereas the class of generative models for which tractable sampling strategies exist has grown to include those with infinite dimensions \cite{}, highly flexible nonlinear models, the kinds of statement we can condition a model on remains severely restricted.
-
-In the Bayesian paradigm, to observe the output of a simulation model is to condition the model on a constraint of the form $X = x$, where $X$ is a random variable and $x$ is a concrete value.
-Sampling from conditioned models is considered intractable if the likelihood function --  which quantifies the extent to which random variables in the model are consistent with observations -- is intractable to compute.
-A likelihood function is intractable if it is implicitly defined by an integral or intractable partition function.
-This can occur for a variety of reasons, for example when there are unobserved variables, when deterministic transformations of densities are conditioned, or when primitive distributions in the model have intractable densities.
-Simulation based models apply arbitrary, often nonlinear transformations to their input, and hence only in limited cases permit a tractable likelihood.
-
+A less explored cause of intractability is conditioning on propositions that are not observations in the conventional sense.
+% Several likelihood-free inference methods exist.
+% but they are largely inapplicable to models which lack a tractable likelihood function because their conditions are non-observational.
 % WTP: Underappreciate Reason for Problem: Conditioning on observations
-Conditioning is more general than observation.
-In modern probability theory it is an operation that restricts a model to be consistent with a statement.
-A less explored cause of intractability occurs when we condition on statements that are not observations of data.
+% Observing data is a special case of conditioning. 
+To observe data $x$ as the output of a simulation model $X$ is to condition the model on a proposition of the form $X = x$.
+There are several propositions that do not conform to this structure, which we would nevertheless like to condition our models on.
+% A less explored cause of intractability occurs when we condition on propositions that are not observations of data.
 For example, if $X$ and $Y$ are normally distributed random variables, then conditioning on $X = Y$ does not permit a density function, let alone a tractable one.
-Conditioning on inequalities such $X > 4$, transformations such $X^2  = 0$, and logical operations such as  $X = 3 \lor X = 5$ falls outside the domain of virtually all conditional sampling algorithms.
-As a consequence, conditioning in practice is significantly more limited than its theoretical counterpart.
+Conditioning on inequalities such $X > 4$, transformations such $X^2  = 0$, and logical formulas such as  $X = 3 \lor X = 5$ falls outside the domain of virtually all conditional sampling algorithms.
+% As a consequence, conditioning in practice is significantly more limited than its theoretical counterpart.
 
 % The value of probabilistic programming systems hinges on how easily a practitioner can encode domain knowledge into a model. Existing probabilistic programming systems support two main mechanisms for encoding knowledge: implicitly in the generative model, and explicitly by conditioning on observations. There are many contexts, however, for which neither of these two mechanisms are sufficient to encode the knowledge that practitioners have about a process.
 
 % WTP: Implications of the Problem
 
-Semantically, conditioning is a mechanism to express declarative knowledge.
+Conditioning is a mechanism to express declarative knowledge.
 It allows us to assert facts we know to be true without specifying the means by which they are true.
-Limiting the statements one can condition on to those with tractable likelihoods severely restricts the kinds of knowledge that we can express.
+% Limiting the propositions one can condition on to those with tractable likelihoods severely restricts the kinds of knowledge that we can express.
 For example, consider the problem of modeling the evolution of glucose levels over time~\citep{levine2017offline}.
-A scientist could define a generative model that captures prior knowledge of how glucose levels evolve over time -- for example, the model may use latent variables to identify when a person eats and the glycemic loads a person consumes, and encode some physiological knowledge of how those meals will affect glucose levels.
+A scientist could define a generative model that captures prior knowledge of how glucose levels evolve over time -- for example, the model may use latent variables to identify when a person eats and the glycemic loads a person consumes, and encode physiological knowledge of how those meals will affect glucose levels.
 The scientist could also condition the model on observations of glucose measurements of a given patient and use existing inference algorithms to sample from the posterior distributions over latent variables.
 However, there are various pieces of declarative knowledge the scientist may possess which are difficult or impossible to encode in this form.
-For instance, she may know that ``human glucose curves are similar across patients'' is surprisingly challenging even in the most expressive probabilistic programming systems. 
-Rather than observations, these statements are facts which condition the prior.These statements are not observations; 
+For instance, she may know that ``human glucose curves are similar across patients'',   is surprisingly challenging even in the most expressive probabilistic programming systems. 
+Rather than observations, these propositions are facts which condition the prior.These propositions are not observations; 
 
 % WTP: Non-obvious benefits of solving the problem:  Prior conditioning.
-The ability to express declarative knowledge through conditioning can serve as the bridge between classical Bayesian modeling which emphasizes interpretability, and recent trends of using highly parameterized families such as deep neural networks.
-For example, inverse graphics attempts to infer the three dimensional scene properties (geometry, lights, camera position) which caused an observed image.
-This requires a prior distributions over scenes.
+Declarative knowledge has the potential to serve as the bridge between classical parametric models, and recent trend towards nonparameric or highly parameterized families such as deep neural networks.
+For example, inverse graphics attempts to infer the three dimensional scene (geometry, lights, camera, etc) which caused an observed image.
+A Bayesian formulation of the problem requires a prior distributions over scenes.
+Simple parametric stand little chance of capturing the complexity of real world scenes, prompting.
 
 
 
-% WTP: Contribution: inference algorithm that supports conditioning on a wider class of statements
+
+% WTP: Contribution: inference algorithm that supports conditioning on a wider class of propositions
 In this paper we present an algorithm that draws samples from generative models that have been conditioned on predicates belonging to a more general class than observation of data.
 Predicates, when used as black boxes, provide only sparse information -- the constraint is satisfied or it is not -- and the subset of satisfying constraints is typically vanishingly small.
 Our objective is to support conditioning on predicates on spaces for which a natural metric can be defined.
 A metric provides more information a measure of the degree of satisfaction, and allows us.
 
 % WTP: Paper summary
-The rest of the paper proceeds as follows:
+In summary we address the problem of conditioning on declarative knowledge.
+In more detail:
 \begin{itemize}
 \item We formalize simulation models in measure-theoretic probability as random variables defined on a shared probability space (section X), and define conditioning as a concentration of measure.
 \item We describe our approach to inference, which softens the hard constraints to admit tractable inference in a broader set of scenarios.

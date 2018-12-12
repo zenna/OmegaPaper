@@ -1,5 +1,11 @@
 \section{Related Work}
-Talk about likelihood free inference.
+
+Demand for likelihood-free inference methods emerged from problems in genetics ecology \cite{}, where high-fidelity simulations are plentiful but tractable likelihood functions are not.
+Approximate Bayesian Computation (ABC) methods refers to a class of methods that sample from the posterior distribution over latent variables by finding simulations that result in data that is sufficiently close to the data that was observed.
+ABC methods have been successfully used to X, to Y and to Z.
+Our approach falls within the ABC paradigm in the sense that (i) we target  simulation based models, and (ii) rely on distance functions.
+However, it departs from most ABC methods in motivation
+Second, ABC methods rely on summary statistics technically do not use distance functions.
 ABC, etc, etc 
 
 Probabilistic programming systems~\citep{milch20071, wood2014new,mansinghka2014venture,goodman2008church,carpenter2017stan} provide a formalism
@@ -7,8 +13,6 @@ for declaring probabilistic models and performing inference
 in them. Traditional probabilistic programming approaches support model definition by simulation thereby, hiding the underlying probability space. 
 One exception to this is Blog \citep{milch20071} 
 that defines models in terms of the generating functions.
-
-It is hard to compute likelihoods of random variables because they can be arbitrary transformations of fixed randomness. This means for inference in Omega we have to use likelihood-free techniques. These methods can be less efficient than their likelihood-based counterparts. Given the completeness of many probabilistic programming systems, the formalism of Omega can be implemented inside them.
 
 Our approach is related to smooth interpretation of programs \citep{chaudhuri2010smooth}.
 
