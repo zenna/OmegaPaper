@@ -1,47 +1,39 @@
 \section{Introduction}
 
 % WTP: What are simulation based models, what is bayesian inference in them.  Why is it necessary. 
-% Mechanistic knowledge is well modeled through simulation, whereby values, states, and transitions in the execution of a program correspond to aspects of the process being modeled. 
-% Even when equational laws that govern a system are known, simulation models are still useful as an algorithm that computes a solution.
-
-Particularly in the sciences, many phenomena are readily modeled through simulation.
-A simulation models a domain as an algorithm which solves the equations which govern it. Values, states, and transitions in the execution of the algorithm correspond to entities in the domain.
-Typically, this execution flows causally in the sense that if $a$ causes $b$ in the domain, $b$ is computed from $a$ in simulation.
-Inference problems, on the other hand, demand the inverse.
-Often we have observed the result of the simulation, and want to infer likely causes.
+For many phenomena we lack succinct equations governing their behaviour but nevertheless understand the causal mechanisms by which they evolve.
+Such phenomena can be simulated, which means to execute a program and associate states which arise in its execution with entities in the domain.
+% as an algorithm which solves the equations which govern it. Values, states, and transitions in the execution of the algorithm correspond to entities in the domain.
+This execution generally follows the causal direction of the domain in the sense that if $a$ causes $b$, $b$ is computed from $a$ in simulation.
+Often, however, we want to simulate in a direction opposed to the direction.we have observed the result of the simulation, and want to infer likely causes.
 
 
-% % WTP: 
-% Many phenomena, particularly in the sciences, are understood mechanistically and hence well modeled through simulation.
-% A simulation model is a program, whereby values constructed in its execution correspond to components of the process being modeled. 
-% Simulation models generally have forward causal direction; they are executed to produce output from a given input.
-% Probability theory 
-% % Simulation models express generative processes that construct observable data, and are unique in their ability to capture complex phenomena across a variety of domains, particularly in the sciences.
-% Unfortunately, the very flexibility that allows simulation models renders them resistant to many kinds of analysis.
-% In particular, the vast majority of algorithms which perform Bayesian inference in probabilistic models -- that is, sample likely values of latent variables given  observed data -- rely on computing the likelihood function, which is not explicitly represented in a simulation model, and more often than not is intractable to compute.
 
 % WTP: What are likelihood functions, why are they use useful, and why are they intractable
-The Bayesian approach quantifies all uncertainty with probabilities and as a result uniquely specifies the posterior distribution over latent variables.
+The Bayesian approach to inference is to first quantify all uncertainty with probability distributions, and as a result uniquely specify the posterior distribution given observed values.
 % Bayesian inference is a principled framework for inferring probable causes of observed values, but relies on terms which are often intractable.
 Most algorithms which draw samples from posterior distributions rely on
 % Bayes theorem dictates that the posterior distribution over latent variables given observations is is proportional to the product of the likelihood function and prior.
 the likelihood function, which quantifies the extent to which values of latent variables are consistent with observations.
-Whereas many probabilistic models are specified explicitly by their likelihood functions, likelihoods are implicit to simulation models and often intractable, i.e., defined by an integral or summation that lacks a closed form solution or is computationally intractable.
-This can occur, for example, when non-latent variables are unobserved, since they must be margainalized out.
-Alternatively, conditioning deterministic transformations of densities are produces integrals change of variables.
+Simulation models explicitly represent the processes which generate data, but leave the likelihood functions implicit. 
+The likelihood  difficult to derive from a simulation model and is often intractable to evaluate.
+This can occur, for example, when non-latent variables are unobserved, since they must be margainalized out, or when transformed densities are conditioned.
 Simulation based models can apply arbitrary, non-injective transformations to their input, and hence induce intractable likelihoods for any or all of these reasons.
 
-A less explored cause of intractability is conditioning on propositions that are not observations in the conventional sense.
-% Several likelihood-free inference methods exist.
-% but they are largely inapplicable to models which lack a tractable likelihood function because their conditions are non-observational.
-% WTP: Underappreciate Reason for Problem: Conditioning on observations
-% Observing data is a special case of conditioning. 
-To observe data $x$ as the output of a simulation model $X$ is to condition the model on a proposition of the form $X = x$.
+A less explored cause of intractability are propositions that are not observations in the conventional sense.
+To observe data $x$ as the output of a simulation model $X$ means to condition the model on the proposition $X = x$.
 There are several propositions that do not conform to this structure, which we would nevertheless like to condition our models on.
-% A less explored cause of intractability occurs when we condition on propositions that are not observations of data.
-For example, if $X$ and $Y$ are normally distributed random variables, then conditioning on $X = Y$ does not permit a density function, let alone a tractable one.
-Conditioning on inequalities such $X > 4$, transformations such $X^2  = 0$, and logical formulas such as  $X = 3 \lor X = 5$ falls outside the domain of virtually all conditional sampling algorithms.
-% As a consequence, conditioning in practice is significantly more limited than its theoretical counterpart.
+These propositions may impose constraints on latent variables, or even jointly on latent and observations.
+For example.
+They could also be observational but more abstract than concrete data.
+For example,.
+All such statements can be enforced through conditioning, but generally the resulting likelihood will be intractable or may not exist,
+% Morever, approximate inference algorithm 
+
+% % A less explored cause of intractability occurs when we condition on propositions that are not observations of data.
+% For example, if $X$ and $Y$ are normally distributed random variables, then conditioning on $X = Y$ does not permit a density function, let alone a tractable one.
+% Conditioning on inequalities such $X > 4$, transformations such $X^2  = 0$, and logical formulas such as  $X = 3 \lor X = 5$ falls outside the domain of virtually all conditional sampling algorithms.
+% % As a consequence, conditioning in practice is significantly more limited than its theoretical counterpart.
 
 % The value of probabilistic programming systems hinges on how easily a practitioner can encode domain knowledge into a model. Existing probabilistic programming systems support two main mechanisms for encoding knowledge: implicitly in the generative model, and explicitly by conditioning on observations. There are many contexts, however, for which neither of these two mechanisms are sufficient to encode the knowledge that practitioners have about a process.
 
