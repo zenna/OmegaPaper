@@ -1,3 +1,5 @@
+% !TEX root = icmlsoft.tex
+
 \section{Introduction}
 
 % WTP: What are simulation based models, what is bayesian inference in them.  Why is it necessary. 
@@ -55,14 +57,62 @@ For example, inverse graphics attempts to infer the three dimensional scene (geo
 A Bayesian formulation of the problem requires a prior distributions over scenes.
 Simple parametric stand little chance of capturing the complexity of real world scenes, prompting.
 
+% TODO: Up to here is good. But it needs to be compactified
+Conditioning priors on data creates inference problems. These inference
+problems can be solved with sampling \citep{andrieu2003introduction} or variational 
+inference \citep{jordan1999introduction, ranganath2014black}.
+In a similar vein, conditioning priors on general predicates create
+more general inference problems. Predicates provide coarse grained
+information about the underlying measure space. Unlike conditioning on
+data, conditioning on a predicate may require conditioning on random
+variables that do not explicitly appear in the data generating process.
+For example, given three variables, it's possible to condition on the sum
+of the variables being positive; this sum is never an explicit random variable.
 
+To perform inference in the generalized setting of conditioning on 
+complete predicates, we need more general algorithms. In this paper,
+we develop a new inference algorithm that samples from distributions
+with constraints. This algorithm works by transforming predicates
+that are hard valued, either the predicate is satisfied
+or it is not, to predicates that are soft valued in the interval
+(0, 1). The softness is controlled by a temperature. To ensure fast
+mixing and exact sampling, the algorithm uses parallel chains and 
+replica exchange at different temperatures \citep{}. Exact samples come
+from the zero temperature chain. 
+
+Our algorithm works for any predicates whose prior measure is not
+zero. For measure zero supported constraints, our algorithm
+produces samples at a temperature strictly greater than
+zero to ensure a non-zero exchange probability. This sampler
+produces approximate samples. Hard valued predicates do not
+have scaling issues as they are either zero or one valued,
+but soft valued predicates can have issues. Our procedure
+to convert from hard valued predicates to soft valued ones
+tries to ensure that each predicate gets satisfied with equal
+probability at a fixed temperature. This equal weighting 
+avoids bias for one predicate or another due to the choice of sampling.
+
+We build our inference algorithm into a system called \emph{Omega}.
+\emph{Omega} provides an to define a generative model and declare
+predicates about it. Given these definitions, \emph{Omega} automatically
+performs inference using our soften-contraint replica exchange algorithm.
+We test \emph{Omega} on a simulated example with truncated Gaussians,
+an object rendering model, a physiological model, and xxx 
+
+In summary our contributions are as follows
+\begin{itemize}
+	\item A formalization on how to build models via conditioning on predicates
+	\item An inference algorithm for conditioning on predicates
+	\item An easy-to-use system for building models, predicates, and doing inference
+	\item A demonstration of this model building approach on many examples
+\end{itemize}
 
 
 % WTP: Contribution: inference algorithm that supports conditioning on a wider class of propositions
-In this paper we present an algorithm that draws samples from generative models that have been conditioned on predicates belonging to a more general class than observation of data.
-Predicates, when used as black boxes, provide only sparse information -- the constraint is satisfied or it is not -- and the subset of satisfying constraints is typically vanishingly small.
-Our objective is to support conditioning on predicates on spaces for which a natural metric can be defined.
-A metric provides more information a measure of the degree of satisfaction, and allows us.
+% In this paper we present an algorithm that draws samples from generative models that have been conditioned on predicates belonging to a more general class than observation of data.
+% Predicates, when used as black boxes, provide only sparse information -- the constraint is satisfied or it is not -- and the subset of satisfying constraints is typically vanishingly small.
+% Our objective is to support conditioning on predicates on spaces for which a natural metric can be defined.
+% A metric provides more information a measure of the degree of satisfaction, and allows us.
 
 % WTP: Paper summary
 In summary we address the problem of conditioning on declarative knowledge.
