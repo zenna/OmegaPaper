@@ -3,33 +3,52 @@
 \section{Introduction}
 
 % WTP: What are simulation based models, what is bayesian inference in them.  Why is it necessary. 
-For many phenomena we lack succinct equations governing their behaviour but nevertheless understand the causal mechanisms by which they evolve.
-Such phenomena can be simulated, which means to execute a program and associate states which arise in its execution with entities in the domain.
+For many phenomena in the world, we can build models that 
+attempt to simulate how they evolve. One goal with 
+these models is to compute the unobserved variables 
+conditional on the output of the simulation, i.e, perform
+posterior inference.
+Most algorithms which draw samples from posterior distributions rely on
+the likelihood function, which quantifies the extent to which values of 
+unobserved variables are consistent with observations.
+Simulation models generate data, but leave the likelihood functions implicit
+and difficult to derive.
+%This can occur, for example, when non-latent variables are unobserved, since they must be margainalized out, or when transformed densities are conditioned.
+Simulation based models can apply arbitrary, non-injective transformations to their input, and hence induce intractable likelihoods for any or all of these reasons.
+
+% A less explored cause of intractability is propositions that are not observations in the conventional sense.
+% To observe data $x$ as the output of a simulation model $X$ means to condition the model on the proposition $X = x$.
+% There are several propositions that do not conform to this structure, which we would nevertheless like to condition our models on.
+% These propositions may impose constraints on latent variables, or even jointly on latent and observations.
+% For example.
+% They could also be observational but more abstract than concrete data.
+% For example,.
+% All such statements can be enforced through conditioning, but generally the resulting likelihood will be intractable or may not exist,
+
+
+% Problems of inference, on the other hand, are typically anti-causal: having observed the result of the simulation we wish to infer the causes.
+
+
+
+% lack succinct equations governing their behavior but nevertheless understand the causal mechanisms by which they evolve.
+% Such phenomena can be simulated, which means to execute a program and associate states which arise in its execution with entities in the domain.
 % as an algorithm which solves the equations which govern it. Values, states, and transitions in the execution of the algorithm correspond to entities in the domain.
-This execution generally follows the causal direction of the domain in the sense that if $a$ causes $b$, $b$ is computed from $a$ in simulation.
-Problems of inference, on the other hand, are typically anti-causal: having observed the result of the simulation we wish to infer the causes.
+% This execution generally follows the causal direction of the domain in the sense that if $a$ causes $b$, $b$ is computed from $a$ in simulation.
+% Problems of inference, on the other hand, are typically anti-causal: having observed the result of the simulation we wish to infer the causes.
 
 
 
 % WTP: What are likelihood functions, why are they use useful, and why are they intractable
-The Bayesian approach to inference is to first quantify all uncertainty with probability distributions, and as a result uniquely specify the posterior distribution given observed values.
-% Bayesian inference is a principled framework for inferring probable causes of observed values, but relies on terms which are often intractable.
-Most algorithms which draw samples from posterior distributions rely on
-% Bayes theorem dictates that the posterior distribution over latent variables given observations is is proportional to the product of the likelihood function and prior.
-the likelihood function, which quantifies the extent to which values of latent variables are consistent with observations.
-Simulation models explicitly represent the processes which generate data, but leave the likelihood functions implicit. 
-The likelihood  difficult to derive from a simulation model and is often intractable to evaluate.
-This can occur, for example, when non-latent variables are unobserved, since they must be margainalized out, or when transformed densities are conditioned.
-Simulation based models can apply arbitrary, non-injective transformations to their input, and hence induce intractable likelihoods for any or all of these reasons.
+% The Bayesian approach to inference is to first quantify all uncertainty with probability distributions, and as a result uniquely specify the posterior distribution given observed values.
+% % Bayesian inference is a principled framework for inferring probable causes of observed values, but relies on terms which are often intractable.
+% Most algorithms which draw samples from posterior distributions rely on
+% % Bayes theorem dictates that the posterior distribution over latent variables given observations is is proportional to the product of the likelihood function and prior.
+% the likelihood function, which quantifies the extent to which values of latent variables are consistent with observations.
+% Simulation models explicitly represent the processes which generate data, but leave the likelihood functions implicit. 
+% The likelihood  difficult to derive from a simulation model and is often intractable to evaluate.
+% This can occur, for example, when non-latent variables are unobserved, since they must be margainalized out, or when transformed densities are conditioned.
+% Simulation based models can apply arbitrary, non-injective transformations to their input, and hence induce intractable likelihoods for any or all of these reasons.
 
-A less explored cause of intractability are propositions that are not observations in the conventional sense.
-To observe data $x$ as the output of a simulation model $X$ means to condition the model on the proposition $X = x$.
-There are several propositions that do not conform to this structure, which we would nevertheless like to condition our models on.
-These propositions may impose constraints on latent variables, or even jointly on latent and observations.
-For example.
-They could also be observational but more abstract than concrete data.
-For example,.
-All such statements can be enforced through conditioning, but generally the resulting likelihood will be intractable or may not exist,
 % Morever, approximate inference algorithm 
 
 % % A less explored cause of intractability occurs when we condition on propositions that are not observations of data.
@@ -49,13 +68,13 @@ A scientist could define a generative model that captures prior knowledge of how
 The scientist could also condition the model on observations of glucose measurements of a given patient and use existing inference algorithms to sample from the posterior distributions over latent variables.
 However, there are various pieces of declarative knowledge the scientist may possess which are difficult or impossible to encode in this form.
 For instance, she may know that ``human glucose curves are similar across patients'',   is surprisingly challenging even in the most expressive probabilistic programming systems. 
-Rather than observations, these propositions are facts which condition the prior.These propositions are not observations; 
+Rather than observations, these propositions are facts which condition the prior. These propositions are not observations.
 
 % WTP: Non-obvious benefits of solving the problem:  Prior conditioning.
 Declarative knowledge has the potential to serve as the bridge between classical parametric models, and recent trend towards nonparameric or highly parameterized families such as deep neural networks.
 For example, inverse graphics attempts to infer the three dimensional scene (geometry, lights, camera, etc) which caused an observed image.
 A Bayesian formulation of the problem requires a prior distributions over scenes.
-Simple parametric stand little chance of capturing the complexity of real world scenes, prompting.
+Simple parametric stand little chance of capturing the complexity of real world scenes.
 
 % TODO: Up to here is good. But it needs to be compactified
 Conditioning priors on data creates inference problems. These inference
@@ -69,19 +88,29 @@ variables that do not explicitly appear in the data generating process.
 For example, given three variables, it's possible to condition on the sum
 of the variables being positive; this sum is never an explicit random variable.
 
+%: Conditioning on complete, computational complexity
+
+%: 
+
 To perform inference in the generalized setting of conditioning on 
-complete predicates, we need more general algorithms. In this paper,
+all predicates, we need more general algorithms. In this paper,
 we develop a new inference algorithm that samples from distributions
-with constraints. This algorithm works by transforming predicates
+conditional on predicates. This algorithm works by transforming predicates
 that are hard valued, either the predicate is satisfied
 or it is not, to predicates that are soft valued in the interval
-(0, 1). The softness is controlled by a temperature. To ensure fast
-mixing and exact sampling, the algorithm uses parallel chains and 
+(0, 1). The softness is controlled by a temperature. 
+The algorithm uses parallel chains and 
 replica exchange at different temperatures \citep{}. Exact samples come
 from the zero temperature chain. 
 
+% Second sentence on measure zero. When do these measure events
+% x = y.
+
 Our algorithm works for any predicates whose prior measure is not
-zero. For measure zero supported constraints, our algorithm
+zero. However, mixing may be slow since condition on general predicates
+encodes the class of decision problems.
+For measure zero supported predicates like the
+predicate $x=y$ for two smooth distributions, our algorithm
 produces samples at a temperature strictly greater than
 zero to ensure a non-zero exchange probability. This sampler
 produces approximate samples. Hard valued predicates do not
@@ -92,6 +121,8 @@ tries to ensure that each predicate gets satisfied with equal
 probability at a fixed temperature. This equal weighting 
 avoids bias for one predicate or another due to the choice of sampling.
 
+% Maybe abstract away scaling issues
+
 We build our inference algorithm into a system called \emph{Omega}.
 \emph{Omega} provides an to define a generative model and declare
 predicates about it. Given these definitions, \emph{Omega} automatically
@@ -99,12 +130,12 @@ performs inference using our soften-contraint replica exchange algorithm.
 We test \emph{Omega} on a simulated example with truncated Gaussians,
 an object rendering model, a physiological model, and xxx 
 
-In summary our contributions are as follows
+In summary we address the problem of conditioning on declarative knowledge,
 \begin{itemize}
 	\item A formalization on how to build models via conditioning on predicates
-	\item An inference algorithm for conditioning on predicates
+	\item An inference algorithm for conditioning on predicates via softening
 	\item An easy-to-use system for building models, predicates, and doing inference
-	\item A demonstration of this model building approach on many examples
+	\item A demonstration of this model building approach on many examples including enriching medical models with limited data
 \end{itemize}
 
 
@@ -115,10 +146,10 @@ In summary our contributions are as follows
 % A metric provides more information a measure of the degree of satisfaction, and allows us.
 
 % WTP: Paper summary
-In summary we address the problem of conditioning on declarative knowledge.
-In more detail:
-\begin{itemize}
-\item We formalize simulation models in measure-theoretic probability as random variables defined on a shared probability space (section X), and define conditioning as a concentration of measure.
-\item We describe our approach to inference, which softens the hard constraints to admit tractable inference in a broader set of scenarios.
-\item  We demonstrate our approach on a number of examples, with experiments on toy data and experiments on medical models by enriching them with declarative knowledge to learn from limited data.
-\end{itemize}
+% In summary we address the problem of conditioning on declarative knowledge.
+% In more detail:
+% \begin{itemize}
+% \item We formalize simulation models in measure-theoretic probability as random variables defined on a shared probability space (section X), and define conditioning as a concentration of measure.
+% \item We describe our approach to inference, which softens the hard constraints to admit tractable inference in a broader set of scenarios.
+% \item  We demonstrate our approach on a number of examples, with experiments on toy data and experiments on medical models by enriching them with declarative knowledge to learn from limited data.
+% \end{itemize}
