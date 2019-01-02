@@ -6,14 +6,14 @@
 
 In Bayesian inference, conditioning is the mechanism by observed data is incorporated into a model.
 In a broader sense, conditioning is the mechanism to assert facts we know to be true without specifying the means by which they are true.
-For instance, the expression $p(\theta \mid X = x)$ asserts that the predicate $X = x$ must hold, but defers to inference algorithms on how to respect the assertion.
+For instance, the expression $p(\theta \mid X = x)$ asserts that the predicate $X = x$ must hold, but does not specify how.
 
 Many useful predicates assert something other than the observation of data.
-For example, in inverse graphics \cite{}: inference of three dimensional geometry that caused an observed image,  statements such as ``rigid bodies do not intersect'' are not observational but easily expressed as predicates.
-Incorporating true statements (i.e., facts) into a model shifts it closer to reality and ultimately increases the true cause.
-In cases where such facts are not easily incorporated into the model by construction, conditioning offers  
-In fact, this example restricts latent variables (geometry), muddling the prior-posterior dichotomy.
-In medical applications such as modeling the glucose dynamics ~\citep{levine2017offline}, a practitioner may know that ``human glucose curves are similar across patients''.	
+For example, in inverse graphics \cite{} -- inferring three dimensional geometry that caused an observed image -- statements such as ``rigid bodies do not intersect'' are not observational but easily expressed as predicates.
+Incorporating true statements (i.e., facts) into a model shifts it closer to reality, ultimately increasing the probability of the true cause under the model.
+In cases where such facts are not easily incorporated into the model constructively (e.g., it is challenging to define a prior over geometry that satisfies non-intersection), they can in principle simply be conditioned on.
+% In fact, this example restricts latent variables (geometry), muddling the prior-posterior dichotomy.
+% In medical applications such as modeling the glucose dynamics ~\citep{levine2017offline}, a practitioner may know that ``human glucose curves are similar across patients''.	
 % A scientist could define a generative model that captures prior knowledge of how glucose levels evolve over time -- for example, the model may use latent variables to identify when a person eats and the glycemic loads a person consumes, and encode physiological knowledge of how those meals will affect glucose levels.
 % The scientist could also condition the model on observations of glucose measurements of a given patient and use existing inference algorithms to sample from the posterior distributions over latent variables.
 % However, there are various pieces of declarative knowledge the scientist may possess which are difficult or impossible to encode in this form.
@@ -89,23 +89,15 @@ In medical applications such as modeling the glucose dynamics ~\citep{levine2017
 
 % Outline: Non-observational predicates induce intractable likelihoods
 % and are largely unsupported by current methods of inference
-Conditioning creates inference problems, which can be solved through sampling \citep{andrieu2003introduction} or variational 
-inference \citep{jordan1999introduction, ranganath2014black}.
 Conditioning on a predicates belonging to a broader class presents severe inference challenges.
-In particular, most sampling algorithms rely on a likelihood function which quantifies the extent to which values of latent variables are consistent with observations, but non-observational predicates tend to induce likelihood functions that are difficult to derive, intractable to compute, or.
-% Predicates provide coarse grained information about the underlying measure space.
-Conditioning on a predicate often restrict variables that do not explicitly appear in the data generating process.
+Several sampling  \citep{andrieu2003introduction} and variational  \citep{jordan1999introduction, ranganath2014black} approaches to inference require only the likelihood function -- which quantifies the extent to which values of latent variables are consistent with observations -- as a black-box that can be evaluated.
+However, non-observational predicates tend to induce likelihood functions that are difficult to derive, intractable to compute, or inadmissible.
+For example, if a	predicate often restrict variables that do not explicitly appear in the data generating process.
 For example, given three variables, it is possible to condition on the sum
 of the variables being positive; this sum is never an explicit random variable.
-
-%: Conditioning on complete, computational complexity
-
-%: 
-
-% To perform inference in the generalized setting of conditioning on 
-% all predicates, we need more general algorithms.
-Predicates return only limited information: 1 when satisfied and 0 otherwise.
+Rather than use the likelihood as a black-box, the predicate itself.  Unfortunately,predicates return only limited information: 1 when satisfied and 0 otherwise.
 This curtails the potential of any inference strategy that uses predicates as black-boxes.
+
 In this paper, we present an inference approach which extracts more information from predicates through a syntactically transformation of the model, yielding relaxed predicates which takes values in the unit interval $[0, 1]$. The extremes $0$ and $1$ are consistent with the original predicate, but intermediate values denote the graded degree to which the predicate is satisfied.
 
 Graded predicates derive their meaning from distance metrics.
