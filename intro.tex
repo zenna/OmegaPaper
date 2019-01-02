@@ -2,19 +2,39 @@
 
 \section{Introduction}
 
+% Outline: Conditioning is a general mechanism for expressing declarative knowledge, but so far it has been limited
+
+In Bayesian inference, conditioning is the mechanism by observed data is incorporated into a model.
+In a broader sense, conditioning is the mechanism to assert facts we know to be true without specifying the means by which they are true.
+For instance, the expression $p(\theta \mid X = x)$ asserts that the predicate $X = x$ must hold, but defers to inference algorithms on how to respect the assertion.
+
+Many useful predicates assert something other than the observation of data.
+For example, in inverse graphics \cite{}: inference of three dimensional geometry that caused an observed image,  statements such as ``rigid bodies do not intersect'' are not observational but easily expressed as predicates.
+Incorporating true statements (i.e., facts) into a model shifts it closer to reality and ultimately increases the true cause.
+In cases where such facts are not easily incorporated into the model by construction, conditioning offers  
+In fact, this example restricts latent variables (geometry), muddling the prior-posterior dichotomy.
+In medical applications such as modeling the glucose dynamics ~\citep{levine2017offline}, a practitioner may know that ``human glucose curves are similar across patients''.	
+% A scientist could define a generative model that captures prior knowledge of how glucose levels evolve over time -- for example, the model may use latent variables to identify when a person eats and the glycemic loads a person consumes, and encode physiological knowledge of how those meals will affect glucose levels.
+% The scientist could also condition the model on observations of glucose measurements of a given patient and use existing inference algorithms to sample from the posterior distributions over latent variables.
+% However, there are various pieces of declarative knowledge the scientist may possess which are difficult or impossible to encode in this form.
+% For instance, she may know that ``human glucose curves are similar across patients'',   is surprisingly challenging even in the most expressive probabilistic programming systems. 
+% Rather than observations, these propositions are facts which condition the prior. These propositions are not observations.
+
+
 % WTP: What are simulation based models, what is bayesian inference in them.  Why is it necessary. 
-For many phenomena in the world, we can build models that 
-attempt to simulate how they evolve. One goal with 
-these models is to compute the unobserved variables 
-conditional on the output of the simulation, i.e, perform
-posterior inference.
-Most algorithms which draw samples from posterior distributions rely on
-the likelihood function, which quantifies the extent to which values of 
-unobserved variables are consistent with observations.
-Simulation models generate data, but leave the likelihood functions implicit
-and difficult to derive.
-%This can occur, for example, when non-latent variables are unobserved, since they must be margainalized out, or when transformed densities are conditioned.
-Simulation based models can apply arbitrary, non-injective transformations to their input, and hence induce intractable likelihoods for any or all of these reasons.
+% Inference on models conditioned on more general predicates yield challenging inference problems, especially when the models are represented as stochastic simulators.
+% For many phenomena in the world, we can build models that 
+% attempt to simulate how they evolve. One purpose of 
+% these models is to draw samples from unobserved variables 
+% conditional on the output of the simulation, i.e, perform
+% posterior inference.
+% Most algorithms which draw samples from posterior distributions rely on
+% the likelihood function, which quantifies the extent to which values of 
+% unobserved variables are consistent with observations.
+% Simulation models, however leave the likelihood functions implicit
+% and difficult to derive.
+% %This can occur, for example, when non-latent variables are unobserved, since they must be margainalized out, or when transformed densities are conditioned.
+% Simulation based models can apply arbitrary, non-injective transformations to their input, and hence induce intractable likelihoods for any or all of these reasons.
 
 % A less explored cause of intractability is propositions that are not observations in the conventional sense.
 % To observe data $x$ as the output of a simulation model $X$ means to condition the model on the proposition $X = x$.
@@ -60,83 +80,74 @@ Simulation based models can apply arbitrary, non-injective transformations to th
 
 % WTP: Implications of the Problem
 
-Conditioning is a mechanism to express declarative knowledge.
-It allows us to assert facts we know to be true without specifying the means by which they are true.
-% Limiting the propositions one can condition on to those with tractable likelihoods severely restricts the kinds of knowledge that we can express.
-For example, consider the problem of modeling the evolution of glucose levels over time~\citep{levine2017offline}.
-A scientist could define a generative model that captures prior knowledge of how glucose levels evolve over time -- for example, the model may use latent variables to identify when a person eats and the glycemic loads a person consumes, and encode physiological knowledge of how those meals will affect glucose levels.
-The scientist could also condition the model on observations of glucose measurements of a given patient and use existing inference algorithms to sample from the posterior distributions over latent variables.
-However, there are various pieces of declarative knowledge the scientist may possess which are difficult or impossible to encode in this form.
-For instance, she may know that ``human glucose curves are similar across patients'',   is surprisingly challenging even in the most expressive probabilistic programming systems. 
-Rather than observations, these propositions are facts which condition the prior. These propositions are not observations.
 
 % WTP: Non-obvious benefits of solving the problem:  Prior conditioning.
-Declarative knowledge has the potential to serve as the bridge between classical parametric models, and recent trend towards nonparameric or highly parameterized families such as deep neural networks.
-For example, inverse graphics attempts to infer the three dimensional scene (geometry, lights, camera, etc) which caused an observed image.
-A Bayesian formulation of the problem requires a prior distributions over scenes.
-Simple parametric stand little chance of capturing the complexity of real world scenes.
+% Declarative knowledge has the potential to serve as the bridge between classical parametric models, and recent trend towards nonparameric or highly parameterized families such as deep neural networks.
+% For example, inverse graphics attempts to infer the three dimensional scene (geometry, lights, camera, etc) which caused an observed image.
+% A Bayesian formulation of the problem requires a prior distributions over scenes.
+% Simple parametric stand little chance of capturing the complexity of real world scenes.
 
-% TODO: Up to here is good. But it needs to be compactified
-Conditioning priors on data creates inference problems. These inference
-problems can be solved with sampling \citep{andrieu2003introduction} or variational 
+% Outline: Non-observational predicates induce intractable likelihoods
+% and are largely unsupported by current methods of inference
+Conditioning creates inference problems, which can be solved through sampling \citep{andrieu2003introduction} or variational 
 inference \citep{jordan1999introduction, ranganath2014black}.
-In a similar vein, conditioning priors on general predicates create
-more general inference problems. Predicates provide coarse grained
-information about the underlying measure space. Unlike conditioning on
-data, conditioning on a predicate may require conditioning on random
-variables that do not explicitly appear in the data generating process.
-For example, given three variables, it's possible to condition on the sum
+Conditioning on a predicates belonging to a broader class presents severe inference challenges.
+In particular, most sampling algorithms rely on a likelihood function which quantifies the extent to which values of latent variables are consistent with observations, but non-observational predicates tend to induce likelihood functions that are difficult to derive, intractable to compute, or.
+% Predicates provide coarse grained information about the underlying measure space.
+Conditioning on a predicate often restrict variables that do not explicitly appear in the data generating process.
+For example, given three variables, it is possible to condition on the sum
 of the variables being positive; this sum is never an explicit random variable.
 
 %: Conditioning on complete, computational complexity
 
 %: 
 
-To perform inference in the generalized setting of conditioning on 
-all predicates, we need more general algorithms. In this paper,
-we develop a new inference algorithm that samples from distributions
-conditional on predicates. This algorithm works by transforming predicates
-that are hard valued, either the predicate is satisfied
-or it is not, to predicates that are soft valued in the interval
-(0, 1). The softness is controlled by a temperature. 
-The algorithm uses parallel chains and 
-replica exchange at different temperatures \citep{}. Exact samples come
-from the zero temperature chain. 
+% To perform inference in the generalized setting of conditioning on 
+% all predicates, we need more general algorithms.
+Predicates return only limited information: 1 when satisfied and 0 otherwise.
+This curtails the potential of any inference strategy that uses predicates as black-boxes.
+In this paper, we present an inference approach which extracts more information from predicates through a syntactically transformation of the model, yielding relaxed predicates which takes values in the unit interval $[0, 1]$. The extremes $0$ and $1$ are consistent with the original predicate, but intermediate values denote the graded degree to which the predicate is satisfied.
 
-% Second sentence on measure zero. When do these measure events
-% x = y.
+Graded predicates derive their meaning from distance metrics.
+For example, a predicate of the form $X = Y$ may be substituted with a softened counter-part of the form $k(d(X, Y))$ where $k$ is some kernel ensuring.
+While distance functions are commonplace in Approximate Bayesian Computation (ABC) approaches to likelihood-free inference, we target exact inference.
+Relaxations are modulated by a temperature parameter $\alpha$ such that at zero temperature the relaxed predicate mirrors its hard counter-part, while at maximal temperatures virtually everything will satisfy the constraint.
+In a form of parallel-tempering, we simulate a number Markov chain in paralle.
 
-Our algorithm works for any predicates whose prior measure is not
-zero. However, mixing may be slow since condition on general predicates
-encodes the class of decision problems.
-For measure zero supported predicates like the
-predicate $x=y$ for two smooth distributions, our algorithm
-produces samples at a temperature strictly greater than
-zero to ensure a non-zero exchange probability. This sampler
-produces approximate samples. Hard valued predicates do not
-have scaling issues as they are either zero or one valued,
-but soft valued predicates can have issues. Our procedure
-to convert from hard valued predicates to soft valued ones
-tries to ensure that each predicate gets satisfied with equal
-probability at a fixed temperature. This equal weighting 
-avoids bias for one predicate or another due to the choice of sampling.
+Knowledge often has a Boolean structure.
+We may know that a statement is not true, that two statements simultaneously hold, that at least one of them holds or at most one of them holds.
+Such structure is captured naturally by a Boolean algebra over predicates, but neither likelihood-based inference nor existing likelihood-free inference offer effective means to condition non-trivial models on such compound primitive.
+A second component of this contribution is a complete set of softened Boolean primitives that compose arbitrarily while retaining consistency with unrelaxed counterpart.
 
-% Maybe abstract away scaling issues
+Conditioning on predicates introduces problems of zero-measure, which are often side-stepped in likelihood-based inference.
+In particular, in practice our algorithm is applicable to predicates of non-zero measure.
+% zero. However, mixing may be slow since condition on general predicates
+% encodes the class of decision problems.
+For measure zero predicates -- typically from equalities such as $X = Y$ in continuous models -- our algorithm produces samples at a temperature strictly greater than zero to ensure a non-zero exchange probability.
+This samples are approximate.
+% Hard valued predicates do not have scaling issues as they are either zero or one valued, but soft valued predicates can have issues. Our procedure
+% to convert from hard valued predicates to soft valued ones
+% tries to ensure that each predicate gets satisfied with equal
+% probability at a fixed temperature. This equal weighting 
+% avoids bias for one predicate or another due to the choice of sampling.
 
-We build our inference algorithm into a system called \emph{Omega}.
-\emph{Omega} provides an to define a generative model and declare
-predicates about it. Given these definitions, \emph{Omega} automatically
-performs inference using our soften-contraint replica exchange algorithm.
-We test \emph{Omega} on a simulated example with truncated Gaussians,
-an object rendering model, a physiological model, and xxx 
+% We build our inference algorithm into a system.
+% \emph{Omega} provides an to define a generative model and declare
+% predicates about it. Given these definitions, \emph{Omega} automatically
+% performs inference using our soften-contraint replica exchange algorithm.
+% We test \emph{Omega} on a simulated example with truncated Gaussians,
+% an object rendering model, a physiological model, and xxx 
 
-In summary we address the problem of conditioning on declarative knowledge,
-\begin{itemize}
-	\item A formalization on how to build models via conditioning on predicates
-	\item An inference algorithm for conditioning on predicates via softening
-	\item An easy-to-use system for building models, predicates, and doing inference
-	\item A demonstration of this model building approach on many examples including enriching medical models with limited data
-\end{itemize}
+In summary we address the problem of conditioning on broad class of predicates as am class to express declarative knowledge.
+In detail, we:
+
+\begin{enumerate}
+	\item Formalize (section \ref{}) simulation based models in terms of measure theoretic probability, and conditioning as the imposition of constraints.
+	\item Present a syntactic transformation to probabilistic model that transforms predicates into relaxted counterparts. 
+	\item Present an algorithm based on replica-exchange Markov Chain Monte Carlo (section \ref{}) which draws exact samples for positive measure predicates. 
+	\item Implement these concepts in system for building models, predicates, and doing inference.
+	\item Evaluate our approach on representative examples, and demonstrate case studies including enriching medical models with limited data.
+\end{enumerate}
 
 
 % WTP: Contribution: inference algorithm that supports conditioning on a wider class of propositions
