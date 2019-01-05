@@ -1,6 +1,6 @@
 % !TEX root = nips_2018.tex
 
-\section{Simulation Models}\label{condknow}
+\section{Simulation Models}\label{simmodels}
 
 Simulation models are functions which map parameters and random variables to outputs.
 Random variables and parameters both represent unknown quantities.
@@ -8,7 +8,7 @@ The sole difference is that uncertainty of a random variable is quantified as a 
 Given values for parameters, a simulation model can be stochastically executed, where random number generators are used to sample from primitive random variables in the model.
 
 The power of the simulation based approach the flexibility allowed in the mapping.
-A simulator is well-moeled as a random variable.
+A simulator is well-modeled as a random variable.
 This allows a simulation based model to model the generative process that models the data, using random variables for noise variables and quantities that are unknown.  The density function of the resulting model, if it exists, is not explicitly represented, but rather implicitly defined.
 For this reason simulator models are often called implicit or generative models.
 
@@ -20,36 +20,36 @@ For this reason simulator models are often called implicit or generative models.
 % If the prior is highly parameterized (such as a deep neural network) there is no mechanism for constructively encoding this knowledge into the prior.
 % In figure \ref{fig:nointersect} we show how with the appropriate language support and inference algorithms, this knowledge can be conditioned on directly.
 
-\begin{figure}[H]
-\centering
-\begin{minipage}[t]{5cm}
-\centering
-\includegraphics[width=0.5\linewidth]{figures/clunk}
-\begin{verbatim}
-        rand(objs)
-\end{verbatim}
-\end{minipage}%
-\begin{minipage}[t]{5cm}
-\centering
-\includegraphics[width=0.8\linewidth]{figures/render}
-\begin{verbatim}
-pred = nointersect(objs)
-rand(scene, pred)
-\end{verbatim}
-\end{minipage}%
-\begin{minipage}[t]{5cm}
-\centering
-\includegraphics[width=0.5\linewidth]{figures/equi}
-$$
-x = 3
-$$
-% \begin{verbatim}
-% pred = equidistant(objs)
-% rand(scene, pred)
-% \end{verbatim}
-\end{minipage}
-\caption{A weak prior (left) does not respect rigid body constraints on objects, whereas (center) is conditioned on the predicate that objects don't intersect.  (right) objects are conditioned on being equidistant, resulting in a tetrahdral arrangement}
-\label{fig:nointersect}
+\begin{figure}
+	\centering
+	\begin{minipage}[t]{5cm}
+		\centering
+		\includegraphics[width=0.45\linewidth]{figures/clunk}
+		% \begin{verbatim}
+		%         rand(objs)
+		% \end{verbatim}
+	\end{minipage}%
+	\begin{minipage}[t]{5cm}
+		\centering
+		\includegraphics[width=0.45\linewidth]{figures/render}
+		% \begin{verbatim}
+		% pred = nointersect(objs)
+		% rand(scene, pred)
+		% \end{verbatim}
+	\end{minipage}%
+	% \begin{minipage}[t]{5cm}
+	% \centering
+	% \includegraphics[width=0.5\linewidth]{figures/equi}
+	% $$
+	% x = 3
+	% $$
+	% % \begin{verbatim}
+	% % pred = equidistant(objs)
+	% % rand(scene, pred)
+	% % \end{verbatim}
+	% \end{minipage}
+	\caption{A weak prior (left) does not respect rigid body constraints on objects, whereas (center) is conditioned on the predicate that objects don't intersect.  (right) objects are conditioned on being equidistant, resulting in a tetrahdral arrangement}
+	\label{fig:nointersect}
 \end{figure}
 
 
@@ -58,13 +58,13 @@ Simulation based models are random variables and hence are rigorously formalized
 \paragraph{Random Variables.} Probability models lie on top of probability
 spaces. A probability space is a measure space $(\Omega, {\cal H}, {\cal P})$,
 where ${\cal H}$ is a sigma algebra and ${\cal P}(\Omega) = 1$ \citep{ccinlar2011probability}. Random variables are
-functions from the space $\Omega$ to a realization space ${\cal X}$. As a concrete 
+functions from the space $\Omega$ to a realization space ${\cal X}$. As a concrete
 example the space $\Omega$ can be thought of as a hypercube, with ${\cal P}$ being
 uniform over that hypercube. To build a normal random variable, we need a function
 that maps from $\Omega \to \mathbb{R}$. If the underlying probability space is uniform, then
-this function is the inverse cumulative distribution function of the normal. 
+this function is the inverse cumulative distribution function of the normal.
 
-A \emph{model} $\cM$ is a collection of random variables along with a probability space. 
+A \emph{model} $\cM$ is a collection of random variables along with a probability space.
 For example, a probabilistic
 graphical model defines a group of random variables via their conditional independencies.
 To fully specify a model, we need both the measure space and the
@@ -75,20 +75,20 @@ Conditioning a model
 creates a new model. As a simple example consider a model $\cM$ with two
 random variables $X_1$ and $X_2$ that both take real values. Conditioning
 $\cM$ on $X_1 = 1$, defines a new model based on limiting the measure space
-$\Omega$ to only the set $A = \{ \omega : X_1(\omega) = 1\}$. 
+$\Omega$ to only the set $A = \{ \omega : X_1(\omega) = 1\}$.
 The new model $\cM^*$ can be defined with probability space
 \begin{align*}
-(\Omega \cap A, \{A \cap B, B \in {\cal H} \}, {\cal P} / {\cal P}(A)) 
+	(\Omega \cap A, \{A \cap B, B \in {\cal H} \}, {\cal P} / {\cal P}(A))
 \end{align*}
-with the same random variables $X_1$ and $X_2$.\footnote{We defer issues of 
-conditioning on events of measure zero.} Sampling from $M^*$ produces 
-samples only where $X_1 = 1$ thereby producing a model that respects the 
+with the same random variables $X_1$ and $X_2$.\footnote{We defer issues of
+	conditioning on events of measure zero.} Sampling from $M^*$ produces
+samples only where $X_1 = 1$ thereby producing a model that respects the
 knowledge that $X_1 = 1$. Note, the new probability measure comes
 from the conditional probability measure.
 
 More generally, conditioning on any predicate defines a new model. These
-predicates can include comparisons between random variables and general 
-functions of them. Example predicates include 
+predicates can include comparisons between random variables and general
+functions of them. Example predicates include
 comparisons $X_i < X_j$, transformations $\exp(X_i) > 2$, and restrictions $X_i < 0$.
 Given
 a model $\cM$  with probability space $(\Omega, {\cal H}, {\cal P})$ and
@@ -98,14 +98,14 @@ $\Omega$ that make the predicate true (takes value 1). This model
 is defined exactly as above.  Let $A = \{\omega : d(X_1(\omega), \dots, X_n(\omega)) = 1\}$,
 then $\cM^*$ has probability space
 \begin{align*}
-(\Omega \cap A, \{A \cap B, B \in {\cal H} \}, {\cal P} / {\cal P}(A)),
+	(\Omega \cap A, \{A \cap B, B \in {\cal H} \}, {\cal P} / {\cal P}(A)),
 \end{align*}
 where the random variables $X_1,...X_n$ remain unchanged. Sampling from
 the model $M^*$ generates $X_1, ..., X_n$ where the predicate $d$ is true.
-Thus, conditioning on a predicate creates a new model with the same 
-random variables that enforces the predicate's truth 
+Thus, conditioning on a predicate creates a new model with the same
+random variables that enforces the predicate's truth
 without having to redefine random variables. In this sense conditioning
-creates new models that respect knowledge (e.g. objects in a 3D render 
+creates new models that respect knowledge (e.g. objects in a 3D render
 can't intersect) without having to alter or understand the random variables (rendering functions).
 
 The general construction of new models might require conditioning
@@ -113,6 +113,7 @@ on sets of measure zero. This process can be made rigorous
 via disintegration \citep{chang1997conditioning}. Disintegration can
 be thought of as the reversal of building joint distributions through
 product measure constructions.
+
 
 % When building models with prior beliefs via conditioning, we would like
 % the property that given an infinite collection of observations, the 

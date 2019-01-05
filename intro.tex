@@ -3,17 +3,32 @@
 \section{Introduction}
 
 % Outline: Conditioning is a general mechanism for expressing declarative knowledge, but so far it has been limited
+% - Conditioning allows you to specify what you know to be true without speifying how
+% - What is specified using predicates.
+% - Dont need to specify how to change generative 
+Conditioning in Bayesian inference incorporates observed data into a model.
+In a broader sense, conditioning is a mechanism to assert predicates -- which may be true or false -- as true propositions, without the burden of specifying how.
+% For example, conditioning a distribution $\theta$ on a proposition $X = x$ asserts that the proposition is true, but does not specify how to sample from the $\theta$.
+For example, given a procedure to simulate samples from two distributions $X$ and $\Theta$, conditioning on the proposition $X = x$ asserts that the proposition holds, but defers to inference algorithms on how to simulate from the conditional model.
 
-In Bayesian inference, conditioning is the mechanism by observed data is incorporated into a model.
-In a broader sense, conditioning is the mechanism to assert facts we know to be true without specifying the means by which they are true.
-For instance, the expression $p(\theta \mid X = x)$ asserts that the predicate $X = x$ must hold, but does not specify how.
+Predicates can express assertions that are not observation of data.
+For example, in inverse graphics \cite{kulkarni2015deep} (inferring three dimensional geometry from observed images) the statement ``rigid bodies do not intersect'' is not an observations of data, but readily expressed as a predicate.
+Incorporating this statement into the model, assuming it is true, increases the probability of the geometry that actually caused the observed image.
+In fact, this example restricts latent variables (geometry), muddling the prior-posterior dichotomy.
 
-Many useful predicates assert something other than the observation of data.
-For example, in inverse graphics \cite{} -- inferring three dimensional geometry that caused an observed image -- statements such as ``rigid bodies do not intersect'' are not observational but easily expressed as predicates.
-Incorporating true statements (i.e., facts) into a model shifts it closer to reality, ultimately increasing the probability of the true cause under the model.
-In cases where such facts are not easily incorporated into the model constructively (e.g., it is challenging to define a prior over geometry that satisfies non-intersection), they can in principle simply be conditioned on.
-% In fact, this example restricts latent variables (geometry), muddling the prior-posterior dichotomy.
-% In medical applications such as modeling the glucose dynamics ~\citep{levine2017offline}, a practitioner may know that ``human glucose curves are similar across patients''.	
+Predicates can also express observations that are abstract.
+For example, in glucose dynamics modeling \citep{levine2017offline} one builds probabilistc models relating physiological factors to glucose levels over time.
+Rather than concrete glucose measurements, a practitioner may know observe that a patient's glucose levels periodically exceed a dangerous threshold.
+Such knowledge can be expressed as predicates and in principle conditioned on to infer the posterior distribution over latent physiological variables in the model.
+In practice, conditioning on predicates of this form presents severe challenges to inference.
+
+
+% ``glucose curves are similar across patients''.	
+
+% It is difficult to define priors of latent geometry that satisfies non-intersection constructively.
+
+
+
 % A scientist could define a generative model that captures prior knowledge of how glucose levels evolve over time -- for example, the model may use latent variables to identify when a person eats and the glycemic loads a person consumes, and encode physiological knowledge of how those meals will affect glucose levels.
 % The scientist could also condition the model on observations of glucose measurements of a given patient and use existing inference algorithms to sample from the posterior distributions over latent variables.
 % However, there are various pieces of declarative knowledge the scientist may possess which are difficult or impossible to encode in this form.
@@ -89,34 +104,44 @@ In cases where such facts are not easily incorporated into the model constructiv
 
 % Outline: Non-observational predicates induce intractable likelihoods
 % and are largely unsupported by current methods of inference
-Conditioning on a predicates belonging to a broader class presents severe inference challenges.
-Several sampling  \citep{andrieu2003introduction} and variational  \citep{jordan1999introduction, ranganath2014black} approaches to inference require only the likelihood function -- which quantifies the extent to which values of latent variables are consistent with observations -- as a black-box that can be evaluated.
-However, non-observational predicates tend to induce likelihood functions that are difficult to derive, intractable to compute, or inadmissible.
-For example, if a	predicate often restrict variables that do not explicitly appear in the data generating process.
-For example, given three variables, it is possible to condition on the sum
-of the variables being positive; this sum is never an explicit random variable.
-Rather than use the likelihood as a black-box, the predicate itself.  Unfortunately,predicates return only limited information: 1 when satisfied and 0 otherwise.
-This curtails the potential of any inference strategy that uses predicates as black-boxes.
+Several effective sampling  \citep{andrieu2003introduction} and variational  \citep{jordan1999introduction, ranganath2014black} approaches to inference require a likelihood function -- which quantifies the extent to which values of latent variables are consistent with observations -- only as a black-box, i.e., evaluable on arbitrary input.
+However, predicates tend to induce likelihood functions that are intractable to compute or incompatible with most inference methods.
+For example, conditioning random variables that do not explicitly appear in the data generating process (e.g., the sum of variables) can result in likelihoods that are normalized by intractable integrals.	
+% For example, given three variables, it is possible to condition on the sum
+% of the variables being positive; this sum is never an explicit random variable.
+In many cases, especially in simulation based models, the likelihood function is not explicitly specified or may not exist.
+Using the predicate itself as a black-box, instead of a likelihood, offers little repreive.
+Black-box predicates yield only limited information: 1 when satisfied and 0 otherwise.
+This caps the potential of black-boxes inference to effectively guess and check.
 
-In this paper, we present an inference approach which extracts more information from predicates through a syntactically transformation of the model, yielding relaxed predicates which takes values in the unit interval $[0, 1]$. The extremes $0$ and $1$ are consistent with the original predicate, but intermediate values denote the graded degree to which the predicate is satisfied.
+In this paper we present Predicate Exchange (PE):
+a method to sample from distributions conditioned on predicates from a broad class.
+Predicate relaxation automatically transforms a probabilistic model such that predicates it is conditioned on take values in the unit interval $[0, 1]$ rather than $\{0, 1\}$.
+A relaxed predicate is 1 in only those scenarios where the unrelaxted predicate is satisfied, while values less than 1 denote the degree to which the predicate is satisfied.
+This degree is is determined by distance metrics.
+For example, our approach will substitute a predicate $X = Y$ with a relaxed counter-part $k_\alpha(d(X, Y))$ where $k_\alpha$ is a kernel bounded in $[0, 1]$.
 
-Graded predicates derive their meaning from distance metrics.
-For example, a predicate of the form $X = Y$ may be substituted with a softened counter-part of the form $k(d(X, Y))$ where $k$ is some kernel ensuring.
-While distance functions are commonplace in Approximate Bayesian Computation (ABC) approaches to likelihood-free inference, we target exact inference.
-Relaxations are modulated by a temperature parameter $\alpha$ such that at zero temperature the relaxed predicate mirrors its hard counter-part, while at maximal temperatures virtually everything will satisfy the constraint.
-In a form of parallel-tempering, we simulate a number Markov chain in paralle.
+In contrast to most distance based inference methods (notably Approximate Bayesian Computation \cite{beaumont2002approximate}), we develop a form of replica exchange Markov Chain Monte Carlo \cite{earl2005parallel} to target inference that is exact in convergence of the chain.
+Predicate relaxations is modulated by temperature such that at zero temperature the relaxed predicate mirrors its hard counter-part, while at maximal temperatures, it is virtually always satisfied.
+PE simulates several Markov chains in parallel at different temperatures.
 
 Knowledge often has a Boolean structure.
 We may know that a statement is not true, that two statements simultaneously hold, that at least one of them holds or at most one of them holds.
-Such structure is captured naturally by a Boolean algebra over predicates, but neither likelihood-based inference nor existing likelihood-free inference offer effective means to condition non-trivial models on such compound primitive.
-A second component of this contribution is a complete set of softened Boolean primitives that compose arbitrarily while retaining consistency with unrelaxed counterpart.
+Such structure is captured naturally by a Boolean algebra over predicates, but neither likelihood-based inference nor existing likelihood-free inference offer effective means to condition non-trivial models on compound predicates.
+A second component of this contribution is a complete set of softened counter parts Boolean primitives including equalities and inequalities and logical Boolean operators.
+Crucially, these primitives compose arbitrarily, retaining consistency with unrelaxed counterpart.
 
-Conditioning on predicates introduces problems of zero-measure, which are often side-stepped in likelihood-based inference.
-In particular, in practice our algorithm is applicable to predicates of non-zero measure.
+Since PE method is not black-box, we define a simple statistical language and formalize the transformations.
+For implementation, we develop a method to incorporate this form of inference in any existing language that supports (i) intervening with the global random number generator, and (ii) the capacity to redefine primitive operators on user define types.
+
+There are a number of limitations to our approach.
+Predicates which indicate sets of zero measure -- typically equalities on continuous variables -- are problematic because X.
+In these cases PE samples at a temperature strictly greater than zero.
+These samples are approximate.
+Convergence of PE depends on the quality of the distance metric.
+
 % zero. However, mixing may be slow since condition on general predicates
 % encodes the class of decision problems.
-For measure zero predicates -- typically from equalities such as $X = Y$ in continuous models -- our algorithm produces samples at a temperature strictly greater than zero to ensure a non-zero exchange probability.
-This samples are approximate.
 % Hard valued predicates do not have scaling issues as they are either zero or one valued, but soft valued predicates can have issues. Our procedure
 % to convert from hard valued predicates to soft valued ones
 % tries to ensure that each predicate gets satisfied with equal
@@ -130,13 +155,13 @@ This samples are approximate.
 % We test \emph{Omega} on a simulated example with truncated Gaussians,
 % an object rendering model, a physiological model, and xxx 
 
-In summary we address the problem of conditioning on broad class of predicates as am class to express declarative knowledge.
+In summary we address the problem of conditioning on broad class of predicates as a means to` express declarative knowledge.
 In detail, we:
 
 \begin{enumerate}
-	\item Formalize (section \ref{}) simulation based models in terms of measure theoretic probability, and conditioning as the imposition of constraints.
-	\item Present a syntactic transformation to probabilistic model that transforms predicates into relaxted counterparts. 
+	\item Formalize simulation based probabilistic models in measure theoretic probability, and conditioning as the imposition of constraints (section \ref{simmodels}).
 	\item Present an algorithm based on replica-exchange Markov Chain Monte Carlo (section \ref{}) which draws exact samples for positive measure predicates. 
+	\item Formalize predicate relaxation as a transformation to the syntax   the syntax and semantics of a minimal statistical language 
 	\item Implement these concepts in system for building models, predicates, and doing inference.
 	\item Evaluate our approach on representative examples, and demonstrate case studies including enriching medical models with limited data.
 \end{enumerate}
