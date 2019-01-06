@@ -234,3 +234,33 @@ from the joint and samples from the conditional approximation~\citep{tran2017hie
 % with that of the model $M$ can be represented as $f_\beta$.
 % This follows since $f_\beta$ can arbitrarily reweight the pullback
 % measure.
+
+\paragraph{Balancing Different Constraints}
+The scales of variables effect their influence on
+the conditional distribution at a fixed temperature.
+For example consider two pairs of variables, where
+the first pair is ten times larger than the second.
+Conditioning on a greater than constraint on both
+pairs of variables is well defined. However,
+a softening of both constraints would have 
+a much larger change in the energy function over
+a standard deviation change in pairs of variables.
+To mitigate this issue, Omega tries enforce equality
+in magnitude between all basic predicates at each temperature.
+% rr: zenna can you add the basic predicates
+To accomplish this, consider the case of two 
+softened predicates $k_1$ and $k_2$. For the
+energy function, Omega introduces a weight
+for all but the first constraint, in this
+case $k_2$ in the energy function gets replaces
+by $\gamma_2 k_2$. The weight $\gamma_2$ should
+ensure that $\gamma_2 k_2$ has the same
+magnitude effect as $k_1$ on the energy
+function:
+\begin{align*}
+E_{p_{\alpha, \gamma_2}}[k_1] = E_{p_{\alpha, \gamma_2}}[\gamma_2 k_2] 
+\end{align*}
+% Does such a gamma_2 always exist? Maybe rewrite it as
+% an optimization problem over gamma to enforce a solution?
+In practice, we set $\gamma_2$ using an exponential moving
+average of the $k_1$ values over the $k_2$ values.
