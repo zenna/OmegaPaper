@@ -1,0 +1,60 @@
+\section{Implementation}\label{implement}
+
+Our approach to inference is not black-box.
+It requires a transformation of the model.
+This can be realized in a number of ways.
+To formalize this we introduce a very simple language for describing probabilistic models.
+Following this, we demonstrate how these principle can be incorporated into existing languages.
+
+
+\subsection{A Minimal Language}{\label{minilang}}
+
+
+\begin{figure}[t]
+	\begin{align*}
+		\text { model term }  &  & \enspace m ::=               & e ; \cond f \\
+		\text { standard term }  &  & \enspace e ::=               & e ; e \mid v \sim f\\
+		\text { standard term }  &  & \enspace f ::=               & p \mid f \textrm{ bop }f \mid\textrm{ op } f \mid \\
+		\text { standard term }  &  & \enspace f ::=               & \text{ if } t_1 \text{ then } t_2 \text{ else } t_3 \\
+		\text { binary op }      &  & \enspace \textrm{bop} ::=    & + \mid - \mid / \mid * \mid \land \mid \lor \mid > \mid < \mid \\
+		\text { unary op }       &  & \enspace \textrm{uop} ::=    & \lnot                                                          \\
+		\text { primitive dist } &  & \enspace p ::= \bern(f) \mid & \unif(f, f) \mid N(f, f) \mid                                  \\
+	\end{align*}
+	\caption{Abstract Syntax}
+	\label{syntax}
+\end{figure}
+
+Figure \ref{Syntax} describes the abstract syntax of our language.
+The language closey resembles statistical notation.
+One difference is that conditions are stated at the end of each model in a single statement $\cond$.
+
+Here is an example.
+
+\begin{align*}
+	x \sim   & \unif(0, 1)           \\
+	y \sim   & \unif(0, 1)           \\
+	\cond \; & (x = y) \land (x > 3) \\
+\end{align*}
+
+\subsubsection{Semantics}\label{semantics}
+\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
+Here we define a semantics denotationally.
+The denotation $\sem{t}$ of a term $t$ is a value in a semantic domain corresponding to an \omegalang{} type, such as a Boolean, real number, or random variable.
+Primitive 
+
+
+\subsection{Syntactic Predicate Relaxation}
+
+The transformation from the original model to a relaxed model is straight forward.
+Algorithm substitutes X accepts as input the abstract syntax
+
+\begin{align*}
+	x \sim \unif(0, 1)              \\
+	y \sim \unif(0, 1)              \\
+	ll \sim x =_s y \land_s x >_s 3 \\
+\end{align*}
+
+\subsection{Intercepting the Random Number Generator}\label{rng}
+
+Describe how you can implement this thing by intercepting the random 
+of \citep{wingate2011lightweight, milch20071} to MCMC that mutates a database of named random variables:
