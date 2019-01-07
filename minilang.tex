@@ -1,60 +1,129 @@
 \section{Implementation}\label{implement}
 
-Our approach to inference is not black-box.
-It requires a transformation of the model.
-This can be realized in a number of ways.
-To formalize this we introduce a very simple language for describing probabilistic models.
-Following this, we demonstrate how these principle can be incorporated into existing languages.
+% Our approach to inference is not black-box.
+% It requires a transformation of the model.
+% This can be realized in a number of ways.
+% To formalize this we introduce a very simple language for describing probabilistic models.
+% Following this, we demonstrate how these principle can be incorporated into existing languages.
 
 
-\subsection{A Minimal Language}{\label{minilang}}
+% \subsection{A Minimal Language}{\label{minilang}}
 
 
-\begin{figure}[t]
-	\begin{align*}
-		\text { model term }  &  & \enspace m ::=               & e ; \cond f \\
-		\text { standard term }  &  & \enspace e ::=               & e ; e \mid v \sim f\\
-		\text { standard term }  &  & \enspace f ::=               & p \mid f \textrm{ bop }f \mid\textrm{ op } f \mid \\
-		\text { standard term }  &  & \enspace f ::=               & \text{ if } t_1 \text{ then } t_2 \text{ else } t_3 \\
-		\text { binary op }      &  & \enspace \textrm{bop} ::=    & + \mid - \mid / \mid * \mid \land \mid \lor \mid > \mid < \mid \\
-		\text { unary op }       &  & \enspace \textrm{uop} ::=    & \lnot                                                          \\
-		\text { primitive dist } &  & \enspace p ::= \bern(f) \mid & \unif(f, f) \mid N(f, f) \mid                                  \\
-	\end{align*}
-	\caption{Abstract Syntax}
-	\label{syntax}
-\end{figure}
+% \begin{figure}[t]
+% 	\begin{align*}
+% 		\text { model term }  &  & \enspace m ::=               & e ; \cond f \\
+% 		\text { standard term }  &  & \enspace e ::=               & e ; e \mid v \sim f\\
+% 		\text { standard term }  &  & \enspace f ::=               & p \mid f \textrm{ bop }f \mid\textrm{ op } f \mid \\
+% 		\text { standard term }  &  & \enspace f ::=               & \text{ if } t_1 \text{ then } t_2 \text{ else } t_3 \\
+% 		\text { binary op }      &  & \enspace \textrm{bop} ::=    & + \mid - \mid / \mid * \mid \land \mid \lor \mid > \mid < \mid \\
+% 		\text { unary op }       &  & \enspace \textrm{uop} ::=    & \lnot                                                          \\
+% 		\text { primitive dist } &  & \enspace p ::= \bern(f) \mid & \unif(f, f) \mid N(f, f) \mid                                  \\
+% 	\end{align*}
+% 	\caption{Abstract Syntax}
+% 	\label{syntax}
+% \end{figure}
 
-Figure \ref{Syntax} describes the abstract syntax of our language.
-The language closey resembles statistical notation.
-One difference is that conditions are stated at the end of each model in a single statement $\cond$.
+% Figure \ref{Syntax} describes the abstract syntax of our language.
+% The language closey resembles statistical notation.
+% One difference is that conditions are stated at the end of each model in a single statement $\cond$.
 
-Here is an example.
+% Here is an example.
 
-\begin{align*}
-	x \sim   & \unif(0, 1)           \\
-	y \sim   & \unif(0, 1)           \\
-	\cond \; & (x = y) \land (x > 3) \\
-\end{align*}
+% \begin{align*}
+% 	x \sim   & \unif(0, 1)           \\
+% 	y \sim   & \unif(0, 1)           \\
+% 	\cond \; & (x = y) \land (x > 3) \\
+% \end{align*}
 
-\subsubsection{Semantics}\label{semantics}
-\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
-Here we define a semantics denotationally.
-The denotation $\sem{t}$ of a term $t$ is a value in a semantic domain corresponding to an \omegalang{} type, such as a Boolean, real number, or random variable.
-Primitive 
+% \subsubsection{Semantics}\label{semantics}
+% \newcommand{\sem}[1]{\llbracket #1 \rrbracket}
+% Here we define a semantics denotationally.
+% The denotation $\sem{t}$ of a term $t$ is a value in a semantic domain corresponding to an \omegalang{} type, such as a Boolean, real number, or random variable.
+% Primitive 
 
 
-\subsection{Syntactic Predicate Relaxation}
+% \subsection{Syntactic Predicate Relaxation}
 
-The transformation from the original model to a relaxed model is straight forward.
-Algorithm substitutes X accepts as input the abstract syntax
+% The transformation from the original model to a relaxed model is straight forward.
+% Algorithm substitutes X accepts as input the abstract syntax
 
-\begin{align*}
-	x \sim \unif(0, 1)              \\
-	y \sim \unif(0, 1)              \\
-	ll \sim x =_s y \land_s x >_s 3 \\
-\end{align*}
+% \begin{figure}[t]
+% 	\begin{align*}
+% 		\text { model term }  &  & \enspace m ::=               & e ; \cond f \\
+% 		\text { standard term }  &  & \enspace e ::=               & e ; e \mid v \sim f\\
+% 		\text { standard term }  &  & \enspace f ::=               & p \mid f \textrm{ bop }f \mid\textrm{ op } f \mid \\
+% 		\text { standard term }  &  & \enspace f ::=               & \text{ if } t_1 \text{ then } t_2 \text{ else } t_3 \\
+% 		\text { binary op }      &  & \enspace \textrm{bop} ::=    & + \mid - \mid / \mid * \mid \land \mid \lor \mid > \mid < \mid \\
+% 		\text { unary op }       &  & \enspace \textrm{uop} ::=    & \lnot                                                          \\
+% 		\text { primitive dist } &  & \enspace p ::= \bern(f) \mid & \unif(f, f) \mid N(f, f) \mid                                  \\
+% 	\end{align*}
+% 	\caption{Abstract Syntax}
+% 	\label{syntax}
+% \end{figure}
 
-\subsection{Intercepting the Random Number Generator}\label{rng}
+% \begin{align*}
+% 	x \sim \unif(0, 1)              \\
+% 	y \sim \unif(0, 1)              \\
+% 	ll \sim x =_s y \land_s x >_s 3 \\
+% \end{align*}
 
-Describe how you can implement this thing by intercepting the random 
-of \citep{wingate2011lightweight, milch20071} to MCMC that mutates a database of named random variables:
+% \subsection{A Lightweight Implementation}\label{rng}
+
+In this section we describe a generic, lightweight implementation of predicate exchange.
+Our approach closely mirrors \citep{wingate2011lightweight, milch20071} in the sense that it provides a language independent layer that can be implemented on top of existing programming languages and modeling formalisms.
+Our objective is to twofold: (i) to compute the prior term $p$, approximate likelihood term $u$, and approximate posterior term $f$ (Equation \ref{approxposterior}) from an arbitrary program $\pi$, and (ii) to perform Replica Exchange MCMC to sample from this posterior.
+
+A program $\pi$ can be an arbitrary composition of deterministic and stochastic procedures, but all stochastic elements must come from a set of known \emph{elementary random primitives}, or ERPs.
+ERPs correspond to primitive parametric distribution families, such as the uniform or normal distribution.
+Let $\mathcal{T}$ be a set of ERP types.
+Each type $t \in \mathcal{T}$ must support two operators (i) evaluation of the conditional probability as a function of its parameters, and (ii) sampling from the distribution.
+
+The prior term $p$ is computed as in \citep{wingate2011lightweight}.
+That is, let $\pi_{K \mid x_1, ..., x_{k-1}}$ be the k'th ERP encountered in while executing $\pi$, $x_k$ be the value it takes, and $x$ denote the set of all values of all ERPs constructed in the simulation of $\pi$.
+The probability $p(x)$ is the product of all the ERP choices:
+
+$$
+p(x) = \prod_k=1^K
+$$
+
+\subsection{Soft Execution}
+Predicate relaxation is performed through a kind of nonstandard execution of a program.
+We assume $\pi$ is conditioned using a special command $\cond(y)$, where $y \in \{0,1\}$ is a Boolean value.
+Considering $\pi$ as a random variable, $y$ corresponds to the output of the predicate $Y$ that $\pi$ is conditioned on.
+
+The objective of soft execution is to replace $y \in \{0,1\}$ with $\soft{y} \in [0, 1]$.
+To achieve this, we define the output types of ERPs as nonstandard.
+For example, if $t$ is a real-valued ERP, rather than return a value $\mathbb{R}$, it will return a tagged value $x' \in \mathbb{R}'$.
+
+Most elementary operations on tagged values mirror their untagged counterparts.
+For example if $x', y' \in \mathbb{R}'$ and $x, y$ denote the real numbers then $x'+ y' = (x + y)'$.
+Boolean operators, on the other hand, are replaced with the softened counterpart given in Figure \ref{softw}.
+For example $x' = y'$ is defined as $x \soft{=} y$.
+
+
+\subsection{Inference}
+
+To perform inference we control the output values of elementary random primitives.
+Let $\mathbb{D}$ denote a database of ERP values, i.e., a mapping $\mathbb{N } \to $ from ERP to the values they take. 
+
+In the context of a particular, fully instantiated database.
+This allows the simulation of $\pi$ to be modulated by controlling the elements of $\mathbb{D}$.
+
+% Define a new number type
+
+% 1. Overload all boolean operators to do soft boolean operators.
+% 2. if its used as  condition then use the round
+% 3. cond
+
+% The basic idea is what I do at the moment
+
+A program is composed of a number of random primitives
+Let $y$ be a soft Boolean that will be updated in the execution of a program, initialized at $1$. 
+Let $\cond(y)$ be a procedure which takes as input $y$.
+In the execution of the program
+
+How to describe it.  I think what we want,
+say we've got a stochastic simulator.
+
+to MCMC that mutates a database of named random variables:
