@@ -72,27 +72,27 @@
 
 In this section we describe a generic, lightweight implementation of predicate exchange.
 Our approach closely mirrors \citep{wingate2011lightweight, milch20071} in the sense that it provides a language independent layer that can be implemented on top of existing programming languages and modeling formalisms.
-Our objective is to twofold: (i) to compute the prior term $p$, approximate likelihood term $u$, and approximate posterior term $f$ (Equation \ref{approxposterior}) from an arbitrary program $\pi$, and (ii) to perform Replica Exchange MCMC to sample from this posterior.
+Our objective is to twofold: (i) to compute the prior term $p$, approximate likelihood term $\soft{y}$, and approximate posterior term $f$ (Equation \ref{approxposterior}) from an arbitrary program $\pi$, and (ii) to perform Replica Exchange MCMC to sample from this posterior.
 
 A program $\pi$ can be an arbitrary composition of deterministic and stochastic procedures, but all stochastic elements must come from a set of known \emph{elementary random primitives}, or ERPs.
 ERPs correspond to primitive parametric distribution families, such as the uniform or normal distribution.
 Let $\mathcal{T}$ be a set of ERP types.
-Each type $t \in \mathcal{T}$ must support two operators (i) evaluation of the conditional probability as a function of its parameters, and (ii) sampling from the distribution.
+Each type $\tau \in \mathcal{T}$ must support two operators (i) evaluation of $p_\tau(x \mid \theta_1, ... \theta_n$: the conditional probability of $x$ as a function of its parameters, and (ii) sampling from the distribution.
 
-The prior term $p$ is computed as in \citep{wingate2011lightweight}.
-That is, let $\pi_{K \mid x_1, ..., x_{k-1}}$ be the k'th ERP encountered in while executing $\pi$, $x_k$ be the value it takes, and $x$ denote the set of all values of all ERPs constructed in the simulation of $\pi$.
-The probability $p(x)$ is the product of all the ERP choices:
-
-$$
-p(x) = \prod_k=1^K
-$$
+The prior term $p$ is product of independent random choices in the program. 
+That is, let $\pi_{k \mid x_1, ..., x_{k-1}}$ be the k'th ERP encountered in while executing $\pi$, $x_k$ be the value it takes, and $x$ denote the set of all values of all ERPs constructed in the simulation of $\pi$.
+The probability $p(x)$ is the product:
+\begin{equation}
+p(x) = \prod_{k=1}^K p_\tau(x_k \mid \theta_1... \theta_n )
+\end{equation}
+Crucially, the parameters $\theta_1,..,\theta_n$ for each random variable may be fixed values or depend on values of other random variables in the $\pi$.
 
 \subsection{Soft Execution}
 Predicate relaxation is performed through a kind of nonstandard execution of a program.
 We assume $\pi$ is conditioned using a special command $\cond(y)$, where $y \in \{0,1\}$ is a Boolean value.
-Considering $\pi$ as a random variable, $y$ corresponds to the output of the predicate $Y$ that $\pi$ is conditioned on.
+$y$ corresponds to the output of the predicate $Y$ that $\pi$ is conditioned on.
 
-The objective of soft execution is to replace $y \in \{0,1\}$ with $\soft{y} \in [0, 1]$.
+The objective of soft execution (Algorithm \ref{alg:softexecute}) is to replace  $y \in \{0,1\}$ with $\soft{y} \in [0, 1]$.
 To achieve this, we define the output types of ERPs as nonstandard.
 For example, if $t$ is a real-valued ERP, rather than return a value $\mathbb{R}$, it will return a tagged value $x' \in \mathbb{R}'$.
 
@@ -110,20 +110,58 @@ Let $\mathbb{D}$ denote a database of ERP values, i.e., a mapping $\mathbb{N } \
 In the context of a particular, fully instantiated database.
 This allows the simulation of $\pi$ to be modulated by controlling the elements of $\mathbb{D}$.
 
-% Define a new number type
+Predicate exchange is carried out through two $\textrm{softexecute}$.
+The procedure $\textrm{softexecute}$ (Algorithm \ref{alg:softexecute}) formalizes the soft execution of a program $\pi$ at temperature $\alpha$, in the context of database $\mathbb{D}$.
+It returns a single value corresponding to the approximate posterior.
+To compute $f$, at every invocation of an elementary random primitive, it computes the conditional density $p_\tau(x \mid \theta)$, where $x$ is either samples from the distribution or drawn from the database $\mathbb{D}$
 
-% 1. Overload all boolean operators to do soft boolean operators.
-% 2. if its used as  condition then use the round
-% 3. cond
+\begin{algorithm}[tb]
+  \caption{Soft Execution: $\textrm{softexecute}(\pi, \alpha, \mathbb{D})$}
+  \label{alg:softexecute}
+\begin{algorithmic}
+\STATE {\bfseries Input:} program $\pi$, temperature $\alpha$, database $\mathbb{D}$
+\STATE Initialize $\soft{y} = 1, p = 1$
+\STATE Simulate $\pi$, intercept statements any statement $s$, wbere:   
+\IF{$s = \textrm{rand}(\tau, n, \theta_1, ..., \theta_n)$}
+ \IF{$n \in \mathbb{D}$}
+   \STATE $x = \mathbb{D}(n)$
+ \ELSE
+   \STATE $x = $ sample from $p_\tau(\mid \theta_1, ..., \theta_n)$
+   \STATE Update database: $\mathbb{D}(n) = x$
+ \ENDIF
+ \STATE $p = p \cdot p_\tau(x \mid \theta_1, ..., \theta_m)$
+ \ELSIF{$s = \cond(y)$}
+   \STATE $\soft{y} = \soft{y} \cdot y$
+ \ENDIF
+\STATE {\bfseries Return:} $p \cdot \soft{y}$
+%    \ENDFOR
+%    \UNTIL{$noChange$ is $true$}
+\end{algorithmic}
+\end{algorithm}
 
-% The basic idea is what I do at the moment
 
-A program is composed of a number of random primitives
-Let $y$ be a soft Boolean that will be updated in the execution of a program, initialized at $1$. 
-Let $\cond(y)$ be a procedure which takes as input $y$.
-In the execution of the program
-
-How to describe it.  I think what we want,
-say we've got a stochastic simulator.
-
-to MCMC that mutates a database of named random variables:
+\begin{algorithm}[tb]
+  \caption{Predicate Exchange}
+  \label{alg:predexchange}
+\begin{algorithmic}
+\STATE {\bfseries Input:} program $\pi$, temperatures $\alpha_1, ...,\alpha_m$, nsamples $n$
+\STATE Initialize $\mathcal{D} = $ empty collection of databases
+\STATE Initialize $\mathbb{D}_1,...,\mathbb{D}_m$ empty databases
+\REPEAT
+  \FOR{$i=1$ {\bfseries to} $m$}
+    \STATE { $\mathbb{D}_1,...,\mathbb{D}_q = $ draw $q$ mcmc samples at temp $\alpha_i$}
+    \IF {i = 1}
+      \STATE append $x$ to $x_0$
+    \ENDIF
+  \ENDFOR
+  \FOR{$i = m$ {\bfseries to} $2$}
+    \STATE $j = i - 1$
+    \STATE $p = \frac{a}{b}$
+    \IF{$p > $}
+      \STATE swap $\alpha_i$ with $\alpha_j$
+    \ENDIF
+  \ENDFOR
+\UNTIL{$forever$}
+\STATE {\bfseries Return:} $\mathcal{D}$
+\end{algorithmic}
+\end{algorithm}
