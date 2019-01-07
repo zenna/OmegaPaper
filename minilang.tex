@@ -93,7 +93,15 @@ We assume $\pi$ is conditioned using a special command $\cond(y)$, where $y \in 
 $y$ corresponds to the output of the predicate $Y$ that $\pi$ is conditioned on.
 
 The objective of soft execution (Algorithm \ref{alg:softexecute}) is to replace  $y \in \{0,1\}$ with $\soft{y} \in [0, 1]$.
-To achieve this, we define the output types of ERPs as nonstandard.
+To achieve this, we redefine the semantics of a number of key statements
+
+\begin{enumerate}
+  \item $\textrm{rand}(\tau, n, \theta_1, ...\theta_n)$: In the normal execution of $\pi$, this would simply yield a value sampled from the distribution.  However
+  \item $a \text{ op } b$ for $\textrm{op} \in \{>, <, =, \land, \lor\}$ is replaced with the softened counter-parts $\soft{op} \in \{\soft{>}, \soft{<}, \soft{=}, \soft{\land}, \soft{\lor}\}$
+  \item $\cond(x)$
+\end{enumerate}
+
+output types of ERPs as nonstandard.
 For example, if $t$ is a real-valued ERP, rather than return a value $\mathbb{R}$, it will return a tagged value $x' \in \mathbb{R}'$.
 
 Most elementary operations on tagged values mirror their untagged counterparts.
