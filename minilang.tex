@@ -81,7 +81,7 @@ Each type $\tau \in \mathcal{T}$ must support (i) evaluation of $p_\tau(x \mid \
 Concretely, a conditioned program $\pi$ is a any program that includes:
 
 \begin{enumerate}
-  \item $\textrm{rand}(\tau, n, \theta_1, ...\theta_n)$ returns a random sample from $p_\tau(x \mid \theta_1, ..., \theta_n)$.
+  \item $\textrm{rand}(\tau, n, \theta_1, ...,\theta_n)$ returns a random sample from $p_\tau(x \mid \theta_1, ..., \theta_n)$.
   \item $\cond(y)$ throws an error if $y \in \{0, 1\}$ is 0, and otherwise allows simulation to resume with no effect.
 \end{enumerate}
 
