@@ -8,9 +8,9 @@ $\soft{Y}$ is 1 iff $Y$ is 1, but otherwise takes nonzero values denoting the de
 \item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo proecdure that exploits temperature. The degree to which $\soft{Y}$ relaxes $Y$ is modulated by a temperature parameter $\alpha$, which trades off between accuracy and ease of inference.  By simulating several replicas of $\soft{Y}$ at different temperatures, replica exchange is able to draw exact samples. 
 \end{enumerate}
 
-\subsection{Predicate Relaxation}
+\subsection{Predicate Relaxation}\label{predexchange}
 
-A relaxed predicate $\soft{Y}$ is an approximation of $Y$ in the sense that WHAT?
+A relaxed predicate $\soft{Y}$ is an approximation of $Y$ in the sense that when viewed as a likelihood function on model parameters, $\soft{Y}$ has a broader support, assigning nonzero weights to parameter values which have zero weight under $Y$.
 There are three desiderata which govern this approximation.
 First, $\soft{Y}$ should have a temperature parameter $\alpha$ that controls the fidelity of the approximation. In particular, $\soft{Y}$ should converge to $Y$ as $\alpha \to 0$, and to a flat surface as $\alpha \to \infty$. Second, the fidelity of the approximation should vary monotonically with temperature. Third, $\soft{Y}$ should be consistent with $Y$ on 1. That is $Y(\omega) = 1$ iff $\soft{Y}(\omega) = 1$ at all temperatures.  
 
@@ -51,7 +51,7 @@ k_{SE}(r) &= \sigma^2\left(1 + \frac{r^2}{2 \alpha \ell^2}\right)^{-\alpha} & \t
 \end{figure}
 
 The relaxation of an inequality such as $x > y$ relies on the amount by which $x$ must be increased (or $y$ decreased) until $x > y$ is true.
-This is the distance between $x$ and the interval $[y, \infty]$, where the distance between a point and any interval $[a, b]$ is the smallest distance between $x$ and any element in $[a, b]$ (and therefore 0 if $x \in [A, b]$:
+This is the distance between $x$ and the interval $[y, \infty]$, where the distance between a point and any interval $[a, b]$ is the smallest distance between $x$ and any element in $[a, b]$ (and therefore 0 if $x \in [a, b]$:
 \begin{equation}
 \rho(x, [a, b]) =
 \begin{cases}
@@ -61,10 +61,10 @@ This is the distance between $x$ and the interval $[y, \infty]$, where the dista
 \end{cases}
 \end{equation}
 
-In general, a distance metric on points extends naturally to sets:
-\[
+In general, a distance on points extends naturally to sets:
+\begin{equation}
 \rho(x, A) = \inf \left\{\rho(x, a) \mid a \in A\right\}
-\]
+\end{equation}
 
 
   % \begin{center}
@@ -90,12 +90,11 @@ a \soft{\lor} b &= \min(a, b)
 \end{figure}
 
 \paragraph{Negation}
-Soft Negation is a necessary of a complete Boolean algebra, but introduces complications.
-In Figure \ref{negationimg}(A), shows $x \soft{>} 0$ as a function of $x$.
-The standard \cite{} approach to negation of $a \in [0, 1]$ is $1 - a$.
-However, as shown in Figure \ref{negationimg} (b) this violates criteria (iii) of predicate relaxation.
+Soft negation is a necessary component of a complete Boolean algebra, but introduces complications.
+Figure \ref{negationimg} (a) shows $x \soft{>} 0$ as a function of $x$.
+Conventionally  \cite{}, the negation of $a \in [0, 1]$ is $1 - a$.
+However, as shown in Figure \ref{negationimg} (b), this violates criteria (iii) of predicate relaxation.
 That is, there are values which satisfy the hard predicate $\neg(x > 0)$ which do take a value of 1 in $1 - (x \soft{>} 0)$.
-Ultimately this would cause inference using soft predicates to be incorrect.
 
 \begin{figure}
 \includegraphics[width=\linewidth]{negation.pdf}
@@ -108,22 +107,24 @@ In other words, $\soft{Y}$ is a one-sided approximation.
 To overcome this challenge we construct two-sided approximations.
 For models where negation is used, a two-sided relaxed predicate yields a pair $(b_0, b_1)$, where $b_0, b_0 \in [0, 1]$.
 $b_1$ preserves consistency with $Y$ on $1$, just as before, whereas $b_0$ preserves consistency with $\neg Y$ on $1$ (or equivalently $Y$ on 0).
-For example if $x \dsoft{>} 0 = (b_0, b_1)$, then as a function of $x$, $b_0$ and $b_1$ correspond to Figure \ref{negationimg}(a) and (c) respectively.
+For example if $x \dsoft{>} 0 = (b_0, b_1)$, then as a function of $x$, $b_0$ and $b_1$ correspond to Figure \ref{negationimg} (a) and (c) respectively.
 
 A complete two-sided soft logic is shown in Figure \ref{softw}.
- 
-\begin{definition}
-The function $\soft{Y} : \Omega \to [0, 1]^2$ parameterized by $\alpha \in [0, \infty)$ is a two-sided relaxation of a $Y: \Omega \to \{0, 1\}$ if:
-\begin{enumerate}[label=(\roman*)]
-	\label{def:temp}
-	\item For all $\omega \in \Omega$, $\lim_{\alpha \to 0}\soft{Y}(\omega; \alpha) = (\neg Y(\omega), Y(\omega))$.
-	\item For all $\omega \in \Omega$, $\lim_{\alpha \to \infty}\soft{Y}(\omega; \alpha) = (0, 1)$.
+Observe that negation simply swaps the elements such that $(a_0, a_1)$ becomes $(a_1, a_0)$.
+Althugh a two-sided soft predicate is symmetric, for the sake of conditioning we are still concerned only with the true side $a_1$ in the pair $(a_0, a_1)$.
 
-    \item For all $\alpha$, $\soft{Y}(\omega; \alpha) = 1$ iff $Y(\omega) = 1$.
-    \item The entropy $H(\soft{Y}(\omega; \alpha))$ (which characterizes the fidelity of the approximation ) is an increasing function of $\alpha$.\footnote
-    {By compactness, it is integrable for all $\alpha$, when $\Omega$ has finite dimension}
-\end{enumerate}
-\end{definition}
+% \begin{definition}
+% The function $\soft{Y} : \Omega \to [0, 1]^2$ parameterized by $\alpha \in [0, \infty)$ is a two-sided relaxation of a $Y: \Omega \to \{0, 1\}$ if:
+% \begin{enumerate}[label=(\roman*)]
+% 	\label{def:temp}
+% 	\item For all $\omega \in \Omega$, $\lim_{\alpha \to 0}\soft{Y}(\omega; \alpha) = (\neg Y(\omega), Y(\omega))$.
+% 	\item For all $\omega \in \Omega$, $\lim_{\alpha \to \infty}\soft{Y}(\omega; \alpha) = (0, 1)$.
+
+%     \item For all $\alpha$, $\soft{Y}(\omega; \alpha) = 1$ iff $Y(\omega) = 1$.
+%     \item The entropy $H(\soft{Y}(\omega; \alpha))$ (which characterizes the fidelity of the approximation ) is an increasing function of $\alpha$.\footnote
+%     {By compactness, it is integrable for all $\alpha$, when $\Omega$ has finite dimension}
+% \end{enumerate}
+% \end{definition}
 
 
 \begin{figure}\label{softw}
@@ -135,7 +136,7 @@ x \dsoft{<} y &= (k_\alpha(\rho(y, [x, \infty])), k_\alpha(\rho(y, [-\infty, x])
 (a_0, a_1) \dsoft{\lor} (b_0, b_1) &= (a_0 \soft{\lor} b_0, a_1 \soft{\lor} b_1)\\
 \dsoft{\neg}(a_0, a_1) &= (a_1, a_0)
 \end{align*}
-\caption{Soft Primitive Predicates with Two-Sided Error}
+\caption{Soft primitive predicates with two-sided error.}
 \end{figure}
 
 % \begin{center}
@@ -161,18 +162,19 @@ Let $\cM$ be a model, $Y$ be a predicate that conditions $\cM$, and $\soft{Y}$ b
 % For example $X = \mathcal{N}(0,1)$ is exogenous while $Y = X^2$ is endogenous.
 % Inference need only take place on exogenous random variables.
 Both $Y$ and $\soft{Y}$ are random variables, and hence map from the sample space $\Omega$.
-For convenience it is useful to define a soft predicate as a function of its parameters, i.e., other random variables in the model.
-Let $\soft{y}$ denote a relaxed predicate that takes as input values of random variables in the model, rather than elements of the sample space.
-That is, if $X_1(\omega), \dots, X_n(\omega) = x_1, \dots, x_n$, then $\soft{y}(x_1, \dots, x_n) = \soft{Y}(\omega)$.
+For convenience we define a soft predicate $u$ as a function of its parameters (other random variables in the model) rather than the sample space.
+That is, let $\soft{Y}(\omega) = y(X_1, ..., x_n)$ be factored into $u$
 Assuming a prior density $p$, the approximate posterior $f$ is the product:
 \begin{equation}
 f(m) = p(m) \cdot u(m)
 \end{equation}
-$u$ effectively down-weights values of parameters which violate the predicate the model is conditioned on by the  degree to which they violate the predicate. 
-This is modulated by temperature.  zero temperature $f$ recovers posterior exactly, since parameter values which violate the condition are given zero weight.
+$u$ down weights parameter values which violate $Y$ by the degree to which they violate it. 
+This is modulated by temperature.
+At maximum temperature $u$ has no effect, and the approximate posterior $f$ is equal to the prior.
+zero temperature $f$ recovers true posterior exactly, since parameter values which violate the condition are given zero weight.
 
-For illustration, let $\cM = (\mu, X_1, X_2)$ be a model where $\mu = \mathcal{N}(0, 1), Y \mathcal{N}(\mu, 1)$, $X_2 = X_1^2$ and $\cM$ is conditioned on $X_2 = 1$.
-Since $X_2$ is a pure function of $X$ (i) and (ii) we can exclude it for inference.
+For illustration, let $\cM = (\mu, X_1, X_2)$ be a model where $\mu = \mathcal{N}(0, 1), Y = \mathcal{N}(\mu, 1)$, $X_2 = X_1^2$ and $\cM$ be conditioned on $X_2 = 1$.
+Since $X_2$ is a deterministic function of $X$ (i) and (ii) we can exclude it for inference.
 The approximate posterior is shown at different temperatures in Figure \ref{temppost} and defined as:
 
 \begin{equation}\label{approxposterior}
@@ -186,10 +188,10 @@ f(x, y) = \mathcal{N}_{0,1}(x) \cdot \mathcal{N}_{0,1}(y) \cdot k(x + y, 0)
 
 
 
-\subsection{Replica Exchange}
+\subsection{Replica Exchange}\label{replicaexchange}
 
 The temperature parameter trades off between tractability of inference and the fidelity of the approximation.
-Too high and $\soft{Y}$ will diverge too greatly from $Y$; too low and convergence will be slow.
+Too high and $\soft{Y}$ will diverge too greatly from $Y$   . Too low and convergence will be slow.
 % Several temperatre methods for controlling temperature exist such as simulated annealing \citep{kirkpatrick1983optimization} and Adiabatic Monte Carlo \citep{betancourt2014adiabatic}.
 Replica exchange (also known as parallel tempering) \citep{swendsen1986replica} combines information from several chains to more  effectively sample from the zero temperature chain.
 
@@ -200,15 +202,15 @@ Assuming w.l.g that there are have two independent, parallel chains with targets
 Replica exchange exchanges states between the two chains while preserving the joint target.
 That is, we propose a swap of $x$ and $y$: to move from $(x, y)$ to $(x^\star,y^\star)$, where $x^\star=y$ and $y^\star=x$.
 The swap is accepted with probability $\min(1, A)$ where:
-$$
+\begin{equation}
 A = \frac{\pi(x^\star,y^\star)}{\pi(x,y)} = \frac{\pi(y,x)}{\pi(x,y)} = \frac{f(y)g(x)}{f(x)g(y)}.
-$$
+\end{equation}
 
-In predicate exchange, $f$ and $g$ correspond to two approximate posteriors (Equation ) at different temperatures.
-Since swapping states is equivalent to swapping predicates.
+In predicate exchange, $f$ and $g$ correspond to two approximate posteriors (Equation \ref{approxposterior}) at different temperatures.
+Swapping states is equivalent to swapping predicates, which motivates the name predicate exchange.
 
 Replica exchange has a number of hyper-parameters: the number of parallel chains, the corresponding temperatures, the swapping schedule.
-Several good practices are outlined in Following \cite{earl2005parallel}.  In practice, we logarithmically spaced temperature between $0$ and an upper bound, and swap adjacent chains (chain $1$ with $2$, $2$ with $3$, etc) periodically.
+Several good practices are outlined in Following \cite{earl2005parallel}.  In practice, we logarithmically spaced temperature between $0$ and an upper bound, and swap states of chains adjacent in temperature ($\alpha_1$ with $\alpha_2$, $\alpha_2$ with $\alpha_3$, etc) periodically.
 
 Replica exchange is relies on an inner MCMC algorithm to simulate the individual parallel chains.
 For finite dimensional contonuous models we use the No U-Turn Sampler \cite{hoffman2014no}, a variant of Hamiltonion Monte Carlo.

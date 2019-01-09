@@ -2,33 +2,24 @@
 
 \section{Introduction}
 
-% Outline: Conditioning is a general mechanism for expressing declarative knowledge, but so far it has been limited
-% - Conditioning allows you to specify what you know to be true without speifying how
-% - What is specified using predicates.
-% - Dont need to specify how to change generative 
 Conditioning in Bayesian inference incorporates observed data into a model.
-In a broader sense, conditioning is a mechanism to assert predicates -- which may be true or false -- as true.
-An observation is a particular kind of predicate that asserts that a variable is equal to data.
-In principle, a predicate can express various kinds of knowledge that need not correspond to the observation of data.
+In a broader sense, conditioning is a mechanism to revise a model such that a yes/no question (a predicate) becomes a true proposition (a fact).
+Observations are by far the most common form of predicate, but in principle a predicate declare any proposition about a domain.
 In practice, conditioning on most predicates presents severe challenges to existing inference procedures.
 
-
-Predicates can express conditions directly on latent variables, rather than observables.
+Predicates can express domain knowledge by constraining latent variables.
 For example, in inverse graphics \cite{kulkarni2015deep} (inferring three dimensional geometry from observed images) the statement ``rigid bodies do not intersect'' is not an observation of data, but is expressible as a predicate.
-Conditioning the distribution over latent geometry on this predicate concentrates probability mass on smaller set of hypotheses, ultimately yielding more accurate posterior inferences.
+Conditioning a model on this predicate would concentrate probability mass on smaller set of possible latent geometric configurations, ultimately yielding more accurate posterior inferences in the inverse graphics problem.
 
 Predicates can also express observations that are more abstract than variables in a model.
 In diabetes research for example, probabilistic models have been used to relate physiological factors to glucose levels over time \citep{levine2017offline,murata2004probabilistic}.
 Rather than concrete, numerical glucose measurements, a medical practitioner may observe (or be told) that a patient suffers from recurrent hypoglycemia, i.e., that their glucose levels periodically fall below a critical value.
-Even if the occurrence of hypoglycemia does not as explicit variable in the model, it can be constructed as a predicate on glucose level variables, and conditioned on to infer the posterior distribution over latent physiological factors.
+Even if the occurrence of hypoglycemia does not appear as an explicit variable in the model, it could be constructed as a predicate on glucose levels, and conditioned on to infer the posterior distribution over latent physiological factors.
 
 
 % ``glucose curves are similar across patients''.	
 
 % It is difficult to define priors of latent geometry that satisfies non-intersection constructively.
-
-
-
 % A scientist could define a generative model that captures prior knowledge of how glucose levels evolve over time -- for example, the model may use latent variables to identify when a person eats and the glycemic loads a person consumes, and encode physiological knowledge of how those meals will affect glucose levels.
 % The scientist could also condition the model on observations of glucose measurements of a given patient and use existing inference algorithms to sample from the posterior distributions over latent variables.
 % However, there are various pieces of declarative knowledge the scientist may possess which are difficult or impossible to encode in this form.
@@ -106,26 +97,27 @@ Even if the occurrence of hypoglycemia does not as explicit variable in the mode
 % and are largely unsupported by current methods of inference
 Several effective sampling  \citep{andrieu2003introduction} and variational  \citep{jordan1999introduction, ranganath2014black} approaches to inference require only a black-box likelihood function, i.e., one evaluable on arbitrary input.
 The likelhood function quantifies the extent to which values of latent variables are consistent with observations. 
-However, models conditioned on predicates tend to have likelihood functions that are intractable to compute or incompatible with most inference methods.
-For example, conditioning random variables that do not explicitly appear in the data generating process (e.g., the product of variables) can result in likelihoods that are normalized by intractable integrals.	
+However, most models conditioned on most predicates have likelihood functions that are intractable to compute or unknown.
+For example, conditioning random variables that are deterministic transformations of other random variables (e.g., the presence of hypoglycemia in the example above, or the sum of variables in a X model) often results in likelihoods that are normalized by intractable integrals.	
 % For example, given three variables, it is possible to condition on the sum
 % of the variables being positive; this sum is never an explicit random variable.
-In many cases, especially in simulation based models, the likelihood function is implicit and hence unavailable even when the condition is a conventional observation.
+In other cases, the likelihood function is implicit to a generative process, rather than explicitly specified, and hence unavailable even when the condition is a conventional observation.
 
 In this paper we present \emph{predicate exchange}:
-a method to sample from distributions conditioned on predicates from a broad class.
+a likelihood-free method to sample from distributions conditioned on predicates from a broad class.
 It is composed of two parts:
 \begin{enumerate}
 \item \textbf{Predicate Relaxation} transforms a probabilistic model such that predicates it is conditioned on take values in the unit interval $[0, 1]$ rather than $\{0, 1\}$.
-\item  \textbf{Replica Exchange} simulates several Markov chains  conditioned on predicates relaxed to different degrees in parallel, and in doing so is able to draw exact samples. 
+\item  \textbf{Replica Exchange} simulates several Markov chains of models conditioned on predicates relaxed to different strengths, and in doing so is able to draw exact samples from the unrelaxed model. 
 \end{enumerate}
 
 Predicate relaxation meets two desiderata.
-First, values in $[0, 1]$ denote a degree to which the predicate is satisfied.
-This allows a soft predicate to serve as an approximate likelihood, and opens up the use of likelihood-based inference procedures.
-Second, values in $[0, 1]$ form a complete Boolean algebra, composed of conjunction, disjunction and negation.
-This is crucial because knowledge often has a Boolean structure.
-We may know that a proposition is not true, that two propositions simultaneously hold, or that one implies the other.
+First, the value in $[0, 1]$ that a relaxed predicate takes denotes the degree to which it is satisfied.
+In other words, a soft predicate quantifies the extent to which values of latent variables are consistent with the predicate.
+This allows it to serve a role similar to a likelihood function, and opens up the use of likelihood-based inference procedures for a form of approximate posterior inference.
+Second, relaxed predicates form a complete Boolean algebra, composed of conjunction, disjunction and negation.
+This is crucial because domain knowledge often has a composite Boolean structure.
+Continuing the previous example, we may know that a person does \emph{not} have hypoglycemia, or that they have hypoglycemia \emph{or} hyperglycemia, or neither.
 % Few likelihood-based likelihood-free approaches to inference offer effective means to condition non-trivial models on compound predicates.
 
 % This degree to which a is is determined by a notion of distance.
@@ -133,38 +125,24 @@ We may know that a proposition is not true, that two propositions simultaneously
 Predicate relaxation is modulated by temperature such that at zero temperature the relaxed predicate mirrors its hard counter-part, while at maximal temperatures, it is virtually always satisfied.
 Predicate Exchange simulates several Markov chains in parallel at different temperatures.
 
-For implementation we take two approaches.
-For completeness, we define predicate relaxation as graph transformation to a form of graphical model. 
-In addition, to allow predicate exchange to be incorporated into different modeling formalisms and frameworks, mirroring  \cite{wingate2011lightweight}, we provide a light-weight implementation that implements predicate exchange by modulating the execution of stochastic simulation based model. 
+Predicate exchange is a response to probabilistic programming languages, which have vastly expanded the class of probabilistic models that can be expressed, but have largely not advanced the the kinds of predicates that can be conditioned in practice.
+Predicate exchange requires a model transformation;
+rather than introduce a new language or mdoeling formalism, we mirror   \cite{wingate2011lightweight} and provide a light-weight implementation that modulates the execution of stochastic simulation based model.
+In practice, this means predicate exchange is easily incorporated into most modeling formalisms and frameworks. 
 
 Our approach comes with certain limitations.
-Predicates which indicate sets of zero measure -- typically equalities on continuous variables -- are problematic because X.
-In these cases PE samples at a temperature strictly greater than zero.
+Predicates which indicate sets of zero measure -- typically due to equalities on continuous variables -- are problematic because .
+In these cases predicate exchange must sample at a minimum temperature strictly greater than zero.
 These samples are approximate.
-
-% zero. However, mixing may be slow since condition on general predicates
-% encodes the class of decision problems.
-% Hard valued predicates do not have scaling issues as they are either zero or one valued, but soft valued predicates can have issues. Our procedure
-% to convert from hard valued predicates to soft valued ones
-% tries to ensure that each predicate gets satisfied with equal
-% probability at a fixed temperature. This equal weighting 
-% avoids bias for one predicate or another due to the choice of sampling.
-
-% We build our inference algorithm into a system.
-% \emph{Omega} provides an to define a generative model and declare
-% predicates about it. Given these definitions, \emph{Omega} automatically
-% performs inference using our soften-contraint replica exchange algorithm.
-% We test \emph{Omega} on a simulated example with truncated Gaussians,
-% an object rendering model, a physiological model, and xxx 
 
 In summary we address the problem of conditioning probabilistic models on predicates as a means to express declarative knowledge.
 In detail, we:
 
 \begin{enumerate}
-	\item Formalize simulation based probabilistic models in measure theoretic probability, and conditioning as the imposition of constraints (section \ref{simmodels}).
-	\item Present an algorithm based on replica-exchange Markov Chain Monte Carlo (section \ref{}) which draws exact samples for positive measure predicates. 
-	\item Formalize predicate relaxation as a transformation to the syntax   the syntax and semantics of a minimal statistical language 
-	\item Implement these concepts in system for building models, predicates, and doing inference.
+	\item Formalize simulation based probabilistic models in measure theoretic probability, and conditioning as the imposition of constraints expressed as predicates (Section \ref{simmodels}).
+	\item Define predicate relaxation criteria (Section \ref{predexchange}) and a logic for relaxed predicates.
+	\item Present an algorithm based on replica-exchange Markov Chain Monte Carlo (Section \ref{replicaexchange}) which draws exact samples for positive measure predicates. 
+	\item Provide a light-weight implementation of predicate exchange (Section \ref{implement}) through nonstandard execution of a simulation based model.
 	\item Evaluate our approach on representative examples, and demonstrate case studies including enriching medical models with limited data.
 \end{enumerate}
 

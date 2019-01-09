@@ -2,15 +2,15 @@
 
 \section{Simulation Models}\label{simmodels}
 
-Simulation models are functions which map parameters and random variables to outputs.
-Random variables and parameters both represent unknown quantities.
-The sole difference is that uncertainty of a random variable is quantified as a probability distribution.
+Simulation models are functions which map parameters and random variables to outputs, where parameters are considered unknown inputs and uncertainty of a random variable is quantified as a probability distribution.
 Given values for parameters, a simulation model can be stochastically executed, where random number generators are used to sample from primitive random variables in the model.
 
-The power of the simulation based approach the flexibility allowed in the mapping.
-A simulator is well-modeled as a random variable.
-This allows a simulation based model to model the generative process that models the data, using random variables for noise variables and quantities that are unknown.  The density function of the resulting model, if it exists, is not explicitly represented, but rather implicitly defined.
+Simuation based models are useful when knowledge.
+The density function of the resulting model, if it exists, is not explicitly represented, but rather implicitly defined.
 For this reason simulator models are often called implicit or generative models.
+
+Simulation based models are random variables and hence are rigorously formalized within measure theoretic probability.
+
 
 
 % Physics is rife with problems which benefit from both declarative and generative knowledge.
@@ -52,8 +52,6 @@ For this reason simulator models are often called implicit or generative models.
 	\label{fig:nointersect}
 \end{figure}
 
-
-Simulation based models are random variables and hence are rigorously formalized within measure theoretic probability.
 
 \paragraph{Random Variables.} Probability models lie on top of probability
 spaces. A probability space is a measure space $(\Omega, {\cal H}, {\cal P})$,
