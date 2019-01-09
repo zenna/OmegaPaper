@@ -90,10 +90,10 @@ functions of them. Example predicates include
 comparisons $X_i < X_j$, transformations $\exp(X_i) > 2$, and restrictions $X_i < 0$.
 Given
 a model $\cM$  with probability space $(\Omega, {\cal H}, {\cal P})$ and
-random variables $X_1,\dots, X_n$ with predicate $d(X_1, \dots, X_n) \in \{0, 1\}$,
+random variables $X_1,\dots, X_n$ with predicate $\lk(X_1, \dots, X_n) \in \{0, 1\}$,
 we can build a new model by restricting the probability space to the subset of
 $\Omega$ that make the predicate true (takes value 1). This model
-is defined exactly as above.  Let $A = \{\omega : d(X_1(\omega), \dots, X_n(\omega)) = 1\}$,
+is defined exactly as above.  Let $A = \{\omega : \lk(X_1(\omega), \dots, X_n(\omega)) = 1\}$,
 then $\cM^*$ has probability space
 \begin{align*}
 	(\Omega \cap A, \{A \cap B, B \in {\cal H} \}, {\cal P} / {\cal P}(A)),

@@ -151,7 +151,7 @@ x \dsoft{<} y &= (k_\alpha(\rho(y, [x, \infty])), k_\alpha(\rho(y, [-\infty, x])
 
 
 \subsection{Approximate Markov Chain Monte Carlo}
-A relaxed predicate can serve as an approximate likelihood in likelihood based inference methods such as Markov Chain Monte Carlo.
+A relaxed predicate can serve as an approximate likelihood, and as a result is amenable to likelihood based inference methods such as Markov Chain Monte Carlo.
 MCMC algorithms require a function $f$ that is proportional to the the target density.
 In Bayesian inference this is the posterior, dictated by Bayes' theorem as the product of the likelihood and the prior.
 Approximate inference using relaxed predicates takes a similar form.
@@ -161,22 +161,21 @@ Let $\cM$ be a model, $Y$ be a predicate that conditions $\cM$, and $\soft{Y}$ b
 % given values for exogenous variables, the values of endogenous are determined.
 % For example $X = \mathcal{N}(0,1)$ is exogenous while $Y = X^2$ is endogenous.
 % Inference need only take place on exogenous random variables.
-Both $Y$ and $\soft{Y}$ are random variables, and hence map from the sample space $\Omega$.
-For convenience we define a soft predicate $u$ as a function of its parameters (other random variables in the model) rather than the sample space.
-That is, let $\soft{Y}(\omega) = y(X_1, ..., x_n)$ be factored into $u$
+Both $Y$ and $\soft{Y}$ are random variables, and hence map from the sample space $\Omega$;
+for convenience we define a soft predicate $\lk$ as a function of its parameters (other random variables in the model) rather than the sample space.
+That is, let $\soft{Y}(\omega) = \lk(X_1(\omega), ..., X_n(\omega))$, where $X_i \in \cM$.
 Assuming a prior density $p$, the approximate posterior $f$ is the product:
 \begin{equation}
-f(m) = p(m) \cdot u(m)
+f(m) = p(m) \cdot \lk(m)
 \end{equation}
-$u$ down weights parameter values which violate $Y$ by the degree to which they violate it. 
-This is modulated by temperature.
-At maximum temperature $u$ has no effect, and the approximate posterior $f$ is equal to the prior.
-zero temperature $f$ recovers true posterior exactly, since parameter values which violate the condition are given zero weight.
+$\lk$ down weights parameter values which violate $Y$ by the degree to which they violate it. 
+This is modulated by temperature $\alpha$ used in the relaxation kernels which constitute $\lk$.
+At maximum temperature $\lk$ has no effect, and the approximate posterior $f$ is equal to the prior $p$.
+Zero temperature $f$ recovers true posterior exactly, since parameter values which violate the condition are given zero weight.
 
 For illustration, let $\cM = (\mu, X_1, X_2)$ be a model where $\mu = \mathcal{N}(0, 1), Y = \mathcal{N}(\mu, 1)$, $X_2 = X_1^2$ and $\cM$ be conditioned on $X_2 = 1$.
-Since $X_2$ is a deterministic function of $X$ (i) and (ii) we can exclude it for inference.
+Since $X_2$ is a deterministic function of $X$, we can exclude it for inference.
 The approximate posterior is shown at different temperatures in Figure \ref{temppost} and defined as:
-
 \begin{equation}\label{approxposterior}
 f(x, y) = \mathcal{N}_{0,1}(x) \cdot \mathcal{N}_{0,1}(y) \cdot k(x + y, 0) 
 \end{equation}
@@ -195,25 +194,24 @@ Too high and $\soft{Y}$ will diverge too greatly from $Y$   . Too low and conver
 % Several temperatre methods for controlling temperature exist such as simulated annealing \citep{kirkpatrick1983optimization} and Adiabatic Monte Carlo \citep{betancourt2014adiabatic}.
 Replica exchange (also known as parallel tempering) \citep{swendsen1986replica} combines information from several chains to more  effectively sample from the zero temperature chain.
 
-In a replica exchange, we simulate $M$ replicas at different temperatures, and periodically swap the temperatures of chains according to a predefined schedule.
-Replica exchange uses a Metroplis-Hastings update to swap between changes while preserving the target distribution.
-
+In a replica exchange, we simulate $M$ replicas at different temperatures, and uses a Metroplis-Hastings update to  periodically swap the temperatures of chains according to a predefined schedule.
 Assuming w.l.g that there are have two independent, parallel chains with targets $f(x)$, $g(y)$ and hence joint target $\pi(x,y)=f(x)g(y)$.
-Replica exchange exchanges states between the two chains while preserving the joint target.
+Replica exchange swaps states between the two chains while preserving the joint target.
 That is, we propose a swap of $x$ and $y$: to move from $(x, y)$ to $(x^\star,y^\star)$, where $x^\star=y$ and $y^\star=x$.
 The swap is accepted with probability $\min(1, A)$ where:
 \begin{equation}
 A = \frac{\pi(x^\star,y^\star)}{\pi(x,y)} = \frac{\pi(y,x)}{\pi(x,y)} = \frac{f(y)g(x)}{f(x)g(y)}.
 \end{equation}
 
-In predicate exchange, $f$ and $g$ correspond to two approximate posteriors (Equation \ref{approxposterior}) at different temperatures.
 Swapping states is equivalent to swapping predicates, which motivates the name predicate exchange.
 
 Replica exchange has a number of hyper-parameters: the number of parallel chains, the corresponding temperatures, the swapping schedule.
-Several good practices are outlined in Following \cite{earl2005parallel}.  In practice, we logarithmically spaced temperature between $0$ and an upper bound, and swap states of chains adjacent in temperature ($\alpha_1$ with $\alpha_2$, $\alpha_2$ with $\alpha_3$, etc) periodically.
+Several good practices are outlined in Following \cite{earl2005parallel}.  In practice, we logarithmically spaced temperature between $0$ and an upper bound, and swap states of chains that are adjacent in temperature ($\alpha_1$ with $\alpha_2$, $\alpha_2$ with $\alpha_3$, etc) periodically.
 
-Replica exchange is relies on an inner MCMC algorithm to simulate the individual parallel chains.
+Replica exchange relies on an inner algorithm to perform MCMC within each individual parallel chains.
 For finite dimensional contonuous models we use the No U-Turn Sampler \cite{hoffman2014no}, a variant of Hamiltonion Monte Carlo.
+% For other models we use.
+Both are elaborated on in the implementation section.
 
 
 

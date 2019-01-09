@@ -72,94 +72,92 @@
 
 In this section we describe a generic, lightweight implementation of predicate exchange.
 Our approach closely mirrors \citep{wingate2011lightweight, milch20071} in the sense that it provides a language independent layer that can be implemented on top of existing programming languages and modeling formalisms.
-Our objective is to twofold: (i) to compute the prior term $p$, approximate likelihood term $\soft{y}$, and approximate posterior term $f$ (Equation \ref{approxposterior}) from an arbitrary program $\pi$, and (ii) to perform Replica Exchange MCMC to sample from this posterior.
+Our objective is to twofold: (i) to compute the prior term $p$, approximate likelihood term $\lk$, and approximate posterior term $f$ (Equation \ref{approxposterior}) from an arbitrary program $\pi$, and (ii) to perform Replica Exchange MCMC to sample from this posterior.
 
 A program $\pi$ can be an arbitrary composition of deterministic and stochastic procedures, but all stochastic elements must come from a set of known \emph{elementary random primitives}, or ERPs.
 ERPs correspond to primitive parametric distribution families, such as the uniform or normal distribution.
 Let $\mathcal{T}$ be a set of ERP types.
-Each type $\tau \in \mathcal{T}$ must support two operators (i) evaluation of $p_\tau(x \mid \theta_1, ... \theta_n$: the conditional probability of $x$ as a function of its parameters, and (ii) sampling from the distribution.
-
-The prior term $p$ is product of independent random choices in the program. 
-That is, let $\pi_{k \mid x_1, ..., x_{k-1}}$ be the k'th ERP encountered in while executing $\pi$, $x_k$ be the value it takes, and $x$ denote the set of all values of all ERPs constructed in the simulation of $\pi$.
-The probability $p(x)$ is the product:
-\begin{equation}
-p(x) = \prod_{k=1}^K p_\tau(x_k \mid \theta_1... \theta_n )
-\end{equation}
-Crucially, the parameters $\theta_1,..,\theta_n$ for each random variable may be fixed values or depend on values of other random variables in the $\pi$.
-
-\subsection{Soft Execution}
-Predicate relaxation is performed through a kind of nonstandard execution of a program.
-We assume $\pi$ is conditioned using a special command $\cond(y)$, where $y \in \{0,1\}$ is a Boolean value.
-$y$ corresponds to the output of the predicate $Y$ that $\pi$ is conditioned on.
-
-The objective of soft execution (Algorithm \ref{alg:softexecute}) is to replace  $y \in \{0,1\}$ with $\soft{y} \in [0, 1]$.
-To achieve this, we redefine the semantics of a number of key statements
+Each type $\tau \in \mathcal{T}$ must support (i) evaluation of $p_\tau(x \mid \theta_1, ..., \theta_n)$: the conditional probability of $x$ as a function of its parameters, and (ii) sampling from the distribution.
+Concretely, a conditioned program $\pi$ is a any program that includes:
 
 \begin{enumerate}
-  \item $\textrm{rand}(\tau, n, \theta_1, ...\theta_n)$: In the normal execution of $\pi$, this would simply yield a value sampled from the distribution.  However
-  \item $a \text{ op } b$ for $\textrm{op} \in \{>, <, =, \land, \lor\}$ is replaced with the softened counter-parts $\soft{op} \in \{\soft{>}, \soft{<}, \soft{=}, \soft{\land}, \soft{\lor}\}$
-  \item $\cond(x)$
+  \item $\textrm{rand}(\tau, n, \theta_1, ...\theta_n)$ returns a random sample from $p_\tau(x \mid \theta_1, ..., \theta_n)$.
+  \item $\cond(y)$ throws an error if $y \in \{0, 1\}$ is 0, and otherwise allows simulation to resume with no effect.
 \end{enumerate}
 
-output types of ERPs as nonstandard.
-For example, if $t$ is a real-valued ERP, rather than return a value $\mathbb{R}$, it will return a tagged value $x' \in \mathbb{R}'$.
-
-Most elementary operations on tagged values mirror their untagged counterparts.
-For example if $x', y' \in \mathbb{R}'$ and $x, y$ denote the real numbers then $x'+ y' = (x + y)'$.
-Boolean operators, on the other hand, are replaced with the softened counterpart given in Figure \ref{softw}.
-For example $x' = y'$ is defined as $x \soft{=} y$.
 
 
-\subsection{Inference}
+\subsection{Tracked Soft Execution}
+The prior term $p$ is computed automatically as the product of independent random choices in the program. 
+That is, let $\pi_{k \mid x_1, ..., x_{k-1}}$ be the k'th ERP encountered in while executing $\pi$, $x_k$ be the value it takes, and $x$ denote the set of all values of all ERPs constructed in the simulation of $\pi$.
+The probability $p(x)$ is the product:
+\begin{equation}\label{productprob}
+p(x) = \prod_{k=1}^K p_\tau(x_k \mid \theta_1,..., \theta_n )
+\end{equation}
+Crucially, the parameters $\theta_1,..,\theta_n$ for each random variable may be fixed values or depend on values of other random variables in $\pi$.
 
-To perform inference we control the output values of elementary random primitives.
-Let $\mathbb{D}$ denote a database of ERP values, i.e., a mapping $\mathbb{N } \to $ from ERP to the values they take. 
-
-In the context of a particular, fully instantiated database.
+Predicate exchange relies on $\textrm{softexecute}$
+(Algorithm \ref{alg:softexecute}), which formalizes the soft execution of a program $\pi$ at temperature $\alpha$, in the context of dictionary $\mathbb{D}$.
+A dictionary $\mathbb{D}$ is a mutable mapping from a set of names to values.
+In the context of a particular dictionary, the simulation of a program is deterministic.
 This allows the simulation of $\pi$ to be modulated by controlling the elements of $\mathbb{D}$.
+Concretely, $\textrm{softexecute}$ simulates $\pi$ but redefines the definition of several operators, with $\lk_\pi$ and $p_\pi$ in global scope and both initialized at $1$:
 
-Predicate exchange is carried out through two $\textrm{softexecute}$.
-The procedure $\textrm{softexecute}$ (Algorithm \ref{alg:softexecute}) formalizes the soft execution of a program $\pi$ at temperature $\alpha$, in the context of database $\mathbb{D}$.
-It returns a single value corresponding to the approximate posterior.
-To compute $f$, at every invocation of an elementary random primitive, it computes the conditional density $p_\tau(x \mid \theta)$, where $x$ is either samples from the distribution or drawn from the database $\mathbb{D}$
+\begin{enumerate}
+  \item $\textrm{rand}(\tau, n, \theta_1, ...\theta_n)$ returns $\mathbb{D}(n)$ if exists, otherwise samples from $p_\tau(x \mid \theta_1, ..., \theta_n)$ and updates $\mathbb{D}(n)$ with this value.  Also, in compliance with Equation \ref{productprob}, $p_\pi$ is updated with conditional density. 
+  \item $a \text{ op } b$ and $\textrm{op } a$ for $\textrm{op} \in \{>, <, =, \land, \lor, \neg\}$ are replaced with the softened counter-parts $\soft{\textrm{ op }} \in \{\soft{>}, \soft{<}, \soft{=}, \soft{\land}, \soft{\lor}, \soft{\neg}\}$.
+  \item $\cond(y)$ updates $\lk_\pi$ with $\lk_\pi \land y$ where $y \in [0,1]$ due to soft primitive operators.  
+\end{enumerate}
+
+The return value is a real value denoting the approximate posterior $f$, which are a function of the dictionary $\mathbb{D}$.
 
 \begin{algorithm}[tb]
   \caption{Soft Execution: $\textrm{softexecute}(\pi, \alpha, \mathbb{D})$}
   \label{alg:softexecute}
 \begin{algorithmic}
-\STATE {\bfseries Input:} program $\pi$, temperature $\alpha$, database $\mathbb{D}$
-\STATE Initialize $\soft{y} = 1, p = 1$
+\STATE {\bfseries Input:} program $\pi$, temperature $\alpha$, dictionary $\mathbb{D}$
+\STATE Initialize $\lk_\pi = 1, p_\pi = 1$
 \STATE Simulate $\pi$, intercept statements any statement $s$, wbere:   
 \IF{$s = \textrm{rand}(\tau, n, \theta_1, ..., \theta_n)$}
  \IF{$n \in \mathbb{D}$}
    \STATE $x = \mathbb{D}(n)$
  \ELSE
-   \STATE $x = $ sample from $p_\tau(\mid \theta_1, ..., \theta_n)$
-   \STATE Update database: $\mathbb{D}(n) = x$
+   \STATE $x = $ sample from $p_\tau(x \mid \theta_1, ..., \theta_n)$
+   \STATE Update dictionary: $\mathbb{D}(n) = x$
  \ENDIF
- \STATE $p = p \cdot p_\tau(x \mid \theta_1, ..., \theta_m)$
- \ELSIF{$s = \cond(y)$}
-   \STATE $\soft{y} = \soft{y} \cdot y$
+ \STATE $p_\pi = p_\pi \cdot p_\tau(x \mid \theta_1, ..., \theta_m)$
+ \ELSIF{$s = \cond(\lk')$}
+   \STATE $\lk_\pi = \lk_\pi \cdot \lk_\pi'$
  \ENDIF
-\STATE {\bfseries Return:} $p \cdot \soft{y}$
+\STATE {\bfseries Return:} $p_\pi \cdot \lk_\pi$
 %    \ENDFOR
 %    \UNTIL{$noChange$ is $true$}
 \end{algorithmic}
 \end{algorithm}
 
+\subsection{Replica Exchange}
+
+Predicate exchange (Algorithm \ref{alg:predexchange}) performs replica exchange using $\textrm{softexectute}$ as an approximate posterior.
+It takes as input an mcmc algorithm, which is expected to return a sequence of dictionaries which capture the Markov Chain.
+We assume a dictionary contains all the information of latent variables of interest, either explicitly or derivable with the simulator $\pi$. 
+
+For finite dimensional continuous models we use the No U-Turn Sampler \cite{hoffman2014no} -- a variant of Hamiltonion Monte Carlo -- as the within-chain MCMC procedure. 
+% For other models we use.
+Both are elaborated on in the implementation section.
 
 \begin{algorithm}[tb]
   \caption{Predicate Exchange}
   \label{alg:predexchange}
 \begin{algorithmic}
 \STATE {\bfseries Input:} program $\pi$, temperatures $\alpha_1, ...,\alpha_m$, nsamples $n$
-\STATE Initialize $\mathcal{D} = $ empty collection of databases
-\STATE Initialize $\mathbb{D}_1,...,\mathbb{D}_m$ empty databases
+\STATE {\bfseries Input:} mcmc, $q$ number within samples
+\STATE Initialize $\mathcal{D} = $ empty collection of dictionarys
+\STATE Initialize $\mathbb{D}_1,...,\mathbb{D}_m$ empty dictionarys
 \REPEAT
   \FOR{$i=1$ {\bfseries to} $m$}
     \STATE { $\mathbb{D}_1,...,\mathbb{D}_q = $ draw $q$ mcmc samples at temp $\alpha_i$}
     \IF {i = 1}
-      \STATE append $x$ to $x_0$
+      \STATE append $\mathbb{D}_1,...,\mathbb{D}_m$ to $\mathcal{D}$
     \ENDIF
   \ENDFOR
   \FOR{$i = m$ {\bfseries to} $2$}
