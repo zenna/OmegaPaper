@@ -8,7 +8,7 @@ using FileIO
 
 len(rng) = maximum(rng) - minimum(rng)
 
-function apprxpost(p, u, f;
+function apprxpost(p, u, f = (μ, x) -> p(μ, x) * u(μ, x);
                    x = 0:0.001:1,
                    y = 0:0.001:1,
                    αs = [1, 100, 100000],
@@ -38,16 +38,24 @@ function apprxpost(p, u, f;
 end
 
 setsize!(scene, width, height) = push!(scene.px_area, HyperRectangle(0, 0, width, height))
-
+viz(plots) = hbox([vbox(plts...) for plts in plots]...)
 
 ## Normal Normal
 function nn()
-  viz(plots) = hbox([vbox(plts...) for plts in plots]...)
-
   p(μ, x) = pdf(Beta(3, 4), μ) * pdf(Normal(μ), x)
   u(μ, x) = err(x ==ₛ 0.5)
   f(μ, x) = p(μ, x) * u(μ, x)
-  viz(apprxpost(p, u, f))
+  scene = viz(apprxpost(p, u, f))
+  setsize!(scene, 1000, 1000)
+  scene
+end
+
+function nn2()
+  p(μ, x) = pdf(Normal(0, 1), μ) * pdf(Normal(0, 1), x)
+  u(μ, x) = err(x ==ₛ μ)
+  scene = viz(apprxpost(p, u))
+  setsize!(scene, 1000, 1000)
+  scene
 end
 
 ## Spiky

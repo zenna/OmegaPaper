@@ -2,23 +2,18 @@
 
 \section{Simulation Models}\label{simmodels}
 
-Simulation models are functions which map parameters and random variables to outputs, where parameters are considered unknown inputs and uncertainty of a random variable is quantified as a probability distribution.
-Given values for parameters, a simulation model can be stochastically executed, where random number generators are used to sample from primitive random variables in the model.
 
-Simuation based models are useful when knowledge.
-The density function of the resulting model, if it exists, is not explicitly represented, but rather implicitly defined.
-For this reason simulator models are often called implicit or generative models.
-
-Simulation based models are random variables and hence are rigorously formalized within measure theoretic probability.
+% The density function of the resulting model, if it exists, is not explicitly represented, but rather implicitly defined.
+% For this reason simulator models are often called implicit or generative models.
 
 
 
-% Physics is rife with problems which benefit from both declarative and generative knowledge.
-% For example, inferring 3D structure from 2D measurements requires prior beliefs about 3D geometry.
-% Encoding knowledge about the world such as `rigid objects do not intersect' would bring our prior closer to reality and help make better inferences.  One way to encode this knowledge
-% would be to try to construct a family of distributions such that the objects never get placed in overlapping places. However, this approach requires careful manipulation of the prior.
-% If the prior is highly parameterized (such as a deep neural network) there is no mechanism for constructively encoding this knowledge into the prior.
-% In figure \ref{fig:nointersect} we show how with the appropriate language support and inference algorithms, this knowledge can be conditioned on directly.
+Probabilistic simulation based models specify the step-by-step causal mechanisms of a domain, and use probability distributions for any uncertain parameters.
+A simulation model can be stochastically executed, using a random number generator to sample from primitive random variables in the model.
+Inference means to simulate the model while imposing constraints on variables in the model.
+This is difficult, since simulation based models lack an explicit likelihood function, which is a necessary component for most inference procedures.
+
+Simulation based models are random variables in measure theoretic probability:
 
 \begin{figure}
 	\centering
@@ -63,8 +58,6 @@ that maps from $\Omega \to \mathbb{R}$. If the underlying probability space is u
 this function is the inverse cumulative distribution function of the normal.
 
 A \emph{model} $\cM$ is a collection of random variables along with a probability space.
-For example, a probabilistic
-graphical model defines a group of random variables via their conditional independencies.
 To fully specify a model, we need both the measure space and the
 collection of random variables on which it acts.
 
@@ -73,16 +66,14 @@ Conditioning a model
 creates a new model. As a simple example consider a model $\cM$ with two
 random variables $X_1$ and $X_2$ that both take real values. Conditioning
 $\cM$ on $X_1 = 1$, defines a new model based on limiting the measure space
-$\Omega$ to only the set $A = \{ \omega : X_1(\omega) = 1\}$.
-The new model $\cM^*$ can be defined with probability space
+$\Omega$ to the set $A = \{ \omega : X_1(\omega) = 1\}$.
+The new model $\cM_{|A}$ can be defined with probability space
 \begin{align*}
 	(\Omega \cap A, \{A \cap B, B \in {\cal H} \}, {\cal P} / {\cal P}(A))
 \end{align*}
-with the same random variables $X_1$ and $X_2$.\footnote{We defer issues of
-	conditioning on events of measure zero.} Sampling from $M^*$ produces
-samples only where $X_1 = 1$ thereby producing a model that respects the
-knowledge that $X_1 = 1$. Note, the new probability measure comes
-from the conditional probability measure.
+with the same random variables $X_1$ and $X_2$.
+Sampling from $\cM_{|A}$ produces
+samples only where $X_1 = 1$
 
 More generally, conditioning on any predicate defines a new model. These
 predicates can include comparisons between random variables and general
@@ -93,18 +84,9 @@ a model $\cM$  with probability space $(\Omega, {\cal H}, {\cal P})$ and
 random variables $X_1,\dots, X_n$ with predicate $\lk(X_1, \dots, X_n) \in \{0, 1\}$,
 we can build a new model by restricting the probability space to the subset of
 $\Omega$ that make the predicate true (takes value 1). This model
-is defined exactly as above.  Let $A = \{\omega : \lk(X_1(\omega), \dots, X_n(\omega)) = 1\}$,
-then $\cM^*$ has probability space
-\begin{align*}
-	(\Omega \cap A, \{A \cap B, B \in {\cal H} \}, {\cal P} / {\cal P}(A)),
-\end{align*}
-where the random variables $X_1,...X_n$ remain unchanged. Sampling from
-the model $M^*$ generates $X_1, ..., X_n$ where the predicate $d$ is true.
-Thus, conditioning on a predicate creates a new model with the same
-random variables that enforces the predicate's truth
-without having to redefine random variables. In this sense conditioning
-creates new models that respect knowledge (e.g. objects in a 3D render
-can't intersect) without having to alter or understand the random variables (rendering functions).
+is defined exactly as above, where $A = \{\omega : \lk(X_1(\omega), \dots, X_n(\omega)) = 1\}$,
+
+Sampling from the model $M^*$ generates $X_1, ..., X_n$ where the predicate $\lk	$ is true.
 
 The general construction of new models might require conditioning
 on sets of measure zero. This process can be made rigorous
