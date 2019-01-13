@@ -77,7 +77,7 @@ Our objective is to twofold: (i) to compute the prior term $p$, approximate like
 A program $\pi$ can be an arbitrary composition of deterministic and stochastic procedures, but all stochastic elements must come from a set of known \emph{elementary random primitives}, or ERPs.
 ERPs correspond to primitive parametric distribution families, such as the uniform or normal distribution.
 Let $\mathcal{T}$ be a set of ERP types.
-Each type $\tau \in \mathcal{T}$ must support (i) evaluation of $p_\tau(x \mid \theta_1, ..., \theta_n)$: the conditional probability of $x$ as a function of its parameters, and (ii) sampling from the distribution.
+Each type $\tau \in \mathcal{T}$ must support (i) evaluation of the conditional density $p_\tau(x \mid \theta_1, ..., \theta_n)$, and (ii) sampling from the distribution.
 Concretely, a conditioned program $\pi$ is a any program that the statements:
 
 \begin{enumerate}
@@ -100,15 +100,15 @@ $\mathbb{D}$ is a mutable mapping from a set of names to values.
 In the context of a particular dictionary, the simulation of a program is deterministic.
 This allows the simulation of $\pi$ to be modulated by controlling the elements of $\mathbb{D}$.
 
-$\textrm{softexecute}$ simulates $\pi$ but within a context where (i) variables $\lk_\mathbb{D}$ and $p_\mathbb{D}$ are initialized the accumulate prior and approximate posterior, (ii) the following operators are redefined:
+$\textrm{softexecute}$ simulates $\pi$ but within a context where (i) variables $\lk_\mathbb{D}$ and $p_\mathbb{D}$ accumulate prior and approximate posterior values, and (ii) the following operators are redefined:
 
 \begin{enumerate}
-  \item $\textrm{rand}(\tau, n, \theta_1, ...\theta_n)$ returns $\mathbb{D}(n)$ if exists, otherwise samples from $p_\tau(x \mid \theta_1, ..., \theta_n)$ and updates $\mathbb{D}(n)$ with this value.  Also, in compliance with Equation \ref{productprob}, $p_\mathbb{D}$ is updated with conditional density. 
+  \item $\textrm{rand}(\tau, n, \theta_1, ...\theta_n)$ returns $\mathbb{D}(n)$, and in compliance with Equation \ref{productprob} updates $p_\mathbb{D}$ with the conditional density. If $n$ is not a key in $\mathbb{D}$, the the distribution is sampled from $\mathbb{D}(n)$ with this value.  
   \item $a \text{ op } b$ and $\textrm{op } a$ for $\textrm{op} \in \{>, <, =, \land, \lor, \neg\}$ are replaced with the softened counter-parts $\soft{\textrm{ op }} \in \{\soft{>}, \soft{<}, \soft{=}, \soft{\land}, \soft{\lor}, \soft{\neg}\}$.
   \item $\cond(y)$ updates $\lk_\mathbb{D}$ with $\lk_\mathbb{D} \land y$ where $y \in [0,1]$ due to soft primitive operators.  
 \end{enumerate}
 
-The return value of $\textrm{softexecute}$ is a approximate posterior $f$ as a function of the dictionary $\mathbb{D}$.
+$\textrm{softexecute}$ returns a real value for the approximate posterior of $f$ as a function of the dictionary $\mathbb{D}$.
 
 \paragraph{Control Flow}
 Talk about control flow
@@ -140,10 +140,16 @@ Talk about control flow
 \subsection{Replica Exchange}
 
 Predicate exchange (Algorithm \ref{alg:predexchange}) performs replica exchange using $\textrm{softexectute}$ as an approximate posterior.
-It takes as input an mcmc algorithm, which is expected to return a chain of dictionaries.
+It takes as input an mcmc algorithm, which simulates an Markov Chain by manipulating elements of the $\mathbb{D}$.
+In our experiments, for finite dimensional continuous models we use the No U-Turn Sampler \cite{hoffman2014no}, a variant of Hamiltonion Monte Carlo.
+
+For other models we use standard Metropolis Hastings by defining proposals on elements in the dictionary.
+
+
+is expected to return a chain of dictionaries.
 Each dictionary should contains all the information required to access values of variables of interest, either explicitly as values in the dictionary, or derivable with the simulator $\pi$. 
 
-For finite dimensional continuous models we use the No U-Turn Sampler \cite{hoffman2014no} -- a variant of Hamiltonion Monte Carlo -- as the within-chain MCMC procedure.  For other models we use standard Metropolis Hastings by defining proposals on elements in the dictionary.
+
 
 \begin{algorithm}[tb]
   \caption{Predicate Exchange}

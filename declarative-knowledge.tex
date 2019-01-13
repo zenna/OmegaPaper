@@ -11,9 +11,9 @@
 Probabilistic simulation based models specify the step-by-step causal mechanisms of a domain, and use probability distributions for any uncertain parameters.
 A simulation model can be stochastically executed, using a random number generator to sample from primitive random variables in the model.
 Inference means to simulate the model while imposing constraints on variables in the model.
-This is difficult, since simulation based models lack an explicit likelihood function, which is a necessary component for most inference procedures.
+This is difficult, since simulation based models lack an explicit likelihood function, which is necessary for most inference procedures.
 
-Simulation based models are random variables in measure theoretic probability:
+Conditioning on more general predicates requires a measure-theoretic foundation, in which a simulation model is a random variable:
 
 \begin{figure}
 	\centering
@@ -61,13 +61,14 @@ A \emph{model} $\cM$ is a collection of random variables along with a probabilit
 To fully specify a model, we need both the measure space and the
 collection of random variables on which it acts.
 
-\paragraph{Conditioning Creates New Models.}
-Conditioning a model
-creates a new model. As a simple example consider a model $\cM$ with two
+\paragraph{Conditioning}
+
+Conditioning a model creates a new model.
+As an example consider a model $\cM$ with two
 random variables $X_1$ and $X_2$ that both take real values. Conditioning
-$\cM$ on $X_1 = 1$, defines a new model based on limiting the measure space
+$\cM$ on $X_1 = 1$, defines a new model $\cM_{|A}$ based on limiting the measure space
 $\Omega$ to the set $A = \{ \omega : X_1(\omega) = 1\}$.
-The new model $\cM_{|A}$ can be defined with probability space
+The new model is defined on a new probability space
 \begin{align*}
 	(\Omega \cap A, \{A \cap B, B \in {\cal H} \}, {\cal P} / {\cal P}(A))
 \end{align*}
@@ -75,18 +76,12 @@ with the same random variables $X_1$ and $X_2$.
 Sampling from $\cM_{|A}$ produces
 samples only where $X_1 = 1$
 
-More generally, conditioning on any predicate defines a new model. These
-predicates can include comparisons between random variables and general
-functions of them. Example predicates include
-comparisons $X_i < X_j$, transformations $\exp(X_i) > 2$, and restrictions $X_i < 0$.
-Given
-a model $\cM$  with probability space $(\Omega, {\cal H}, {\cal P})$ and
-random variables $X_1,\dots, X_n$ with predicate $\lk(X_1, \dots, X_n) \in \{0, 1\}$,
-we can build a new model by restricting the probability space to the subset of
-$\Omega$ that make the predicate true (takes value 1). This model
-is defined exactly as above, where $A = \{\omega : \lk(X_1(\omega), \dots, X_n(\omega)) = 1\}$,
+More generally, conditioning on any predicate $Y(\omega) = \lk(X_1(\omega), \dots, X_n(\omega))$
+defines a new model defined exactly as above, where $A = \{\omega : \lk(X_1(\omega), \dots, X_n(\omega)) = 1\}$.
+This predicate may include a comparisonsuch as $X_i < X_j$, restrict deterministic function of variables in in the model such as $\exp(X_i) = 2$, or be a Boolean combination such as $(X_i < X_j) \lor \neg(\exp(X_i) = 2)$.
 
-Sampling from the model $M^*$ generates $X_1, ..., X_n$ where the predicate $\lk	$ is true.
+
+Sampling from $\cM_{|A}$ generates $x_1, ..., x_n$ where $\lk	$ is true.
 
 The general construction of new models might require conditioning
 on sets of measure zero. This process can be made rigorous

@@ -1,44 +1,45 @@
 \section{Predicate Exchange}
 To condition a model $\cM$ on a predicate $Y$ we develop Predicate Exchange, a likelihood-free inference procedure.  It is composed of two parts:
 \begin{enumerate}
-\item \textbf{Predicate Relaxation} constructs a relaxed predicate $\soft{Y}$ from $Y$. $\soft{Y}$ takes values in the unit interval $[0, 1]$ rather than $\{0, 1\}$.
-$\soft{Y}$ is 1 iff $Y$ is 1, but otherwise takes nonzero values denoting the degree to which $Y$ is satisfied.
+\item \textbf{Predicate Relaxation} constructs a relaxed predicate $\softv{Y}$ from $Y$. $\softv{Y}$ takes values in the unit interval $[0, 1]$ rather than $\{0, 1\}$.
+$\softv{Y}$ is 1 iff $Y$ is 1, but otherwise takes nonzero values denoting the degree to which $Y$ is satisfied.
 % The relaxation is parameterized by a temperature.
 % Predicate relaxation allows us to apply likelihood based MCMC inference procedures.
-\item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo procedure that exploits temperature. The strength by which $\soft{Y}$ relaxes $Y$ is modulated by a temperature parameter $\alpha$, which trades off between accuracy and ease of inference.  By simulating several replicas of $\soft{Y}$ at different temperatures, replica exchange is able to draw exact samples. 
+\item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo procedure that exploits temperature. The strength by which $\softv{Y}$ relaxes $Y$ is modulated by a temperature parameter $\alpha$, which trades off between accuracy and ease of inference.  By simulating several replicas of $\softv{Y}$ at different temperatures, replica exchange is able to draw exact samples. 
 \end{enumerate}
 
 \subsection{Predicate Relaxation}\label{predexchange}
 
-A relaxed predicate $\soft{Y}$ approximates $Y$ in the sense that when viewed as a likelihood function on model parameters, $\soft{Y}$ has a broader support, assigning nonzero weights to parameter values which have zero weight under $Y$.
+A relaxed predicate $\softv{Y}$ approximates $Y$ in the sense that when viewed as a likelihood function on model parameters, $\softv{Y}$ has a broader support, assigning nonzero weights to parameter values which have zero weight under $Y$.
 There are three desiderata which govern this approximation.
-First, $\soft{Y}$ should have a temperature parameter $\alpha$ that controls the fidelity of the approximation. In particular, $\soft{Y}$ should converge to $Y$ as $\alpha \to 0$, and to a flat surface as $\alpha \to \infty$. Second, the fidelity of the approximation should vary monotonically with temperature. Third, $\soft{Y}$ should be consistent with $Y$ on 1. That is $Y(\omega) = 1$ iff $\soft{Y}(\omega) = 1$ at all temperatures.  
+First, $\softv{Y}$ should have a temperature parameter $\alpha$ that controls the fidelity of the approximation. In particular, $\softv{Y}$ should converge to $Y$ as $\alpha \to 0$, and to a flat surface as $\alpha \to \infty$. Second, the fidelity of the approximation should vary monotonically with temperature. Third, $\softv{Y}$ should be consistent with $Y$ on 1. That is $Y(\omega) = 1$ iff $\softv{Y}(\omega) = 1$ at all temperatures.  
 
 
-% The family of approximations of the predicate $Y$ is parameterized through a temperature $\alpha$ that controls the smoothness of the approximation. In particular, $\soft{Y}$ with $\alpha \to 0$ converges to $Y$ itself while increasing values of $\alpha$ yield smoother approximations eventually giving a flat surface when $\alpha \to \infty$. Moreover, the set of conditional samples $C(Y) = \{ \omega \in \Omega \text{ } | \text{ } Y(\omega) = 1 \}$ are assigned a value of $1$ in $\soft{Y}$ for all temperatures. 
+% The family of approximations of the predicate $Y$ is parameterized through a temperature $\alpha$ that controls the smoothness of the approximation. In particular, $\softv{Y}$ with $\alpha \to 0$ converges to $Y$ itself while increasing values of $\alpha$ yield smoother approximations eventually giving a flat surface when $\alpha \to \infty$. Moreover, the set of conditional samples $C(Y) = \{ \omega \in \Omega \text{ } | \text{ } Y(\omega) = 1 \}$ are assigned a value of $1$ in $\softv{Y}$ for all temperatures. 
 
-% To construct a $\soft{Y}$ with such properties, we let $Y$ be the following predicate $a=b$ for standard Gaussians $a, b \sim \mathcal{N}(0, 1)$. We choose a distance
+% To construct a $\softv{Y}$ with such properties, we let $Y$ be the following predicate $a=b$ for standard Gaussians $a, b \sim \mathcal{N}(0, 1)$. We choose a distance
 % $\rho(a, b)$ to indicate how close our sample is to $C(Y)$. To meet the desiderata
 % of having $C(Y)$ be $1$ over the constraint set and to ensure the constraint becomes
-% smoother with large $\alpha$, we use a function $k : [0, \infty] \to [0, 1]$ parameterized by $\alpha$ to wrap the distance $\rho(a, b)$. A simple choice for such a function is $k(d; \alpha) = e^{-d / \alpha}$ that provides the desired properties to $\soft{Y}$ (see Appendix). The formal definition of $\soft{Y}$ is as follows.
+% smoother with large $\alpha$, we use a function $k : [0, \infty] \to [0, 1]$ parameterized by $\alpha$ to wrap the distance $\rho(a, b)$. A simple choice for such a function is $k(d; \alpha) = e^{-d / \alpha}$ that provides the desired properties to $\softv{Y}$ (see Appendix). The formal definition of $\softv{Y}$ is as follows.
 
 \begin{definition}
-The function $\soft{Y} : \Omega \to [0, 1]$ parameterized by $\alpha \in [0, \infty)$ is a relaxation of a $Y: \Omega \to \{0, 1\}$ if:
+The function $\softv{Y} : \Omega \to [0, 1]$ parameterized by $\alpha \in [0, \infty)$ is a relaxation of a $Y: \Omega \to \{0, 1\}$ if:
 \begin{enumerate}[label=(\roman*)]
 	\label{def:temp}
-	\item For all $\omega \in \Omega$, $\lim_{\alpha \to 0}\soft{Y}(\omega; \alpha) = Y(\omega)$.
-	\item For all $\omega \in \Omega$, $\lim_{\alpha \to \infty}\soft{Y}(\omega; \alpha) = 1$.
+	\item For all $\omega \in \Omega$, $\lim_{\alpha \to 0}\softv{Y}(\omega; \alpha) = Y(\omega)$.
+	\item For all $\omega \in \Omega$, $\lim_{\alpha \to \infty}\softv{Y}(\omega; \alpha) = 1$.
 
-    \item For all $\alpha$, $\soft{Y}(\omega; \alpha) = 1$ iff $Y(\omega) = 1$.
-    \item The entropy $H(\soft{Y}(\omega; \alpha))$ (which characterizes the fidelity of the approximation ) is an increasing function of $\alpha$.\footnote
+    \item For all $\alpha$, $\softv{Y}(\omega; \alpha) = 1$ iff $Y(\omega) = 1$.
+    \item The entropy $H(\softv{Y}(\omega; \alpha))$ (which characterizes the fidelity of the approximation ) is an increasing function of $\alpha$.\footnote
     {By compactness, it is integrable for all $\alpha$, when $\Omega$ has finite dimension}
 \end{enumerate}
 \end{definition}
 
 
-The construction of $\soft{Y}$ from $Y$ (Section \ref{implement}) substitutes primitive predicates (equality, inequalities and logical operators) in the model with soft predicates.  Soft predicates rely on a notion of distance; the degree to which a predicate is satisfied is a measure of closeness in a metric space. 
-For example if $x$ and $y$ are real values, then $x \soft{=} y$ is defined as $k_\alpha(\rho(x, y))$ where $\rho$ is a distance function and $k$ is a relaxation kernel paramterized by temperature $\alpha$.
-A relaxation kernel maps distances to values in $[0, 1]$, and ensures that relaxed predicates adhere to the outlined criteria.
+The construction of $\softv{Y}$ from $Y$ (Section \ref{implement}) substitutes primitive predicates (equality, inequalities and logical operators) in the model with soft predicates.  Soft predicates rely on a notion of distance; the degree to which a predicate is satisfied is a measure of closeness in a metric space. 
+For example if $x$ and $y$ are real values, then $x \soft{=} y$ is defined as $k_\alpha(\rho(x, y))$ where $\rho$ is a distance function and $k_\alpha$ is a relaxation kernel paramterized by temperature $\alpha$.
+In general, we use $\soft{p}$ to denote a relaxation of a predicate $p$.
+A relaxation kernel maps distances to values in $[0, 1]$, and ensures that $\softv{Y}$ adheres to the outlined criteria.
 Examples are given in Figure \ref{kernels}.
 If the squared exponential kernel is used for example then $x \soft{=} y \deq \exp(\norm{x - y}/\alpha)$.
 
@@ -51,8 +52,8 @@ k_{SE}(r) &= \sigma^2\left(1 + \frac{r^2}{2 \alpha \ell^2}\right)^{-\alpha} & \t
 \label{kernels}
 \end{figure}
 
-Soft inequalities such as $x \soft{eq} y$ (soft predicates in general follow this syntax) are functions of the amount by which $x$ must be increased (or $y$ decreased) until $x > y$ is true.
-This is the distance between $x$ and the interval $[y, \infty]$, where the distance between a point and any interval $[a, b]$ is the smallest distance between $x$ and any element in $[a, b]$ (and therefore 0 if $x \in [a, b]$:
+A soft inequality such as $x \soft{eq} y$ is function of the amount by which $x$ must be increased (or $y$ decreased) until $x > y$ is true.
+This is the distance between $x$ and the interval $[y, \infty]$, where the distance between a point and any interval $[a, b]$ is the smallest distance between $x$ and any element in $[a, b]$, and therefore 0 if $x \in [a, b]$:
 \begin{equation}
 \rho(x, [a, b]) =
 \begin{cases}
@@ -91,11 +92,10 @@ a \soft{\lor} b &= \min(a, b)
 \end{figure}
 
 \paragraph{Negation}
-Soft negation is a necessary component of a complete Boolean algebra, but introduces complications.
-Figure \ref{negationimg} (a) shows $x \soft{>} 0$ as a function of $x$.
+Negation is a necessary component of a Boolean algebra, but its relaxation introduces complications.
+To illustrate, Figure \ref{negationimg} (a) shows $x \soft{>} 0$ as a function of $x$.
 In continuous logics \cite{kimmig2012short}, the negation of $a \in [0, 1]$ is $1 - a$.
-However, as shown in Figure \ref{negationimg} (b), this violates criteria (iii) of predicate relaxation.
-That is, there are values which satisfy the hard predicate $\neg(x > 0)$ which do take a value of 1 in $1 - (x \soft{>} 0)$.
+However, as shown in Figure \ref{negationimg} (b), this violates criteria (iii) of predicate relaxation; there are values which satisfy the hard predicate $\neg(x > 0)$ which do take a value of 1 in $1 - (x \soft{>} 0)$.
 
 \begin{figure}
 \includegraphics[width=\linewidth]{negation.pdf}
@@ -103,26 +103,25 @@ That is, there are values which satisfy the hard predicate $\neg(x > 0)$ which d
 \end{figure}
 
 
-The problem arises because $\soft{Y}$ preserves consistency with $Y$ at 1 but not at 0.
-In other words, $\soft{Y}$ is a one-sided approximation.
-To overcome this challenge we construct two-sided approximations.
-For models where negation is used, a two-sided relaxed predicate yields a pair $(a_0, a_1)$, where $a_0, a_0 \in [0, 1]$.
+The problem arises because $\softv{Y}$ is consistent with $Y$ at 1 but not at 0.
+In other words, $\softv{Y}$ is a one-sided approximation.
+To overcome this challenge for models where negation is used, a two-sided relaxed predicate yields a pair $(a_0, a_1)$, where $a_0, a_0 \in [0, 1]$.
 $a_1$ preserves consistency with $Y$ on $1$, just as before, whereas $a_0$ preserves consistency with $\neg Y$ on $1$ (or equivalently $Y$ on 0).
 For example if $x \dsoft{>} 0 = (a_0, a_1)$, then as a function of $x$, $a_0$ and $a_1$ correspond to Figure \ref{negationimg} (a) and (c) respectively.
 
 A complete two-sided soft logic is shown in Figure \ref{softw}.
-Observe that negation simply swaps the elements such that $(a_0, a_1)$ becomes $(a_1, a_0)$.
-Although a two-sided has two components, for the sake of conditioning we are still concerned only with the true side $a_1$ in the pair $(a_0, a_1)$.
+Observe that soft negation simply swaps the elements of $(a_0, a_1)$ to yield $a_1, a_0)$.
+Although a two-sided predicate has two components, for the sake of conditioning we are still concerned only with the true side $a_1$ in the pair $(a_0, a_1)$.
 
 % \begin{definition}
-% The function $\soft{Y} : \Omega \to [0, 1]^2$ parameterized by $\alpha \in [0, \infty)$ is a two-sided relaxation of a $Y: \Omega \to \{0, 1\}$ if:
+% The function $\softv{Y} : \Omega \to [0, 1]^2$ parameterized by $\alpha \in [0, \infty)$ is a two-sided relaxation of a $Y: \Omega \to \{0, 1\}$ if:
 % \begin{enumerate}[label=(\roman*)]
 % 	\label{def:temp}
-% 	\item For all $\omega \in \Omega$, $\lim_{\alpha \to 0}\soft{Y}(\omega; \alpha) = (\neg Y(\omega), Y(\omega))$.
-% 	\item For all $\omega \in \Omega$, $\lim_{\alpha \to \infty}\soft{Y}(\omega; \alpha) = (0, 1)$.
+% 	\item For all $\omega \in \Omega$, $\lim_{\alpha \to 0}\softv{Y}(\omega; \alpha) = (\neg Y(\omega), Y(\omega))$.
+% 	\item For all $\omega \in \Omega$, $\lim_{\alpha \to \infty}\softv{Y}(\omega; \alpha) = (0, 1)$.
 
-%     \item For all $\alpha$, $\soft{Y}(\omega; \alpha) = 1$ iff $Y(\omega) = 1$.
-%     \item The entropy $H(\soft{Y}(\omega; \alpha))$ (which characterizes the fidelity of the approximation ) is an increasing function of $\alpha$.\footnote
+%     \item For all $\alpha$, $\softv{Y}(\omega; \alpha) = 1$ iff $Y(\omega) = 1$.
+%     \item The entropy $H(\softv{Y}(\omega; \alpha))$ (which characterizes the fidelity of the approximation ) is an increasing function of $\alpha$.\footnote
 %     {By compactness, it is integrable for all $\alpha$, when $\Omega$ has finite dimension}
 % \end{enumerate}
 % \end{definition}
@@ -137,7 +136,7 @@ x \dsoft{<} y &= (k_\alpha(\rho(y, [x, \infty])), k_\alpha(\rho(y, [-\infty, x])
 (a_0, a_1) \dsoft{\lor} (b_0, b_1) &= (a_0 \soft{\lor} b_0, a_1 \soft{\lor} b_1)\\
 \dsoft{\neg}(a_0, a_1) &= (a_1, a_0)
 \end{align*}
-\caption{Soft primitive predicates with two-sided error.}
+\caption{Two sided soft primitive predicates}
 \end{figure}
 
 % \begin{center}
@@ -157,22 +156,22 @@ MCMC algorithms require a function $f$ that is proportional to the the target de
 In Bayesian inference this is the posterior, dictated by Bayes' theorem as the product of the likelihood and the prior.
 Approximate inference using relaxed predicates takes a similar form.
 
-Let $\cM$ be a model, $Y$ be a predicate that conditions $\cM$, and $\soft{Y}$ be a relaxation of $Y$.
+Let $\cM$ be a model, $Y$ be a predicate that conditions $\cM$, and $\softv{Y}$ be a relaxation of $Y$.
 % Random variables in $\cM$ may be exogenous or endogenous in the sense that
 % given values for exogenous variables, the values of endogenous are determined.
 % For example $X = \mathcal{N}(0,1)$ is exogenous while $Y = X^2$ is endogenous.
 % Inference need only take place on exogenous random variables.
-Both $Y$ and $\soft{Y}$ are random variables, and hence map from the sample space $\Omega$;
-for convenience we define a soft predicate $\soft{\lk}$ as a function of its parameters (other random variables in the model) rather than the sample space.
-That is, let $\soft{Y}(\omega) = \soft{\lk}(X_1(\omega), ..., X_n(\omega))$, where $X_i \in \cM$.
+Both $Y$ and $\softv{Y}$ are random variables, and hence map from the sample space $\Omega$;
+for convenience we define a soft predicate $\softv{\lk}$ as a function of its parameters (other random variables in the model) rather than the sample space.
+That is, let $\softv{Y}(\omega) = \softv{\lk}(X_1(\omega), ..., X_n(\omega))$, where $X_i \in \cM$.
 Assuming a prior density $p$, the approximate posterior $f$ is the product:
 \begin{equation}
-f(m) = p(m) \cdot \soft{\lk}(m)
+f(m) = p(m) \cdot \softv{\lk}(m)
 \end{equation}
-$\soft{\lk}$ down weights parameter values which violate $Y$ by the degree to which they violate it. 
-This is modulated by the temperature $\alpha$ used in the relaxation kernels which constitute $\soft{\lk}$.
-At maximum temperature $\soft{\lk}$ has no effect, and the approximate posterior $f$ is equal to the prior $p$.
-Zero temperature $f$ recovers the true posterior, since parameter values which violate the condition are given zero weight.
+$\softv{\lk}$ down weights parameter values which violate $Y$ by the degree to which they violate it. 
+This is modulated by the temperature $\alpha$ used in the  relaxation kernels which constitute $\softv{\lk}$.
+At maximum temperature $\softv{\lk}$ has no effect, and the approximate posterior $f$ is equal to the prior $p$.
+At zero temperature, $f$ recovers the true posterior since parameter values which violate the condition are given zero weight.
 
 For illustration, let $\cM = (\mu, X_1, X_2)$ be a model where $\mu = \mathcal{N}(0, 1), Y = \mathcal{N}(\mu, 1)$, $X_2 = X_1^2$ and $\cM$ be conditioned on $X_2 = 1$.
 Since $X_2$ is a deterministic function of $X$, we can exclude it for inference.
@@ -191,14 +190,15 @@ f(x, y) = \mathcal{N}_{0,1}(x) \cdot \mathcal{N}_{0,1}(y) \cdot k(x + y, 0)
 \subsection{Replica Exchange}\label{replicaexchange}
 
 The temperature parameter trades off between tractability of inference and the fidelity of the approximation.
-Too high and $\soft{Y}$ will diverge too greatly from $Y$   . Too low and convergence will be slow.
+Too high and $\softv{Y}$ will diverge too greatly from $Y$   . Too low and convergence will be slow.
 % Several temperatre methods for controlling temperature exist such as simulated annealing \citep{kirkpatrick1983optimization} and Adiabatic Monte Carlo \citep{betancourt2014adiabatic}.
 Replica exchange (also known as parallel tempering) \citep{swendsen1986replica} combines information from several chains to more  effectively sample from the zero temperature chain.
 
-Replica exchange simulates $M$ replicas at different temperatures, and uses a Metropolis-Hastings update to  periodically swap the temperatures of chains .
-Assuming w.l.g that there are have two independent, parallel chains with targets $_{\alpha_1}f(x)$, $f_{\alpha_2}(y)$ and hence joint target $f_{\alpha_1, \alpha_2}(x,y)=f_{\alpha_1}(x)f_{\alpha_2}(y)$.
+Replica exchange simulates $M$ replicas at different temperatures, and uses a Metropolis-Hastings update to  periodically swap the temperatures of chains.
+Given w.l.g two parallel chains simulating targets $f_{\alpha_1}(x)$, $f_{\alpha_2}(y)$ where $f_{\alpha_i}$ is an approximate posterior function at temperature $\alpha_i$.
+Assuming independence, they follow a joint target $f_{\alpha_1, \alpha_2}(x,y) = f_{\alpha_1}(x)f_{\alpha_2}(y)$.
 Replica exchange swaps states between the two chains while preserving the joint target.
-That is, we propose a swap of $x$ and $y$: to move from $(x, y)$ to $(x^\star,y^\star)$, where $x^\star=y$ and $y^\star=x$.
+That is, we propose a swap of $x$ and $y$ to move from $(x, y)$ to $(x^\star,y^\star)$, where $x^\star=y$ and $y^\star=x$.
 The swap is accepted with probability $\min(1, A)$ where:
 \begin{equation}
 A = \frac{f_{\alpha_1, \alpha_2}(x^\star,y^\star)}{f_{\alpha_1, \alpha_2}(x,y)} = \frac{f_{\alpha_1, \alpha_2}(y,x)}{f_{\alpha_1, \alpha_2}(x,y)} = \frac{f_{\alpha_1}(y)f_{\alpha_2}(x)}{f_{\alpha_1}(x)f_{\alpha_2}(y)}
@@ -208,11 +208,6 @@ Swapping states is equivalent to swapping predicates, which motivates the name p
 
 Replica exchange has a number of hyper-parameters: the number of parallel chains, the corresponding temperatures, the swapping schedule.
 Several good practices are outlined in Following \cite{earl2005parallel}.  In practice, we logarithmically spaced temperature between $0$ and an upper bound, and swap states of chains that are adjacent in temperature ($\alpha_1$ with $\alpha_2$, $\alpha_2$ with $\alpha_3$, etc) periodically.
-
-Replica exchange relies on an inner algorithm to perform MCMC within each individual parallel chains.
-For finite dimensional contonuous models we use the No U-Turn Sampler \cite{hoffman2014no}, a variant of Hamiltonion Monte Carlo.
-% For other models we use.
-Both are elaborated on in the implementation section.
 
 
 

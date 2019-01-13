@@ -1,34 +1,18 @@
-% We introduce a method to augment probabilistic generative models with declarative knowledge and perform inference in these models.
+We develop a likelihood free inference procedure for conditioning a probabilistic model on a predicate.
+A predicate is a Boolean valued function which expresses a yes/no question about a domain; when conditioned on, they enforce propositions such as ``rigid bodies do not intersect``, or observations that coarse e.g., that a person is tall, when height in inches is explicit in the model; or even complex logical combinations.
+Conditioning on a predicates remains severely limited due to intractable likelihoods.
+Our contribution, which we call predicate exchange, 
+constructs a softened predicate which takes value in the unit interval [0, 1] as opposed to a simply true or false. Intuitively, 1 corresponds to true, and a high value (such as 0.999) corresponds to "nearly true" as determined by a distance metric.
+We define Boolean algebra for soft predicates,  such that they can be negated, conjoined and disjoined arbitrarily.
+A softened predicate can serve as a tractable proxy to a likelihood function for approximate posterior inference.
+However, we target exact inference by tempering the relaxation by a temperature parameter, and use replica exchange Markov Chain Mont Carlo, which exchanges states between a sequence of models conditioned on predicates at varying temperatures, and in doing so is able to draw exact samples from the unrelaxed model.
+We describe a lightweight implementation of predicate exchange that it provides a language independent layer that can be implemented on top of existing modeling formalisms.
 
-% Mathematically, conditioning on a predicate is sufficient to encode many kinds of declarative knowledge, but existing probabilistic programming systems limit statements that can be conditioned on to avoid intractable likelihoods.
 
-% We view a probabilistic program as a deterministic transformation of random inputs, and conditioning as a restriction to the subset of these inputs consistent with a predicate. 
-
-% For inference, we automatically replace all Boolean functions (e.g., $=, <, >, \neg, \land, \lor$), which constitute random variables, with softened counterparts defined on the unit interval.  
-
-% This induces an energy function over the random input space which assigns mass only to the inputs consistent with our conditions.
-
-% We then perform inference by constructing a Markov Chain over this energy function.
-
-% We build these concepts into a probabilistic programming system, and evaluate our approach on a number of examples.
-
-Probabilistic modeling relies on knowledge. The most common
-knowledge comes from observing a variable in the probabilistic model.
-However alternative forms of knowledge can be provided to
-probabilistic models in the form of predicates. For example,
-we may know estimates of human physiologic variables within a person
-can only vary minimally across the population. We may also know
-that a probabilistic render will only be used as a model
-for non-intersecting objects. In the same way that conditioning
-on data creates a new "posterior model", conditioning on predicates
-creates a new model that respects the predicates. Conditioning on
-arbitrary predicates requires new kinds of inference. We develop
-a new likelihood free inference algorithm that operates on the
-measure space that underlies the probability model.
-This inference algorithm automatically replaces 
-all Boolean functions (e.g., $=, <, >, \neg, \land, \lor$), which 
-constitute random variables, with softened counterparts defined on the 
-unit interval and samples from the induced energy function with a Markov
-Chain. As softening does not directly respect the constraints, we introduce
-a replica exchange step between different levels of the softened constraint.
-We build this likelihood-free inference algorithm into a probabilistic programming system, and evaluate our approach on a number of examples. 
+% arbitrary predicates requires new kinds of inference. 
+% % Probabilistic modeling relies on knowledge. The most common
+% % knowledge comes from observing a variable in the probabilistic model.
+% % However alternative forms of knowledge can be provided to
+% % probabilistic models in the form of predicates.
+% 
+% in
