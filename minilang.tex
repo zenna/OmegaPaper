@@ -111,7 +111,27 @@ $\textrm{softexecute}$ simulates $\pi$ but within a context where (i) variables 
 $\textrm{softexecute}$ returns a real value for the approximate posterior of $f$ as a function of the dictionary $\mathbb{D}$.
 
 \paragraph{Control Flow}
-Talk about control flow
+Programs may have control flow constructs, such as if-then-else statements, which make it challenging to exactly compute the minimum distance.
+If a branch depends on an uncertain value, then depending on values of random variables either side of the branch may be followed.
+This means that 
+
+For illustration, consider the following predicate that tests whether an element is in a vector.
+
+\begin{verbatim}
+if x > 0
+  return x == 1
+else
+  return x == -100
+end
+\end{verbatim}
+
+Given, for of $x = -1$, naively the branch condition will be false and resulting distance will be the relaxation of $x = -100$.
+However, it is plain to see that a small positive change from $x = 1$, will cause the positive branch to be taken, and the resulting distance would be.
+
+The solution, is to visit all branches, while taking into account the distance required to visit each branch.
+Exploring all paths of a program is often infeasible, and in the case of many recursive programs, impossible as it will prevent the program from halting.
+This problem arises in many areas of program analysis.
+
 
 \begin{algorithm}[tb]
   \caption{Soft Execution: $\textrm{softexecute}(\pi, \alpha, \mathbb{D})$}
