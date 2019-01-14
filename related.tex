@@ -1,21 +1,45 @@
 \section{Related Work}
 
-Demand for likelihood-free inference methods emerged from problems in genetics ecology \cite{}, where high-fidelity simulations are plentiful but tractable likelihood functions are not.
-Approximate Bayesian Computation (ABC) methods refers to a class of methods that sample from the posterior distribution over latent variables by finding simulations that result in data that is sufficiently close to the data that was observed.
-ABC methods have been successfully used to X, to Y and to Z.
-Our approach falls within the ABC paradigm in the sense that (i) we target  simulation based models, and (ii) rely on distance functions.
-However, it departs from most ABC methods in motivation
-Second, ABC methods rely on summary statistics technically do not use distance functions.
-ABC, etc, etc 
+% Likelihood free inference
+Demand for likelihood-free inference methods emerged from problems in genetics ecology, where high-fidelity simulations are plentiful but tractable likelihood functions are not.
+Approximate Bayesian Computation (ABC) refers to a class of methods \cite{beaumont2002approximate,sisson2007sequential} that sample from posterior distributions by finding simulations that yield data that is sufficiently close to the observed data.
+Closeness is determined by a distance function.
+Methods which combine ABC Markov Chain Monte Carlo were initialized in \cite{marjoram2003markov} and developed further \cite{wegmann2009efficient}.
+Our approach shares target simulation based models, and rely on distance functions.
 
-Probabilistic programming systems~\citep{milch20071, wood2014new,mansinghka2014venture,goodman2008church,carpenter2017stan} provide a formalism
-for declaring probabilistic models and performing inference
-in them. Traditional probabilistic programming approaches support model definition by simulation thereby, hiding the underlying probability space. 
-One exception to this is Blog \citep{milch20071} 
-that defines models in terms of the generating functions.
+Predicate exchange targets exact inference without summary statistics, which reduce the dimensionality and to filter out information which is not deemed relevant for the inference of latent variables.
+There have been number of approaches to exact inference in implicit models.
+Rather than heaveside step function that rejects simulations outside of a distance, \cite{albert2015simulated} parameterizes the distance with a annealing temperature temperature.  If $\alpha$ is declreased sufficently slowly, under some regularity constraints the sequence of targets converges to the true posterior.
+
+\cite{graham2017asymptotically} also targets asymptoically exact inference.
+They develop a version of Hamiltonian Monte Carlo at each iteration, uses a quasi-Newton method to solve exactly the constraint that $x = x$.  They perform inference in an unconstrained space and project back to the constrained manifold.
+This is of course computationally very expensive.
+In addition, it is limited differentiable models conditioned with equality constraints. 
+
+% \cite{Pseudo-Marginal Hamiltonian Monte Carlo}HMC methods cannot be implemented in scenarios where the likelihood function is intractable. However, we have shown here that if we have access to a non-negative unbiased likelihood estimator.
+% parameterized by normal random variables then it is possible to derive an algorithm which mimicsthe HMC algorithm having access to the exact likelihood. The resulting pseudo-marginal HMCalgorithm replaces the original intractable gradient of the log-likelihood by the gradient of thelog-likelihood estimator while preserving the target distribution as invariant distributi
+
+% Synthetic Likelihood
+-  synthetic likelihood (SL), which uses a multivariate normal approximation of the distribution of a set of summary statistics. 
+
+% PPLS
+Probabilistic logics such as ProbLog \cite{richardson2006markov} and Markov logic networks \cite{de2007problog} extend first order logic with probabilistic constructs.
+Predicate exchange conditions models on predicates belonging to a Boolean logic, but does not target logic languages in particular.
+In fact, it is more suited to stochasticc simlator based models used in more recent probabilistic programming systems~\citep{milch20071, wood2014new,mansinghka2014venture,goodman2008church,carpenter2017stan}.  These systems automatically derive the likelihood function for a rich class of simulation based models, but are subject to the same restrictions that a tractaqble likelihood must exist.
 
 % ?
-Our approach is related to smooth interpretation of programs \citep{chaudhuri2010smooth}.
+% Our approach is related to smooth interpretation of programs \citep{chaudhuri2010smooth}
 
-Probabilistic Similarity Logic \cite{brocheler2012probabilistic,kimmig2012short}
+Several continuous logics have been developed to apply model-theoretic tools to metric structures which arise in analysis and geometry.
+Continuous logics replace the Boolean structure ${T, F}$, quantifiers $\forall x$ and $\exists x$, and logical connectives with continuous functions,
+but vary on the particular continuous structure uses
+Predicate relaxation constructs predicates map to continuous structures, but departs from exiting work is primarily in motivation.
+Our objective is not to provide a more general logic, but use continuity to make inference more tractable.
+Semantically, our approach remains within measure theoretic foundations, which relies on hard predicates to condition.
+
+
+Probabilistic Similarity Logic \cite{brocheler2012probabilistic,kimmig2012short} uses continuous logics 
 Talk about Soft logic
+
+
+

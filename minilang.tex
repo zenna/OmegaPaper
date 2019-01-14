@@ -1,4 +1,10 @@
 \section{Implementation}\label{implement}
+% \begin{exprogram}
+% \begin{algorithmic}
+% \State Hello
+% \end{algorithmic}
+% \caption{A mega algorithm}
+% \end{exprogram} 
 
 % Our approach to inference is not black-box.
 % It requires a transformation of the model.
@@ -94,6 +100,18 @@ p(x) = \prod_{k=1}^K p_\tau(x_k \mid \theta_1,..., \theta_n )
 \end{equation}
 Crucially, the parameters $\theta_1,..,\theta_n$ for each random variable may be fixed values or depend on values of other random variables in $\pi$.
 
+\begin{exprogram}[tb]
+\caption{}
+\label{prog:ex1}
+\begin{algorithmic}
+\STATE $x = \textrm{rand}(\mathcal{N}, x, 0, 1)$
+\STATE $y = \textrm{rand}(\mathcal{N}, y, 0, 1)$
+\STATE $\cond(x > y)$
+\STATE {\bfseries Return:} $(x, y)$
+\end{algorithmic}
+\end{exprogram}
+
+
 Predicate exchange relies on $\textrm{softexecute}$
 (Algorithm \ref{alg:softexecute}), which formalizes the soft execution of a program $\pi$ at temperature $\alpha$, in the context of dictionary $\mathbb{D}$.
 $\mathbb{D}$ is a mutable mapping from a set of names to values.
@@ -117,13 +135,19 @@ This means that
 
 For illustration, consider the following predicate that tests whether an element is in a vector.
 
-\begin{verbatim}
-if x > 0
-  return x == 1
-else
-  return x == -100
-end
-\end{verbatim}
+\begin{exprogram}[tb]
+\caption{}
+\label{prog:ex1}
+\begin{algorithmic}
+\STATE $x = \textrm{rand}(\mathcal{N}, x, 0, 1)$
+\IF {$x > y$}
+\STATE $\cond(x = 1)$
+\ELSE
+\STATE $\cond(x = -100)$
+\ENDIF
+\STATE {\bfseries Return:} $x$
+\end{algorithmic}
+\end{exprogram}
 
 Given, for of $x = -1$, naively the branch condition will be false and resulting distance will be the relaxation of $x = -100$.
 However, it is plain to see that a small positive change from $x = 1$, will cause the positive branch to be taken, and the resulting distance would be.

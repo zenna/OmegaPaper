@@ -19,6 +19,13 @@
 
 \usepackage{icml2019}
 
+\makeatletter
+\newenvironment{exprogram}[1][htb]{%
+    \renewcommand{\ALG@name}{Example Program}% Update algorithm name
+   \begin{algorithm}[#1]%
+  }{\end{algorithm}}
+\makeatother
+
 % If accepted, instead use the following line for the camera-ready submission:
 %\usepackage[accepted]{icml2019}
 
