@@ -1,26 +1,20 @@
 \section{Related Work}
 
 % Likelihood free inference
-Demand for likelihood-free inference methods emerged from problems in genetics ecology, where high-fidelity simulations are plentiful but tractable likelihood functions are not.
-Approximate Bayesian Computation (ABC) refers to a class of methods \cite{beaumont2002approximate,sisson2007sequential} that sample from posterior distributions by finding simulations that yield data that is sufficiently close to the observed data.
-Closeness is determined by a distance function.
-Methods which combine ABC Markov Chain Monte Carlo were initialized in \cite{marjoram2003markov} and developed further \cite{wegmann2009efficient}.
-Our approach shares target simulation based models, and rely on distance functions.
+Demand for likelihood-free inference emerged in genetics ecology; Tavar{\'e} et al. \citep{tavare1997inferring} computed summary statistics of the output of a simulation, reject an accept-reject for posterior inference.
+Weiss et al. \cite{weiss1998inference} expanded on this with a tolerance term, such that simulations yielding data sufficiently close to the targets were accepted.
+Such posterior samples are therefore approximate.
+Approximate Bayesian Computation (ABC) has come to refer to broad class of methods \cite{beaumont2002approximate,sisson2007sequential} in this general regime.
+Marjoram et al. \cite{marjoram2003markov} simulated Markov Chains according to the prior, but introduced the accept/reject stage to yield approximate posterior samples.
+A small tolerance leads to a high rejection rate, whereas a large tolerance results in an unacceptable approximation error.
+Among several solutions are dynamically decreasing of tolerance \cite{toni2008approximate}, having a large tolerance but importance reweighting samples based on distance \cite{wegmann2009efficient}, adapting the tolerance based on the current distance \cite{del2012adaptive,lenormand2013adaptive}, as well as annealing the tolerance as a temperature parameter.
 
-Predicate exchange targets exact inference without summary statistics, which reduce the dimensionality and to filter out information which is not deemed relevant for the inference of latent variables.
-There have been number of approaches to exact inference in implicit models.
-Rather than heaveside step function that rejects simulations outside of a distance, \cite{albert2015simulated} parameterizes the distance with a annealing temperature temperature.  If $\alpha$ is declreased sufficently slowly, under some regularity constraints the sequence of targets converges to the true posterior.
-
-\cite{graham2017asymptotically} also targets asymptoically exact inference.
-They develop a version of Hamiltonian Monte Carlo at each iteration, uses a quasi-Newton method to solve exactly the constraint that $x = x$.  They perform inference in an unconstrained space and project back to the constrained manifold.
-This is of course computationally very expensive.
-In addition, it is limited differentiable models conditioned with equality constraints. 
+Predicate exchange targets simulation models and uses distance metrics, but targets exact inference without summary statistics.
+In a recent approach with similar motivation, \cite{graham2017asymptotically} develop Hamiltonian Monte Carlo variant, which at each iteration uses a quasi-Newton method to solve exactly the constraint that the data is equal to the output of the generative model.  They perform HMC in an unconstrained space and project back to the constrained manifold.
+This is costly -- although the cost is more than accounted for in a reduction of the number of steps -- and limited to differentiable models conditioned with equality. 
 
 % \cite{Pseudo-Marginal Hamiltonian Monte Carlo}HMC methods cannot be implemented in scenarios where the likelihood function is intractable. However, we have shown here that if we have access to a non-negative unbiased likelihood estimator.
 % parameterized by normal random variables then it is possible to derive an algorithm which mimicsthe HMC algorithm having access to the exact likelihood. The resulting pseudo-marginal HMCalgorithm replaces the original intractable gradient of the log-likelihood by the gradient of thelog-likelihood estimator while preserving the target distribution as invariant distributi
-
-% Synthetic Likelihood
--  synthetic likelihood (SL), which uses a multivariate normal approximation of the distribution of a set of summary statistics. 
 
 % PPLS
 Probabilistic logics such as ProbLog \cite{richardson2006markov} and Markov logic networks \cite{de2007problog} extend first order logic with probabilistic constructs.
@@ -36,8 +30,6 @@ but vary on the particular continuous structure uses
 Predicate relaxation constructs predicates map to continuous structures, but departs from exiting work is primarily in motivation.
 Our objective is not to provide a more general logic, but use continuity to make inference more tractable.
 Semantically, our approach remains within measure theoretic foundations, which relies on hard predicates to condition.
-
-
 Probabilistic Similarity Logic \cite{brocheler2012probabilistic,kimmig2012short} uses continuous logics 
 Talk about Soft logic
 

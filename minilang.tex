@@ -128,16 +128,19 @@ $\textrm{softexecute}$ simulates $\pi$ but within a context where (i) variables 
 
 $\textrm{softexecute}$ returns a real value for the approximate posterior of $f$ as a function of the dictionary $\mathbb{D}$.
 
-\paragraph{Control Flow}
-Programs may have control flow constructs, such as if-then-else statements, which make it challenging to exactly compute the minimum distance.
-If a branch depends on an uncertain value, then depending on values of random variables either side of the branch may be followed.
-This means that 
+\paragraph{Unsatisfiability}Predicate exchange is unable to determine if a predicate is unsatisfiable (e.g.  $(x > 1) \land (x < -1)$), and defers to the user to ensure this is the case.
 
-For illustration, consider the following predicate that tests whether an element is in a vector.
+\paragraph{Control Flow}
+Programs may have control flow constructs, such as if-then-else statements.
+These may cause $\textrm{softexecute}$ to return a value that is significantly less than $\softv{\lk}^*(m)$ as defined in Equation \ref{eq:distpset}.
+This is because if a branch condition is a function of an uncertain value, then several alternative paths could, which could.
+$\textrm{softexecute}$ is ignorant of thees other possibilities.
+For illustration, consider example \ref{prog:ex2}.
+If $x = -1$, the condition fails, and the predicate relaxation will yield $x \soft{=} -100$, which is significantly larger than if the true branch were taken.
 
 \begin{exprogram}[tb]
 \caption{}
-\label{prog:ex1}
+\label{prog:ex2}
 \begin{algorithmic}
 \STATE $x = \textrm{rand}(\mathcal{N}, x, 0, 1)$
 \IF {$x > y$}
@@ -149,12 +152,16 @@ For illustration, consider the following predicate that tests whether an element
 \end{algorithmic}
 \end{exprogram}
 
-Given, for of $x = -1$, naively the branch condition will be false and resulting distance will be the relaxation of $x = -100$.
-However, it is plain to see that a small positive change from $x = 1$, will cause the positive branch to be taken, and the resulting distance would be.
-
-The solution, is to visit all branches, while taking into account the distance required to visit each branch.
-Exploring all paths of a program is often infeasible, and in the case of many recursive programs, impossible as it will prevent the program from halting.
-This problem arises in many areas of program analysis.
+Problems of this form appear in all forms of program analyis.
+This problem is called the path explosion problem, since the number of possible paths often increases combinatorially with program size and runtime length.
+Automated program testing, which is concerned has developed various strategies \cite{cadar2008exe, sen2005cute}.
+Broadly, these trace the execution of the program and derive in symbol form the branch constraints.
+These constraints are solved to force the execution into branches of the program that incur error states.
+These tools have been scaled to very large problems, in complex real world code.
+Two methods that use heuristics toguide path exploration are [4] (which attempts to explore paths that hit less-often executed statements.
+Unlike automated testing, probabilistic inference has the stricter requirement of adhering to the true posterior distribution.
+However, in predicate exchange, we have a latitude on all nonunitary values.
+This opens up the potential for extending these methods in future work.
 
 
 \begin{algorithm}[tb]
@@ -163,18 +170,37 @@ This problem arises in many areas of program analysis.
 \begin{algorithmic}
 \STATE {\bfseries Input:} program $\pi$, temperature $\alpha$, dictionary $\mathbb{D}$
 \STATE Initialize $\lk_\mathbb{D} = 1, p_\mathbb{D} = 1$
-\STATE Simulate $\pi$, intercept statements any statement $s$, wbere:   
-\IF{$s = \textrm{rand}(\tau, n, \theta_1, ..., \theta_n)$}
- \IF{$n \in \mathbb{D}$}
+\STATE Simulate $\pi$ with following subroutines redefined as:   
+\ALOOP {$\textrm{rand}(\tau, n, \theta_1, ..., \theta_n)$}
+   \IF{$n \in \mathbb{D}$}
    \STATE $x = \mathbb{D}(n)$
  \ELSE
    \STATE $x = $ sample from $p_\tau(x \mid \theta_1, ..., \theta_n)$
    \STATE Update dictionary: $\mathbb{D}(n) = x$
  \ENDIF
  \STATE $p_\mathbb{D} = p_\mathbb{D} \cdot p_\tau(x \mid \theta_1, ..., \theta_m)$
- \ELSIF{$s = \cond(\lk')$}
-   \STATE $\lk_\mathbb{D} = \lk_\mathbb{D} \cdot \lk_\mathbb{D}'$
- \ENDIF
+ \STATE Return from subroutine: $x$
+\ENDALOOP
+\STATE
+\ALOOP {$\cond(\lk')$}
+  \STATE $\lk_\mathbb{D} = \lk_\mathbb{D} \cdot \lk_\mathbb{D}'$
+\ENDALOOP
+\STATE
+\ALOOP {$\textrm{op}(x, \dots)$ for $\textrm{op} \in \{>, <, =, \land, \lor, \neg\}$}
+  \STATE Return from subroutine: $\soft{\textrm{op}}(x, \dots)$ 
+\ENDALOOP
+\STATE
+% \IF{$s = \textrm{rand}(\tau, n, \theta_1, ..., \theta_n)$}
+%  \IF{$n \in \mathbb{D}$}
+%    \STATE $x = \mathbb{D}(n)$
+%  \ELSE
+%    \STATE $x = $ sample from $p_\tau(x \mid \theta_1, ..., \theta_n)$
+%    \STATE Update dictionary: $\mathbb{D}(n) = x$
+%  \ENDIF
+%  \STATE $p_\mathbb{D} = p_\mathbb{D} \cdot p_\tau(x \mid \theta_1, ..., \theta_m)$
+%  \ELSIF{$s = \cond(\lk')$}
+%    \STATE $\lk_\mathbb{D} = \lk_\mathbb{D} \cdot \lk_\mathbb{D}'$
+%  \ENDIF
 \STATE {\bfseries Return:} $p_\mathbb{D} \cdot \lk_\mathbb{D}$
 %    \ENDFOR
 %    \UNTIL{$noChange$ is $true$}
@@ -185,7 +211,7 @@ This problem arises in many areas of program analysis.
 
 Predicate exchange (Algorithm \ref{alg:predexchange}) performs replica exchange using $\textrm{softexectute}$ as an approximate posterior.
 It takes as input an mcmc algorithm, which simulates an Markov Chain by manipulating elements of the $\mathbb{D}$.
-In our experiments, for finite dimensional continuous models we use the No U-Turn Sampler \cite{hoffman2014no}, a variant of Hamiltonion Monte Carlo.
+In our experiments, for finite dimensional continuous models we use the No U-Turn Sampler \cite{hoffman2014no}, a variant of Hamiltonion Monte Carlo, using reverse-mode automatic differentiation \cite{griewank2008evaluating} to compute the negative log gradient of $f$.
 
 For other models we use standard Metropolis Hastings by defining proposals on elements in the dictionary.
 
@@ -200,24 +226,28 @@ Each dictionary should contains all the information required to access values of
   \label{alg:predexchange}
 \begin{algorithmic}
 \STATE {\bfseries Input:} program $\pi$, temperatures $\alpha_1, ...,\alpha_m$, nsamples $n$
-\STATE {\bfseries Input:} mcmc, $q$ number within samples
+\STATE {\bfseries Input:} mcmc, nsamples between swaps $q$ 
 \STATE Initialize $\mathcal{D} = $ empty collection of dictionarys
-\STATE Initialize $\mathbb{D}_1,...,\mathbb{D}_m$ empty dictionarys
+\STATE Initialize $\mathbb{D}^{\textrm{init}}_1,...,\mathbb{D}^{\textrm{init}}_m$ empty dictionarys
+\STATE Define $f_{\alpha_i}(\mathbb{D}) = \textrm{softexecute}(\pi, \alpha_i, \mathbb{D})$
 \REPEAT
   \FOR{$i=1$ {\bfseries to} $m$}
-    \STATE { $\mathbb{D}_1,...,\mathbb{D}_q = $ draw $q$ mcmc samples at temp $\alpha_i$}
-    \IF {i = 1}
-      \STATE append $\mathbb{D}_1,...,\mathbb{D}_m$ to $\mathcal{D}$
-    \ENDIF
+    \STATE { $\mathbb{D}_1,...,\mathbb{D}_q = $ $q$ mcmc samples at temp $\alpha_i$}, from $\mathbb{D}^{\textrm{init}}_i$
+    \STATE $\mathbb{D}^{\textrm{init}}_i = \mathbb{D}_q$
+    \FOR{$j=1$ {\bfseries to} $q$}
+      \IF {$f_{\alpha_1}(\mathbb{D}_j) = 1$}
+        \STATE append $\mathbb{D}_j$ to $\mathcal{D}$
+      \ENDIF
+    \ENDFOR
   \ENDFOR
-  \FOR{$i = m$ {\bfseries to} $2$}
+  \FOR{$i = m$ {\bfseries down to} $2$}
     \STATE $j = i - 1$
-    \STATE $p = \frac{a}{b}$
-    \IF{$p > $}
+    \STATE $p = {f_{\alpha_i}(\mathbb{D}_j)f_{\alpha_j}(\mathbb{D}_i)}/{f_{\alpha_i}(\mathbb{D}_i)f_{\alpha_j}(\mathbb{D}_j)}$
+    \IF{$p >$ random sample in $[0, 1]$}
       \STATE swap $\alpha_i$ with $\alpha_j$
     \ENDIF
   \ENDFOR
-\UNTIL{$forever$}
+\UNTIL{$\mathcal{D}$ has $n$ elements}
 \STATE {\bfseries Return:} $\mathcal{D}$
 \end{algorithmic}
 \end{algorithm}

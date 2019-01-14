@@ -26,6 +26,14 @@
   }{\end{algorithm}}
 \makeatother
 
+\makeatletter
+\newcommand{\ALOOP}[1]{\ALC@it\algorithmicloop\ #1%
+  \begin{ALC@loop}}
+\newcommand{\ENDALOOP}{\end{ALC@loop}\ALC@it\algorithmicendloop}
+\makeatother
+
+\renewcommand{\algorithmicloop}{\textbf{subroutine}}
+
 % If accepted, instead use the following line for the camera-ready submission:
 %\usepackage[accepted]{icml2019}
 

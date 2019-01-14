@@ -3,8 +3,8 @@
 
 
 \paragraph{Small Models}
-In figure \ref{fig:density} we demonstrate two examples of conditioning on predicates which are non trivial.
-First we show that the program \texttt{rand(x, 0 < x < 1)} can be used to truncate a Gaussian distribution, and the approximation behavior at varying temperatures.  Second we show that two independent random variables can be made equal.  While simple, both are a challenge for probabilistic programming systems because they prevent automatic calculation of the likelihood.
+In Figure \ref{fig:density} we demonstrate two examples of conditioning on predicates which are non trivial.
+First we show that the conditioning can be used to truncate a Gaussian distribution, and the approximation behavior at varying temperatures.  Second we show that two independent random variables can be made equal.  While simple, both are a challenge for probabilistic programming systems because they prevent automatic calculation of the likelihood.
 
 \begin{figure}[!htb]
 \centering
@@ -34,7 +34,7 @@ First we show that the program \texttt{rand(x, 0 < x < 1)} can be used to trunca
 Type 2 diabetes is a prevalent and costly condition.
 Keeping blood glucose within normal limits helps prevent the
 long-term complications of Type 2 diabetes like diabetic neuropathy and diabetic retinopathy \citep{brownlee2006glycemic}. Models to predict the trajectories of blood glucose aid in keeping glucose within
-normal limits \citep{zeevi2015personalized}. Traditional models have been built from compositions of differential equations \citep{albers2017personalized,levine2017offline} whose parameters are estimated separately for each patient. An alternative approach would be to use a flexible sequence model like an RNN. The problem with this approach is that an RNN can extrapolate to glucose values incompatible with human physiology. This is especially a problem where we have patients with only a few blood glucose measurements. To build an RNN model that respects physiology, we condition on this information using Omega. The specific Omega program is shown in the appendix.
+normal limits \citep{zeevi2015personalized}. Traditional models have been built from compositions of differential equations \citep{albers2017personalized,levine2017offline} whose parameters are estimated separately for each patient. An alternative approach would be to use a flexible sequence model like an RNN. The problem with this approach is that an RNN can extrapolate to glucose values incompatible with human physiology. This is especially a problem where we have patients with only a few blood glucose measurements. To build an RNN model that respects physiology, we condition on it.
 
 We compare the independent RNN model to the one with declarative knowledge on a second patient from Physionet \citep{moody2001physionet}.
 Figure \ref{fig:rnn-samples} plots the results performed on more than 300 pairs of patients.

@@ -3,13 +3,13 @@
 \section{Introduction}
 
 Conditioning in Bayesian inference incorporates observed data into a model.
-In a broader sense, conditioning is a mechanism to revise a model such that a yes/no question (a predicate) becomes a true proposition (a fact).
-For instance, the question of whether a variable is equal to a particular value, changes from a predicate of uncertain truth to a true fact once it is observed.
+In a broader sense, conditioning revises a model such that a yes/no question (a predicate) is resolved to a true proposition (a fact).
+For instance, the question of whether a variable is equal to a particular value, changes from a predicate of uncertain truth, to a fact, once it is observed.
 In principle, a predicate can be used to declare any proposition about a domain, not only the observation of data.
 In practice, sampling from models conditioned on most predicates presents severe challenges to existing inference procedures.
 
 Predicates can be used to update a model to adhere to known facts about a domain, without the burden of specifying how.
-For example, in inverse graphics \cite{kulkarni2015deep} (inferring three dimensional geometry from observed images) the proposition ``rigid bodies do not intersect'' is a predicate on latent configurations of geometry.
+For example, in inverse graphics \cite{marschner1998inverse,kulkarni2015deep} (inferring three dimensional geometry from observed images), the proposition ``rigid bodies do not intersect'' is a predicate on latent configurations of geometry.
 To manually revise a model to constructively adhere to this fact is often infeasible.
 Instead, we would ideally simply condition on it being true, concentrating probability mass on a subset of the latent variable space, and ultimately yielding more accurate posterior inferences in the inverse graphics problem.
 
@@ -109,7 +109,7 @@ In this paper we present predicate exchange:
 a likelihood-free method to sample from distributions conditioned on predicates from a broad class.
 It is composed of two parts:
 \begin{enumerate}
-\item \textbf{Predicate Relaxation} transforms a probabilistic model such that predicates it is conditioned on take values in the unit interval $[0, 1]$ rather than $\{0, 1\}$.
+\item \textbf{Predicate Relaxation} transforms a probabilistic model such that predicates it is conditioned on is soft, taking values in the unit interval $[0, 1]$ rather  than $\{0, 1\}$.
 \item  \textbf{Replica Exchange} simulates several Markov chains of models conditioned on predicates relaxed to different strengths, and in doing so is able to draw exact samples from the unrelaxed model. 
 \end{enumerate}
 
@@ -127,15 +127,14 @@ Continuing the previous example, we may know that a person does \emph{not} have 
 % Predicate relaxation is modulated by temperature such that at zero temperature the relaxed predicate mirrors its hard counter-part, while at maximal temperatures, it is virtually always satisfied.
 % Predicate Exchange simulates several Markov chains in parallel at different temperatures.
 
-Predicate exchange is a response to probabilistic programming languages, which have vastly expanded the class of unconditional probabilistic models that can be expressed, but still largely restrict the kinds of predicates that can be practically conditioned on.
+Predicate exchange is motivated by probabilistic programming languages, which have vastly expanded the class of unconditional probabilistic models that can be expressed, but still heavily restrict the kinds of predicates that can be conditioned on.
 Rather than introduce a new language or modeling formalism, we mirror   \cite{wingate2011lightweight} and provide a light-weight implementation that performs inference by modulating the execution of stochastic simulation based model.
 This means predicate exchange is easily incorporated into most frameworks. 
 
 Our approach comes with certain limitations.
-Predicates which indicate sets of zero measure -- typically due to equality conditions on continuous variables -- are problematic because they result in zero acceptance ratios.
+Predicates which indicate sets of zero measure -- typically due to equality conditions on continuous variables -- are problematic because the probability of proposal a satisfying state becomes zero.
 In these cases predicate exchange must sample at a minimum temperature strictly greater than zero.
-Predicate exchange is also sensitive to the choice of distance metric.
-Moreover, to evaluate a soft predicate on models whose control-flow depends on a random variable, can in some cases itself be a	 hard problem.
+In addition, to evaluate a soft predicate whose control-flow depends on randomness in the model, can in some be a hard problem in of itself.
 % Nevertheless predicate exchange 
 
 In summary we address the problem of conditioning probabilistic models on predicates as a means to express declarative knowledge.
@@ -145,7 +144,7 @@ In detail, we:
 	\item Formalize simulation based probabilistic models in measure theoretic probability, and conditioning as the imposition of constraints expressed as predicates (Section \ref{simmodels}).
 	\item Motivate predicate relaxation (Section \ref{predexchange}), and provide softened versions of primitive Boolean functions. 
 	\item Provide a light-weight implementation of predicate exchange (Section \ref{implement}) through nonstandard execution of a simulation based model.
-	\item Evaluate our approach on representative examples, and demonstrate case studies including enriching medical models with limited data.
+	\item Evaluate our approach on examples, including case studies in inverse graphics and enriching medical models with limited data.
 \end{enumerate}
 
 
