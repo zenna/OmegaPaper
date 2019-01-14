@@ -6,14 +6,14 @@
 % The density function of the resulting model, if it exists, is not explicitly represented, but rather implicitly defined.
 % For this reason simulator models are often called implicit or generative models.
 
-Simulator-based models are useful because they interface easily with models typicallyencountered in the natural sciences. In particular, hypotheses of how the observed datayowere generated can be implemented without making excessive compromises in order tohave an analytically tractable model
+% Simulator-based models are useful because they interface easily with models typicallyencountered in the natural sciences. In particular, hypotheses of how the observed datayowere generated can be implemented without making excessive compromises in order tohave an analytically tractable model
 
 Probabilistic simulation based models specify the step-by-step causal mechanisms of a domain, and use probability distributions for any uncertain parameters.
 A simulation model can be stochastically executed, using a random number generator to sample from primitive random variables in the model.
 Inference means to simulate the model while imposing constraints on variables in the model.
 This is difficult, since simulation based models lack an explicit likelihood function, which is necessary for most inference procedures.
 
-Conditioning on more general predicates requires a measure-theoretic foundation, in which a simulation model is a random variable:
+Conditioning on predicates requires a measure-theoretic foundation, in which a simulation model is a random variable:
 
 \begin{figure}
 	\centering
@@ -69,9 +69,9 @@ random variables $X_1$ and $X_2$ that both take real values. Conditioning
 $\cM$ on $X_1 = 1$, defines a new model $\cM_{|A}$ based on limiting the measure space
 $\Omega$ to the set $A = \{ \omega : X_1(\omega) = 1\}$.
 The new model is defined on a new probability space
-\begin{align*}
+\begin{align}
 	(\Omega \cap A, \{A \cap B, B \in {\cal H} \}, {\cal P} / {\cal P}(A))
-\end{align*}
+\end{align}
 with the same random variables $X_1$ and $X_2$.
 Sampling from $\cM_{|A}$ produces
 samples only where $X_1 = 1$
@@ -79,9 +79,7 @@ samples only where $X_1 = 1$
 More generally, conditioning on any predicate $Y(\omega) = \lk(X_1(\omega), \dots, X_n(\omega))$
 defines a new model defined exactly as above, where $A = \{\omega : \lk(X_1(\omega), \dots, X_n(\omega)) = 1\}$.
 This predicate may include a comparisonsuch as $X_i < X_j$, restrict deterministic function of variables in in the model such as $\exp(X_i) = 2$, or be a Boolean combination such as $(X_i < X_j) \lor \neg(\exp(X_i) = 2)$.
-
-
-Sampling from $\cM_{|A}$ generates $x_1, ..., x_n$ where $\lk	$ is true.
+Sampling from $\cM_{|A}$ generates $(x_1, ..., x_n)$ where $\lk$ is true.
 
 The general construction of new models might require conditioning
 on sets of measure zero. This process can be made rigorous

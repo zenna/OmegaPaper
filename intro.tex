@@ -98,7 +98,7 @@ Even if the occurrence of hypoglycemia does not appear as an explicit variable i
 % Outline: Non-observational predicates induce intractable likelihoods
 % and are largely unsupported by current methods of inference
 Several effective sampling  \citep{andrieu2003introduction} and variational  \citep{jordan1999introduction, ranganath2014black} approaches to inference require only a black-box likelihood function, i.e., one evaluable on arbitrary input.
-The likelhood function quantifies the extent to which values of latent variables are consistent with observations. 
+The likelihood function quantifies the extent to which values of latent variables are consistent with observations. 
 However, most models conditioned on most predicates have likelihood functions that are intractable to compute or unknown.
 For example, conditioning random variables that are deterministic transformations of other random variables (e.g., the presence of hypoglycemia in the example above, or the mean of a collection of variables) often results in likelihoods that are normalized by intractable integrals.	
 % For example, given three variables, it is possible to condition on the sum
@@ -109,16 +109,14 @@ In this paper we present predicate exchange:
 a likelihood-free method to sample from distributions conditioned on predicates from a broad class.
 It is composed of two parts:
 \begin{enumerate}
-\item \textbf{Predicate Relaxation} transforms a probabilistic model such that predicates it is conditioned on is soft, taking values in the unit interval $[0, 1]$ rather  than $\{0, 1\}$.
-\item  \textbf{Replica Exchange} simulates several Markov chains of models conditioned on predicates relaxed to different strengths, and in doing so is able to draw exact samples from the unrelaxed model. 
+\item \textbf{Predicate Relaxation} transforms a predicate such that it returns a value in a soft Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$. $\soft{\lor}$ and $\neg$.
+\item  \textbf{Replica Exchange} simulates several Markov chains of models conditioned on predicates relaxed to different strengths.  Combined with an accept/reject phase, we are able to draw samples that are asymptotically exact. 
 \end{enumerate}
 
-Predicate relaxation meets two desiderata.
-First, the value in $[0, 1]$ that a relaxed predicate takes denotes the degree to which it is satisfied.
-In other words, a soft predicate quantifies the extent to which values of latent variables are consistent with the predicate.
-This allows it to serve a role similar to a likelihood function, and opens up the use of likelihood-based inference procedures for a form of approximate posterior inference.
-Second, relaxed predicates form a complete Boolean algebra, composed of conjunction, disjunction and negation.
-This is crucial because domain knowledge often has a composite Boolean structure.
+% WTP? Show that soft Boolean is useful for (i) tractability of inference show that rather th	an 
+By returning a value in $[0, 1]$ instead of $\{0, 1\}$, a soft predicate quantifies the extent to which values of latent variables are consistent with the predicate.
+This allows it to serve a role similar to a likelihood function, and opens up the use of likelihood-based inference procedures.
+The soft Boolean algebra distinguishes predicate relaxation from most other likelihood-free inference procedures, and is necessary to express domain knowledge of composite Boolean structure.
 Continuing the previous example, we may know that a person does \emph{not} have hypoglycemia, or that they have hypoglycemia \emph{or} hyperglycemia, or \emph{neither}.
 % Few likelihood-based likelihood-free approaches to inference offer effective means to condition non-trivial models on compound predicates.
 
@@ -132,9 +130,10 @@ Rather than introduce a new language or modeling formalism, we mirror   \cite{wi
 This means predicate exchange is easily incorporated into most frameworks. 
 
 Our approach comes with certain limitations.
-Predicates which indicate sets of zero measure -- typically due to equality conditions on continuous variables -- are problematic because the probability of proposal a satisfying state becomes zero.
+Predicates which indicate sets of zero measure -- typically due to equality conditions on continuous variables -- are problematic because the probability of proposing a satisfying state becomes zero.
 In these cases predicate exchange must sample at a minimum temperature strictly greater than zero.
-In addition, to evaluate a soft predicate whose control-flow depends on randomness in the model, can in some be a hard problem in of itself.
+In addition, control-flow in a predicate may depends on randomness in the model.
+This can cause it to be difficult to evaluate efficiently.
 % Nevertheless predicate exchange 
 
 In summary we address the problem of conditioning probabilistic models on predicates as a means to express declarative knowledge.
@@ -144,7 +143,7 @@ In detail, we:
 	\item Formalize simulation based probabilistic models in measure theoretic probability, and conditioning as the imposition of constraints expressed as predicates (Section \ref{simmodels}).
 	\item Motivate predicate relaxation (Section \ref{predexchange}), and provide softened versions of primitive Boolean functions. 
 	\item Provide a light-weight implementation of predicate exchange (Section \ref{implement}) through nonstandard execution of a simulation based model.
-	\item Evaluate our approach on examples, including case studies in inverse graphics and enriching medical models with limited data.
+	\item Evaluate our approach on examples, including case studies in inverse graphics and glycemic forecasting.
 \end{enumerate}
 
 

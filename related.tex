@@ -1,13 +1,14 @@
 \section{Related Work}
 
 % Likelihood free inference
-Demand for likelihood-free inference emerged in genetics ecology; Tavar{\'e} et al. \citep{tavare1997inferring} computed summary statistics of the output of a simulation, reject an accept-reject for posterior inference.
-Weiss et al. \cite{weiss1998inference} expanded on this with a tolerance term, such that simulations yielding data sufficiently close to the targets were accepted.
+Demand for likelihood-free inference emerged in genetics ecology.
+Tavar{\'e} et al. \yrcite{tavare1997inferring} computed summary statistics of the output of a simulation, reject an accept-reject for posterior inference.
+Weiss et al. \yrcite{weiss1998inference} expanded on this with a tolerance term, such that simulations yielding data sufficiently close to the targets were accepted.
 Such posterior samples are therefore approximate.
 Approximate Bayesian Computation (ABC) has come to refer to broad class of methods \cite{beaumont2002approximate,sisson2007sequential} in this general regime.
-Marjoram et al. \cite{marjoram2003markov} simulated Markov Chains according to the prior, but introduced the accept/reject stage to yield approximate posterior samples.
+Marjoram et al. \yrcite{marjoram2003markov} simulated Markov Chains according to the prior, but introduced the accept/reject stage to yield approximate posterior samples.
 A small tolerance leads to a high rejection rate, whereas a large tolerance results in an unacceptable approximation error.
-Among several solutions are dynamically decreasing of tolerance \cite{toni2008approximate}, having a large tolerance but importance reweighting samples based on distance \cite{wegmann2009efficient}, adapting the tolerance based on the current distance \cite{del2012adaptive,lenormand2013adaptive}, as well as annealing the tolerance as a temperature parameter.
+Among several solutions are dynamically decreasing of tolerance \cite{toni2008approximate}, importance reweighting samples based on distance \cite{wegmann2009efficient}, adapting the tolerance based on distance \cite{del2012adaptive,lenormand2013adaptive}, as well as annealing the tolerance as a temperature parameter \cite{albert2015simulated}.
 
 Predicate exchange targets simulation models and uses distance metrics, but targets exact inference without summary statistics.
 In a recent approach with similar motivation, \cite{graham2017asymptotically} develop Hamiltonian Monte Carlo variant, which at each iteration uses a quasi-Newton method to solve exactly the constraint that the data is equal to the output of the generative model.  They perform HMC in an unconstrained space and project back to the constrained manifold.
