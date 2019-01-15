@@ -128,8 +128,6 @@ $\textrm{softexecute}$ simulates $\pi$ but within a context where (i) variables 
 
 $\textrm{softexecute}$ returns a real value for the approximate posterior of $f$ as a function of the dictionary $\mathbb{D}$.
 
-\paragraph{Unsatisfiability}Predicate exchange is unable to determine if a predicate is unsatisfiable (e.g.  $(x > 1) \land (x < -1)$), and defers to the user to ensure this is the case.
-
 \paragraph{Control Flow}
 Programs may have control flow constructs, such as if-then-else statements.
 These may cause $\textrm{softexecute}$ to return a value that is significantly less than $\softv{\lk}^*(m)$ as defined in Equation \ref{eq:distpset}.

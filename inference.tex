@@ -2,7 +2,7 @@
 To condition a model $\cM$ on a predicate $Y$ we develop \emph{predicate exchange}, a likelihood-free inference procedure.  It is composed of two parts:
 \begin{enumerate}
 \item \textbf{Predicate Relaxation} constructs a relaxed predicate $\softv{Y}$ from $Y$. $\softv{Y}$ takes values   in a soft Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$. $\soft{\lor}$ and $\neg$. 
-% the unit interval $[0, 1]$ rather than $\{0, 1\}$.
+
 $\softv{Y}$ is 1 iff $Y$ is 1, but otherwise takes nonzero values denoting the degree to which $Y$ is satisfied.
 % The relaxation is parameterized by a temperature.
 % Predicate relaxation allows us to apply likelihood based MCMC inference procedures.
@@ -173,11 +173,10 @@ This is modulated by the temperature $\alpha$ used in the  relaxation kernels wh
 At maximum temperature $\softv{\lk}$ has no effect, and the approximate posterior $f$ is equal to the prior $p$.
 At zero temperature, $f$ recovers the true posterior since parameter values which violate the condition are given zero weight.
 
-For illustration, let $\cM = (\mu, X_1, X_2)$ be a model where $\mu = \mathcal{N}(0, 1), Y = \mathcal{N}(\mu, 1)$, $X_2 = X_1^2$ and $\cM$ be conditioned on $X_2 = 1$.
-Since $X_2$ is a deterministic function of $X$, we can exclude it for inference.
+For illustration, let $\cM = (\mu, X)$ be a model where $\mu = \textrm{Beta}(3, 4), X = \mathcal{N}(\mu, 1)$  conditioned on $X_2 = 0.5$.
 The approximate posterior is shown at different temperatures in Figure \ref{temppost} and defined as:
 \begin{equation}\label{approxposterior}
-f(x, y) = \mathcal{N}_{0,1}(x) \cdot \mathcal{N}_{0,1}(y) \cdot k(x + y, 0) 
+f_\alpha(\mu, x) = \textrm{Beta}_{0,1}(\mu) \cdot \mathcal{N}_{\mu,1}(x) \cdot k_\alpha(\rho(x, 0.5)) 
 \end{equation}
 
 \begin{figure}\label{temppost}
@@ -186,15 +185,14 @@ f(x, y) = \mathcal{N}_{0,1}(x) \cdot \mathcal{N}_{0,1}(y) \cdot k(x + y, 0)
 \end{figure}
 
 The temperature parameter trades off between tractability of inference and the fidelity of the approximation.
-Too high and $\softv{Y}$ will diverge too greatly from $Y$   . Too low and convergence will be slow.
+Too high and $\softv{Y}$ will diverge too greatly from $Y$. Too low and convergence will be slow.
 % Several temperatre methods for controlling temperature exist such as simulated annealing \citep{kirkpatrick1983optimization} and Adiabatic Monte Carlo \citep{betancourt2014adiabatic}.
 We augment replica exchange \citep{swendsen1986replica}, which combines information from several chains to sample more effectively, which an accept/reject phase, to sample from the unrelaxed model.
 
 \subsection{Replica Exchange}\label{replicaexchange}
 Replica exchange simulates $M$ replicas at different temperatures, and uses a Metropolis-Hastings update to  periodically swap the temperatures of chains.
-Given w.l.g two parallel chains simulating targets $f_{\alpha_1}(x)$, $f_{\alpha_2}(y)$ where $f_{\alpha_i}$ is an approximate posterior function at temperature $\alpha_i$.
-Assuming independence, they follow a joint target $f_{\alpha_1, \alpha_2}(x,y) = f_{\alpha_1}(x)f_{\alpha_2}(y)$.
-Replica exchange swaps states between the two chains while preserving the joint target.
+If $f_{\alpha_i}$ is an approximate posterior function at temperature $\alpha_i$, two independent parallel chains simulating targets $f_{\alpha_1}(x)$, $f_{\alpha_2}(y)$ they follow a joint target $f_{\alpha_1, \alpha_2}(x,y) = f_{\alpha_1}(x)f_{\alpha_2}(y)$.
+Replica exchange swaps states between the chains while preserving the joint target.
 That is, we propose a swap of $x$ and $y$ to move from $(x, y)$ to $(x^\star,y^\star)$, where $x^\star=y$ and $y^\star=x$.
 Swapping states is equivalent to swapping predicates, which motivates the name predicate exchange.
 The swap is accepted with probability $\min(1, A)$ where:
@@ -206,38 +204,40 @@ For exact inference, states which violate the constraint are rejected.
 Unlike conventional replica exchange which draws samples only from the zero-temperature chain, we accept states from any chains so long as $f_{\alpha_i}(x) = 1$.
 
 Replica exchange has a number of hyper-parameters: the number of parallel chains, the corresponding temperatures, the swapping schedule.
-Several good practices are outlined in Following \cite{earl2005parallel}.  In practice, we logarithmically space $\alpha$ between a lower and upper bound (e.g., $\alpha_1 = 10^{-5}$, $\alpha_M = 10^5$), and swap states of chains that are adjacent in temperature ($\alpha_1$ with $\alpha_2$, $\alpha_2$ with $\alpha_3$, etc) periodically.
+Several good practices are outlined in \cite{earl2005parallel}.  In practice, we logarithmically space $\alpha$ between a lower and upper bound (e.g., $\alpha_1 = 10^{-5}$, $\alpha_M = 10^5$), and swap states of chains that are adjacent in temperature ($\alpha_1$ with $\alpha_2$, $\alpha_2$ with $\alpha_3$, etc) periodically.
 
 
-\paragraph{Balancing Different Constraints}
-The scales of variables effect their influence on
-the conditional distribution at a fixed temperature.
-For example consider two pairs of variables, where
-the first pair is ten times larger than the second.
-Conditioning on a greater than constraint on both
-pairs of variables is well defined. However,
-a softening of both constraints would have 
-a much larger change in the energy function over
-a standard deviation change in pairs of variables.
-To mitigate this issue, Omega tries enforce equality
-in magnitude between all basic predicates at each temperature.
-% rr: zenna can you add the basic predicates
-To accomplish this, consider the case of two 
-softened predicates $k_1$ and $k_2$. For the
-energy function, Omega introduces a weight
-for all but the first constraint, in this
-case $k_2$ in the energy function gets replaces
-by $\gamma_2 k_2$. The weight $\gamma_2$ should
-ensure that $\gamma_2 k_2$ has the same
-magnitude effect as $k_1$ on the energy
-function:
-\begin{align*}
-E_{p_{\alpha, \gamma_2}}[k_1] = E_{p_{\alpha, \gamma_2}}[\gamma_2 k_2] 
-\end{align*}
-% Does such a gamma_2 always exist? Maybe rewrite it as
-% an optimization problem over gamma to enforce a solution?
-In practice, we set $\gamma_2$ using an exponential moving
-average of the $k_1$ values over the $k_2$ values.
+% \paragraph{Balancing Different Constraints}
+% The scales of variables effect their influence on
+% the conditional distribution at a fixed temperature.
+% For example consider two pairs of variables, where
+% the first pair is ten times larger than the second.
+% Conditioning on a greater than constraint on both
+% pairs of variables is well defined. However,
+% a softening of both constraints would have 
+% a much larger change in the energy function over
+% a standard deviation change in pairs of variables.
+% To mitigate this issue, Omega tries enforce equality
+% in magnitude between all basic predicates at each temperature.
+% % rr: zenna can you add the basic predicates
+% To accomplish this, consider the case of two 
+% softened predicates $k_1$ and $k_2$. For the
+% energy function, Omega introduces a weight
+% for all but the first constraint, in this
+% case $k_2$ in the energy function gets replaces
+% by $\gamma_2 k_2$. The weight $\gamma_2$ should
+% ensure that $\gamma_2 k_2$ has the same
+% magnitude effect as $k_1$ on the energy
+% function:
+% \begin{align*}
+% E_{p_{\alpha, \gamma_2}}[k_1] = E_{p_{\alpha, \gamma_2}}[\gamma_2 k_2] 
+% \end{align*}
+% % Does such a gamma_2 always exist? Maybe rewrite it as
+% % an optimization problem over gamma to enforce a solution?
+% In practice, we set $\gamma_2$ using an exponential moving
+% average of the $k_1$ values over the $k_2$ values.
+
+\paragraph{Unsatisfiability}Predicate exchange is unable to determine if a predicate is unsatisfiable (e.g.  $(x > 1) \land (x < -1)$), and defers to the user to ensure this is the case.
 
 % This scenario closely resembles the reparameterization trick \citep{Kingma:2014, rezende2014stochastic} where one resorts to include all the uncertainty of a random variable $z$ in a simple, easy-to-sample, parameter-free noise source such as $\epsilon \sim \mathcal{N}(\mathbf{0}, I)$. The actual random variable $z$ is then obtained through a parametric transformation of the noise, $z = f(\epsilon; \theta)$. Both methods separate the 
 % uncertainty of a random variable from the deterministic transformation that results in a complex density. However, in the reparameterization trick the noise source is constant and controlled while the parametric transformation is meant to infer the structure of the resulting random variable. Conversely, our forward model -- deterministic transformation -- is constant and controlled, hence we simply transfer our inference problem to a much simpler space of $\Omega$.

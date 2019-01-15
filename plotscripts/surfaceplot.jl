@@ -42,7 +42,8 @@ viz(plots) = hbox([vbox(plts...) for plts in plots]...)
 
 ## Normal Normal
 function nn()
-  p(μ, x) = pdf(Beta(3, 4), μ) * pdf(Normal(μ), x)
+  # p(μ, x) = pdf(Beta(3, 4), μ) * pdf(Normal(μ), x)
+  p(μ, x) = pdf(Normal(0, .5), μ) * pdf(Normal(μ), x)
   u(μ, x) = err(x ==ₛ 0.5)
   f(μ, x) = p(μ, x) * u(μ, x)
   scene = viz(apprxpost(p, u, f))
@@ -69,7 +70,8 @@ function spiky()
                         αs = [0.0001, 1, 100000]))
 
   setsize!(scene, 1000, 1000)
-  FileIO.save("approxpost.png", scene)
+  # FileIO.save("approxpost.png", scene)
+  scene
 end
 
 ## Spiky
