@@ -23,7 +23,7 @@ First, $\softv{Y}$ should have a temperature parameter $\alpha$ that controls th
 % smoother with large $\alpha$, we use a function $k : [0, \infty] \to [0, 1]$ parameterized by $\alpha$ to wrap the distance $\rho(a, b)$. A simple choice for such a function is $k(d; \alpha) = e^{-d / \alpha}$ that provides the desired properties to $\softv{Y}$ (see Appendix). The formal definition of $\softv{Y}$ is as follows.
 
 \begin{definition}
-The function $\softv{Y} : \Omega \to [0, 1]$ parameterized by $\alpha \in [0, \infty)$ is a relaxation of a $Y: \Omega \to \{0, 1\}$ if:
+A function $\softv{Y} : \Omega \to [0, 1]$ parameterized by $\alpha \in [0, \infty)$ is a relaxation of a $Y: \Omega \to \{0, 1\}$ if:
 \begin{enumerate}[label=(\roman*)]
 	\label{def:temp}
 	\item For all $\omega \in \Omega$, $\lim_{\alpha \to 0}\softv{Y}(\omega; \alpha) = Y(\omega)$.
@@ -40,22 +40,17 @@ The construction of $\softv{Y}$ from $Y$ (Section \ref{implement}) substitutes p
 For example if $x$ and $y$ are real values, then $x \soft{=} y$ is defined as $k_\alpha(\rho(x, y))$ where $\rho$ is a distance function and $k_\alpha$ is a relaxation kernel paramterized by temperature $\alpha$.
 In general, we use $\soft{p}$ to denote a relaxation of a predicate $p$.
 A relaxation kernel maps distances to values in $[0, 1]$, and ensures that $\softv{Y}$ adheres to the outlined criteria.
-There are several possible kernels; we restrict our attention to the squared exponentional kernel:
+There are several possible kernels but we restrict our attention to the squared exponentional kernel:
 \begin{equation}
-k_{SE}(r) = \exp\left(-\frac{r^2}{\alpha}\right)
+k_{\alpha}(r) = \exp\left(-\frac{r^2}{\alpha}\right)
 \end{equation}
-With the squared exponential kernel, $x \soft{=} y$ is defined as $\exp(\norm{x - y}/\alpha)$.
 
-% \begin{figure}
-% \begin{align*}
-% k_{SE}(r) &= \exp\left(-\frac{r^2}{\alpha}\right) & \text{Squared Exponential}\\
-% k_{SE}(r) &= \sigma^2\left(1 + \frac{r^2}{2 \alpha \ell^2}\right)^{-\alpha} & \text{Rational Quadratic}
-% \end{align*}
-% \caption{Relaxation Kernels}
-% \label{kernels}
-% \end{figure}
+\paragraph{Distance}The distance $\rho$ depends on the realization spaces of random variables.
+For canonical spaces such as $\mathbb{R}$ and $\mathbb{N}$ we default to Euclidean distances. 
+For example, $x \soft{=} y$ is then defined as $\exp(\norm{x - y}/\alpha)$.
+For elements of composite structure taking with a product typem $x, y \in \mathbb{T}_1 \times \cdots \times \mathbb{T}_n$, by default $\rho$ takes a mean $\rho(x, y) = (1/n)\sum^n_{i=1}\rho(x_i, y_i)$.
 
-A soft inequality such as $x \soft{=} y$ is function of the amount by which $x$ must be increased (or $y$ decreased) until $x > y$ is true.
+A soft inequality such as $x \soft{>} y$ is function of the amount by which $x$ must be increased (or $y$ decreased) until $x > y$ is true.
 This is the distance between $x$ and the interval $[y, \infty]$, where the distance between a point and any interval $[a, b]$ is the smallest distance between $x$ and any element in $[a, b]$, and therefore 0 if $x \in [a, b]$:
 \begin{equation}
 \rho(x, [a, b]) =
@@ -66,18 +61,12 @@ This is the distance between $x$ and the interval $[y, \infty]$, where the dista
 \end{cases}
 \end{equation}
 
-In general, a distance on points extends naturally to sets:
+The optimal degree of satisfaction $\soft{\lk}_{\inf}(m)$ of a realization $m = (x_1, \cdots x_n)$ of a model is then the smallest distance between that realization and any point in the constraint set, i.e.,
 \begin{equation}
-\rho(x, A) = \inf \left\{\rho(x, a) \mid a \in A\right\}
+\soft{\lk}_{\inf}(m) = \rho(m, A)
 \end{equation}
-
-Given an realization of a model $(x_1, \cdots x_n)$, we can then define a general notion of distance.
-ABC methods assume a simple distance metric on the output of the simulation; the situation is more complex with predicates.
-Instead, we define the degree of satisfaction of a realization of the model is the smallest distance between that point and any point in the constraint set, i.e., $A = \{(x_1, \dots, x_n) \mid \lk(x_1, \dots, x_n) = 1\}$, and
-\begin{equation}
-\rho(x, A) = \inf \left\{\rho(x, a) \mid a \in A\right\}
-\end{equation}
-As shown in the Section \ref{implement}, this can be difficult to compute.
+where $A = \{(x_1, \dots, x_n) \mid \lk(x_1, \dots, x_n) = 1\}$, and $\rho(x, A) = \inf \left\{\rho(x, a) \mid a \in A\right\}$
+As shown in the Section \ref{implement}, $\soft{\lk}_{\inf}$ can be difficult to compute.
 
   % \begin{center}
   % \begin{tabular}{ c |  c | c }
@@ -109,18 +98,18 @@ However, as shown in Figure \ref{negationimg} (b), this violates criteria (iii) 
 
 \begin{figure}
 \includegraphics[width=\linewidth]{negation.pdf}
-\caption{Soft (blue) and hard (dotted red) predicates as a function of $x$.}\label{negationimg}
+\caption{Soft predicates as function of $x$.  In all figures the blue line denotes the soft predicate, while the red line denotes the predicate to approximate.}\label{negationimg}
 \end{figure}
 
 
-The problem arises because $\softv{Y}$ is consistent with $Y$ at 1 but not at 0.
+The problem of negation arises because $\softv{Y}$ is consistent with $Y$ at 1 but not at 0.
 In other words, $\softv{Y}$ is a one-sided approximation.
 To overcome this challenge for models where negation is used, a two-sided relaxed predicate yields a pair $(a_0, a_1)$, where $a_0, a_0 \in [0, 1]$.
-$a_1$ preserves consistency with $Y$ on $1$, just as before, whereas $a_0$ preserves consistency with $\neg Y$ on $1$ (or equivalently $Y$ on 0).
+$a_1$ preserves consistency with $Y$ on $1$, just as before, while $a_0$ preserves consistency with $\neg Y$ on $1$ (or equivalently $Y$ on 0).
 For example if $x \dsoft{>} 0 = (a_0, a_1)$, then as a function of $x$, $a_0$ and $a_1$ correspond to Figure \ref{negationimg} (a) and (c) respectively.
 
 A complete two-sided soft logic is shown in Figure \ref{softw}.
-Observe that soft negation simply swaps the elements of $(a_0, a_1)$ to yield $a_1, a_0)$.
+Observe that soft negation simply swaps the elements of $(a_0, a_1)$ to yield $(a_1, a_0)$.
 Although a two-sided predicate has two components, for the sake of conditioning we are still concerned only with the true side $a_1$ in the pair $(a_0, a_1)$.
 
 % \begin{definition}
@@ -166,14 +155,14 @@ MCMC algorithms require a function $f$ that is proportional to the the target de
 In Bayesian inference this is the posterior, dictated by Bayes' theorem as the product of the likelihood and the prior.
 Approximate inference using relaxed predicates takes a similar form.
 
-Let $\cM$ be a model, $Y$ be a predicate that conditions $\cM$, and $\softv{Y}$ be a relaxation of $Y$.
-% Random variables in $\cM$ may be exogenous or endogenous in the sense that
-% given values for exogenous variables, the values of endogenous are determined.
-% For example $X = \mathcal{N}(0,1)$ is exogenous while $Y = X^2$ is endogenous.
-% Inference need only take place on exogenous random variables.
-Both $Y$ and $\softv{Y}$ are random variables, and hence map from the sample space $\Omega$;
-for convenience we define a soft predicate $\softv{\lk}$ as a function of its parameters (other random variables in the model) rather than the sample space.
-That is, let $\softv{Y}(\omega) = \softv{\lk}(X_1(\omega), ..., X_n(\omega))$, where $X_i \in \cM$.
+Let $\cM = (X_1, \dots, X_n)$ be a model, $Y$ be a predicate that conditions $\cM$, and  $\softv{Y}(\omega) = \softv{\lk}(X_1(\omega), ..., X_n(\omega))$ be a relaxation of $Y$.
+% % Random variables in $\cM$ may be exogenous or endogenous in the sense that
+% % given values for exogenous variables, the values of endogenous are determined.
+% % For example $X = \mathcal{N}(0,1)$ is exogenous while $Y = X^2$ is endogenous.
+% % Inference need only take place on exogenous random variables.
+% Both $Y$ and $\softv{Y}$ are random variables, and hence map from the sample space $\Omega$;
+% for convenience we define a soft predicate $\softv{\lk}$ as a function of its parameters (other random variables in the model) rather than the sample space.
+% That is, let $\softv{Y}(\omega) = \softv{\lk}(X_1(\omega), ..., X_n(\omega))$, where $X_i \in \cM$.
 Assuming a prior density $p$, the approximate posterior $f$ is the product:
 \begin{equation}
 f(m) = p(m) \cdot \softv{\lk}(m)
@@ -195,15 +184,12 @@ f(x, y) = \mathcal{N}_{0,1}(x) \cdot \mathcal{N}_{0,1}(y) \cdot k(x + y, 0)
 \caption{Approximate Posterior at varying temperatures}
 \end{figure}
 
-
-
-\subsection{Replica Exchange}\label{replicaexchange}
-
 The temperature parameter trades off between tractability of inference and the fidelity of the approximation.
 Too high and $\softv{Y}$ will diverge too greatly from $Y$   . Too low and convergence will be slow.
 % Several temperatre methods for controlling temperature exist such as simulated annealing \citep{kirkpatrick1983optimization} and Adiabatic Monte Carlo \citep{betancourt2014adiabatic}.
 We augment replica exchange \citep{swendsen1986replica}, which combines information from several chains to sample more effectively, which an accept/reject phase, to sample from the unrelaxed model.
 
+\subsection{Replica Exchange}\label{replicaexchange}
 Replica exchange simulates $M$ replicas at different temperatures, and uses a Metropolis-Hastings update to  periodically swap the temperatures of chains.
 Given w.l.g two parallel chains simulating targets $f_{\alpha_1}(x)$, $f_{\alpha_2}(y)$ where $f_{\alpha_i}$ is an approximate posterior function at temperature $\alpha_i$.
 Assuming independence, they follow a joint target $f_{\alpha_1, \alpha_2}(x,y) = f_{\alpha_1}(x)f_{\alpha_2}(y)$.
