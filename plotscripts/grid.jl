@@ -177,7 +177,7 @@ algs = [
         (alg = SSMH,),
         (alg = NUTS,),
         (alg = Replica, nreplicas = 4, inneralg = SSMH),
-        # (alg = Replica, nreplicas = 4, inneralg = NUTS),
+        (alg = Replica, nreplicas = 4, inneralg = NUTS),
         # (alg = HMCFAST, stepsize = 0.001, nsteps = 100),
         # (alg = Replica, nreplicas = 4, inneralg = HMCFAST,
         #  ΩT = SimpleΩ{Vector{Int}, Flux.TrackedArray}, algargs = (stepsize = 0.001, nsteps = 100))
@@ -186,15 +186,15 @@ algs = [
 flatten(xs) = vcat([x for x in xs]...)
 
 
-plots = vizall(probs, algs, 10)
+plots = vizall(probs, algs, 10000)
 
 
 st = L"x + y < 0"
 ltxstrings = [L"x = y", L"x > y", L"|x| > |y|", L"x^2 = y^2", L"\sin(kx)\cos(kx) < \epsilon_1", L"\sin(kx)\cos(kx) < \epsilon_2"] 
-algstrings = ["", "SSMH", "RE-SSMH", "RE-HMC"]
+algstrings = ["", "SSMH", "NUTS", "RE-SSMH", "RE-NUTS"]
 
 function makeplots(plots)
-  foreach((plt, st) -> ylabel!(plt[1], st), plots, ltxstrings)
+  # foreach((plt, st) -> ylabel!(plt[1], st), plots, ltxstrings)
   foreach((plt, st) -> title!(plt, st), plots[1], algstrings)
   flatplots = flatten(plots)
   @show nrows, ncols = length(plots), length(plots[1])
@@ -215,7 +215,7 @@ function makeplots(plots)
 end
 
 plt = makeplots(plots)
-
+savefig(plt, "grid3.pdf")
 # n = 8
 # temps = Omega.Inference.logtemps(n)
 # temps = [1e-9, 10000]
