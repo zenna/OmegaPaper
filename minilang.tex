@@ -78,23 +78,24 @@
 
 In this section we describe a generic, lightweight implementation of predicate exchange.
 Our approach closely mirrors \citep{wingate2011lightweight, milch20071} in the sense that it provides a language independent layer that can be implemented on top of existing programming languages and modeling formalisms.
-Our objective is to twofold: (i) to compute the prior term $p$, approximate likelihood term $\lk$, and approximate posterior term $f$ (Equation \ref{approxposterior}) from an arbitrary program $\pi$, and (ii) to perform Replica Exchange MCMC to sample from this posterior.
+Our objective is to twofold: (i) to compute the prior term $p$, approximate likelihood term $\softv{\lk}$, and approximate posterior term $f$ (Equation \ref{approxposterior}) from an arbitrary program $\pi$, and (ii) to perform Replica Exchange MCMC to sample from this posterior.
 
 A program $\pi$ can be an arbitrary composition of deterministic and stochastic procedures, but all stochastic elements must come from a set of known \emph{elementary random primitives}, or ERPs.
 ERPs correspond to primitive parametric distribution families, such as the uniform or normal distribution.
 Let $\mathcal{T}$ be a set of ERP types.
 Each type $\tau \in \mathcal{T}$ must support (i) evaluation of the conditional density $p_\tau(x \mid \theta_1, ..., \theta_n)$, and (ii) sampling from the distribution.
-Concretely, a conditioned program $\pi$ is a any program that the statements:
+Concretely, a conditioned program $\pi$ is a any nullary program that contains the statements:
 
 \begin{enumerate}
   \item $\textrm{rand}(\tau, n, \theta_1, ...,\theta_n)$ returns a random sample from $p_\tau(x \mid \theta_1, ..., \theta_n)$.  $n$ is a unique named described below.
   \item $\cond(y)$ conditions $\pi$.  It throws an error if $y \in \{0, 1\}$ is 0, and otherwise allows simulation to resume with no effect.
 \end{enumerate}
 
+Example Program 1 illustrates a simple conditioned model.
+
 \subsection{Tracked Soft Execution}
-The prior term $p$ is computed automatically as the product of independent random choices in the program. 
-That is, let $\pi_{k \mid x_1, ..., x_{k-1}}$ be the k'th ERP encountered in while executing $\pi$, $x_k$ be the value it takes, and $x$ denote the set of all values of all ERPs constructed in the simulation of $\pi$.
-The probability $p(x)$ is the product:
+The prior term $p$ is computed automatically as the product of random choices in the program. 
+That is, let $\pi_{k \mid x_1, ..., x_{k-1}}$ be the k'th ERP encountered in while executing $\pi$, $x_k$ be the value it takes, and $x$ denote the set of all values of all ERPs constructed in the simulation of $\pi$, $p(x)$ is the product:
 \begin{equation}\label{productprob}
 p(x) = \prod_{k=1}^K p_\tau(x_k \mid \theta_1,..., \theta_n )
 \end{equation}
@@ -121,29 +122,27 @@ This allows the simulation of $\pi$ to be modulated by controlling the elements 
 $\textrm{softexecute}$ simulates $\pi$ but within a context where (i) variables $\lk_\mathbb{D}$ and $p_\mathbb{D}$ accumulate prior and approximate posterior values, and (ii) the following operators are redefined:
 
 \begin{enumerate}
-  \item $\textrm{rand}(\tau, n, \theta_1, ...\theta_n)$ returns $\mathbb{D}(n)$, and in compliance with Equation \ref{productprob} updates $p_\mathbb{D}$ with the conditional density. If $n$ is not a key in $\mathbb{D}$, the the distribution is sampled from $\mathbb{D}(n)$ with this value.  
+  \item $\textrm{rand}(\tau, n, \theta_1, ...\theta_n)$ returns $\mathbb{D}(n)$, and in compliance with Equation \ref{productprob} updates $p_\mathbb{D}$ with the conditional density. If $n$ is not a key in $\mathbb{D}$, the distribution is sampled from and $\mathbb{D}(n)$ is updated with this value.  
   \item $a \text{ op } b$ and $\textrm{op } a$ for $\textrm{op} \in \{>, <, =, \land, \lor, \neg\}$ are replaced with the softened counter-parts $\soft{\textrm{ op }} \in \{\soft{>}, \soft{<}, \soft{=}, \soft{\land}, \soft{\lor}, \soft{\neg}\}$.
-  \item $\cond(y)$ updates $\lk_\mathbb{D}$ with $\lk_\mathbb{D} \land y$ where $y \in [0,1]$ due to soft primitive operators.  
+  \item $\cond(y)$ updates $\softv{\lk}_\mathbb{D}$ with $\softv{\lk}_\mathbb{D} \soft{\land} y$. $y \in [0,1]$ due to soft primitive operators.  
 \end{enumerate}
 
 $\textrm{softexecute}$ returns a real value for the approximate posterior of $f$ as a function of the dictionary $\mathbb{D}$.
 
-\paragraph{Unsatisfiability}Predicate exchange is unable to determine if a predicate is unsatisfiable (e.g.  $(x > 1) \land (x < -1)$), and defers to the user to ensure this is the case.
-
 \paragraph{Control Flow}
 Programs may have control flow constructs, such as if-then-else statements.
-These may cause $\textrm{softexecute}$ to return a value that is significantly less than $\softv{\lk}^*(m)$ as defined in Equation \ref{eq:distpset}.
-This is because if a branch condition is a function of an uncertain value, then several alternative paths could, which could.
-$\textrm{softexecute}$ is ignorant of thees other possibilities.
-For illustration, consider example \ref{prog:ex2}.
-If $x = -1$, the condition fails, and the predicate relaxation will yield $x \soft{=} -100$, which is significantly larger than if the true branch were taken.
+These may cause $\textrm{softexecute}$ to return a value that is significantly less than $\soft{\lk}_{\inf}$.
+This is because if a branch condition is a function of an uncertain value, then several unexplored alternative paths could produce values that are closer to the constraint set.
+$\textrm{softexecute}$ is ignorant of thees other possibilities
+For illustration, consider Example Program 2 \ref{prog:ex2}.
+If $x = -1$ the condition fails, and the predicate relaxation will yield $x \soft{=} -100$, which is significantly larger than if the true branch were taken.
 
 \begin{exprogram}[tb]
 \caption{}
 \label{prog:ex2}
 \begin{algorithmic}
 \STATE $x = \textrm{rand}(\mathcal{N}, x, 0, 1)$
-\IF {$x > y$}
+\IF {$x > 0$}
 \STATE $\cond(x = 1)$
 \ELSE
 \STATE $\cond(x = -100)$
@@ -152,16 +151,16 @@ If $x = -1$, the condition fails, and the predicate relaxation will yield $x \so
 \end{algorithmic}
 \end{exprogram}
 
-Problems of this form appear in all forms of program analyis.
+Problems of this form appear in all forms of program analysis.
 This problem is called the path explosion problem, since the number of possible paths often increases combinatorially with program size and runtime length.
-Automated program testing, which is concerned has developed various strategies \cite{cadar2008exe, sen2005cute}.
-Broadly, these trace the execution of the program and derive in symbol form the branch constraints.
-These constraints are solved to force the execution into branches of the program that incur error states.
-These tools have been scaled to very large problems, in complex real world code.
-Two methods that use heuristics toguide path exploration are [4] (which attempts to explore paths that hit less-often executed statements.
+Automated program testing, which is concerned with finding program paths that yield to failure has developed various strategies \cite{cadar2008exe, sen2005cute}.
+% Broadly, these trace the execution of the program and derive in symbol form the branch constraints.
+% These constraints are solved to force the execution into branches of the program that incur error states.
+% These tools have been scaled to very large problems, in complex real world code.
+% Two methods that use heuristics toguide path exploration are [4] (which attempts to explore paths that hit less-often executed statements.
 Unlike automated testing, probabilistic inference has the stricter requirement of adhering to the true posterior distribution.
 However, in predicate exchange, we have a latitude on all nonunitary values.
-This opens up the potential for extending these methods in future work.
+This opens up the potential for extending program analysis methods to the probabilistic domain in future work.
 
 
 \begin{algorithm}[tb]
@@ -169,7 +168,7 @@ This opens up the potential for extending these methods in future work.
   \label{alg:softexecute}
 \begin{algorithmic}
 \STATE {\bfseries Input:} program $\pi$, temperature $\alpha$, dictionary $\mathbb{D}$
-\STATE Initialize $\lk_\mathbb{D} = 1, p_\mathbb{D} = 1$
+\STATE Initialize $\softv{\lk}_\mathbb{D} = 1, p_\mathbb{D} = 1$
 \STATE Simulate $\pi$ with following subroutines redefined as:   
 \ALOOP {$\textrm{rand}(\tau, n, \theta_1, ..., \theta_n)$}
    \IF{$n \in \mathbb{D}$}
@@ -183,7 +182,7 @@ This opens up the potential for extending these methods in future work.
 \ENDALOOP
 \STATE
 \ALOOP {$\cond(\lk')$}
-  \STATE $\lk_\mathbb{D} = \lk_\mathbb{D} \cdot \lk_\mathbb{D}'$
+  \STATE $\softv{\lk}_\mathbb{D} = \softv{\lk}_\mathbb{D} \cdot \softv{\lk}_\mathbb{D}'$
 \ENDALOOP
 \STATE
 \ALOOP {$\textrm{op}(x, \dots)$ for $\textrm{op} \in \{>, <, =, \land, \lor, \neg\}$}
@@ -201,7 +200,7 @@ This opens up the potential for extending these methods in future work.
 %  \ELSIF{$s = \cond(\lk')$}
 %    \STATE $\lk_\mathbb{D} = \lk_\mathbb{D} \cdot \lk_\mathbb{D}'$
 %  \ENDIF
-\STATE {\bfseries Return:} $p_\mathbb{D} \cdot \lk_\mathbb{D}$
+\STATE {\bfseries Return:} $p_\mathbb{D} \cdot \softv{\lk}_\mathbb{D}$
 %    \ENDFOR
 %    \UNTIL{$noChange$ is $true$}
 \end{algorithmic}
@@ -211,13 +210,13 @@ This opens up the potential for extending these methods in future work.
 
 Predicate exchange (Algorithm \ref{alg:predexchange}) performs replica exchange using $\textrm{softexectute}$ as an approximate posterior.
 It takes as input an mcmc algorithm, which simulates an Markov Chain by manipulating elements of the $\mathbb{D}$.
-In our experiments, for finite dimensional continuous models we use the No U-Turn Sampler \cite{hoffman2014no}, a variant of Hamiltonion Monte Carlo, using reverse-mode automatic differentiation \cite{griewank2008evaluating} to compute the negative log gradient of $f$.
-
+In our experiments, for finite dimensional continuous models we use the No U-Turn Sampler \cite{hoffman2014no}, a variant of Hamiltonion Monte Carlo.
+We use reverse-mode automatic differentiation \cite{griewank2008evaluating} to compute the negative log gradient of $f$.
 For other models we use standard Metropolis Hastings by defining proposals on elements in the dictionary.
+In particular we use the single site MH \cite{wingate2011lightweight} which modifies a single random variable at a time.
 
-
-is expected to return a chain of dictionaries.
-Each dictionary should contains all the information required to access values of variables of interest, either explicitly as values in the dictionary, or derivable with the simulator $\pi$. 
+% Rep
+% Each dictionary should contains all the information required to access values of variables of interest, either explicitly as values in the dictionary, or derivable with the simulator $\pi$. 
 
 
 

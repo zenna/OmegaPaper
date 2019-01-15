@@ -4,7 +4,7 @@
 
 % Recommended, but optional, packages for figures and better typesetting:
 \usepackage{microtype}
-\usepackage{graphicx}
+% \usepackage{graphicx}
 \usepackage{subfigure}
 \usepackage{booktabs} % for professional tables
 
@@ -17,7 +17,10 @@
 % Attempt to make hyperref and algorithmic work together better:
 \newcommand{\theHalgorithm}{\arabic{algorithm}}
 
-\usepackage{icml2019}
+% \usepackage{icml2019}
+\usepackage[accepted]{icml2019}
+\input{includes.tex}
+
 
 \makeatletter
 \newenvironment{exprogram}[1][htb]{%
@@ -39,10 +42,9 @@
 
 % The \icmltitle you define below is probably too long as a header.
 % Therefore, a short form for the running title is supplied here:
-\icmltitlerunning{Submission and Formatting Instructions for ICML 2019}
-
-\input{includes.tex}
-
+\icmltitlerunning{Soft Constraints for Inference with Declarative Knowledge}
+% \usepackage[dvipdfm]{graphicx}
+% \usepackage{bmpsize}
 \begin{document}
 
 \twocolumn[
@@ -64,31 +66,25 @@
 \icmlsetsymbol{equal}{*}
 
 \begin{icmlauthorlist}
-\icmlauthor{Aeiau Zzzz}{equal,to}
-\icmlauthor{Bauiu C.~Yyyy}{equal,to,goo}
-\icmlauthor{Cieua Vvvvv}{goo}
-\icmlauthor{Iaesut Saoeu}{ed}
-\icmlauthor{Fiuea Rrrr}{to}
-\icmlauthor{Tateu H.~Yasehe}{ed,to,goo}
-\icmlauthor{Aaoeu Iasoh}{goo}
-\icmlauthor{Buiui Eueu}{ed}
-\icmlauthor{Aeuia Zzzz}{ed}
-\icmlauthor{Bieea C.~Yyyy}{to,goo}
-\icmlauthor{Teoau Xxxx}{ed}
-\icmlauthor{Eee Pppp}{ed}
+\icmlauthor{Zenna Tavares}{mit}
+\icmlauthor{Javier Burroni}{amhert}
+\icmlauthor{Edgar Minaysan}{princeton}
+\icmlauthor{Armando Solar Lezama}{mit}
+\icmlauthor{Rajesh Rangananth}{nyu}
 \end{icmlauthorlist}
 
-\icmlaffiliation{to}{Department of Computation, University of Torontoland, Torontoland, Canada}
-\icmlaffiliation{goo}{Googol ShallowMind, New London, Michigan, USA}
-\icmlaffiliation{ed}{School of Computation, University of Edenborrow, Edenborrow, United Kingdom}
+\icmlaffiliation{mit}{MIT, USA}
+\icmlaffiliation{nyu}{NYU, USA}
+\icmlaffiliation{amhert}{UMass Amherst, USA}
+\icmlaffiliation{princeton}{Princeton University, USA}
 
-\icmlcorrespondingauthor{Cieua Vvvvv}{c.vvvvv@googol.com}
-\icmlcorrespondingauthor{Eee Pppp}{ep@eden.co.uk}
+\icmlcorrespondingauthor{Zenna Tavares}{zenna@mit.edu}
+% \icmlcorrespondingauthor{Eee Pppp}{ep@eden.co.uk}
 
 % You may provide any keywords that you
 % find helpful for describing your paper; these are used to populate
 % the "keywords" metadata in the PDF but will not be shown in the document
-\icmlkeywords{Machine Learning, ICML}
+\icmlkeywords{Probabilistic Inference, Markov Chain Monte Carlo, Replica Exchange, Probabilistic Programming}
 
 \vskip 0.3in
 ]
@@ -115,7 +111,7 @@
 \input{minilang}
 \input{experiments}
 \input{discussion}
-\input{key}
+% \input{key}
 
 
 \bibliography{bib}
