@@ -17,33 +17,15 @@ Conditioning on predicates requires a measure-theoretic foundation, in which a s
 
 \begin{figure}
 	\centering
-	\begin{minipage}[t]{5cm}
+	\begin{minipage}[t]{0.5\linewidth}
 		\centering
-		\includegraphics[width=0.45\linewidth]{figures/clunk}
-		% \begin{verbatim}
-		%         rand(objs)
-		% \end{verbatim}
+		\includegraphics[width=0.8\linewidth]{figures/clunk}
 	\end{minipage}%
-	\begin{minipage}[t]{5cm}
+	\begin{minipage}[t]{0.5\linewidth}
 		\centering
-		\includegraphics[width=0.45\linewidth]{figures/render}
-		% \begin{verbatim}
-		% pred = nointersect(objs)
-		% rand(scene, pred)
-		% \end{verbatim}
+		\includegraphics[width=0.8\linewidth]{figures/nointersect}
 	\end{minipage}%
-	% \begin{minipage}[t]{5cm}
-	% \centering
-	% \includegraphics[width=0.5\linewidth]{figures/equi}
-	% $$
-	% x = 3
-	% $$
-	% % \begin{verbatim}
-	% % pred = equidistant(objs)
-	% % rand(scene, pred)
-	% % \end{verbatim}
-	% \end{minipage}
-	\caption{A weak prior (left) does not respect rigid body constraints on objects, whereas (center) is conditioned on the predicate that objects don't intersect.  (right) objects are conditioned on being equidistant, resulting in a tetrahdral arrangement}
+	\caption{Sample from geometric prior (left), whereas (right) is conditioned on no-intersection constraint}
 	\label{fig:nointersect}
 \end{figure}
 
