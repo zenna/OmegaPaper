@@ -40,8 +40,8 @@ that maps from $\Omega \to \mathbb{R}$. If the underlying probability space is u
 this function is the inverse cumulative distribution function of the normal.
 
 A \emph{model} $\cM$ is a collection of random variables along with a probability space.
-To fully specify a model, we need both the measure space and the
-collection of random variables on which it acts.
+% To fully specify a model, we need both the measure space and the
+% collection of random variables on which it acts.
 
 \paragraph{Conditioning}
 
@@ -60,7 +60,7 @@ samples only where $X_1 = 1$
 
 More generally, conditioning on any predicate $Y(\omega) = \lk(X_1(\omega), \dots, X_n(\omega))$
 defines a new model defined exactly as above, where $A = \{\omega : \lk(X_1(\omega), \dots, X_n(\omega)) = 1\}$.
-This predicate may include a comparisonsuch as $X_i < X_j$, restrict deterministic function of variables in in the model such as $\exp(X_i) = 2$, or be a Boolean combination such as $(X_i < X_j) \lor \neg(\exp(X_i) = 2)$.
+% This predicate may include a comparisonsuch as $X_i < X_j$, restrict deterministic function of variables in in the model such as $\exp(X_i) = 2$, or be a Boolean combination such as $(X_i < X_j) \lor \neg(\exp(X_i) = 2)$.
 Sampling from $\cM_{|A}$ generates $(x_1, ..., x_n)$ where $\lk$ is true.
 
 The general construction of new models might require conditioning
