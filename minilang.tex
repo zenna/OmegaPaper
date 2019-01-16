@@ -78,16 +78,16 @@
 
 In this section we describe a generic, lightweight implementation of predicate exchange.
 Our approach closely mirrors \citep{wingate2011lightweight, milch20071} in the sense that it provides a language independent layer that can be implemented on top of existing programming languages and modeling formalisms.
-Our objective is to twofold: (i) to compute the prior term $p$, approximate likelihood term $\softv{\lk}$, and approximate posterior term $f$ (Equation \ref{approxposterior}) from an arbitrary program $\pi$, and (ii) to perform Replica Exchange MCMC to sample from this posterior.
+Our objective is to twofold: (i) to compute the prior term $p$, approximate likelihood term $\softv{\lk}$, and approximate posterior term $f$ (Equation \ref{approxposterior}) from an arbitrary simulator $\pi$, and (ii) to perform replica exchange MCMC to sample from this posterior.
 
-A program $\pi$ can be an arbitrary composition of deterministic and stochastic procedures, but all stochastic elements must come from a set of known \emph{elementary random primitives}, or ERPs.
+A simulator $\pi$ can be an arbitrary composition of deterministic and stochastic procedures, but all stochastic elements must come from a set of known \emph{elementary random primitives}, or ERPs.
 ERPs correspond to primitive parametric distribution families, such as the uniform or normal distribution.
 Let $\mathcal{T}$ be a set of ERP types.
 Each type $\tau \in \mathcal{T}$ must support (i) evaluation of the conditional density $p_\tau(x \mid \theta_1, ..., \theta_n)$, and (ii) sampling from the distribution.
-Concretely, a conditioned program $\pi$ is a any nullary program that contains the statements:
+Concretely, $\pi$ is any nullary program that contains the statements:
 
 \begin{enumerate}
-  \item $\textrm{rand}(\tau, n, \theta_1, ...,\theta_n)$ returns a random sample from $p_\tau(x \mid \theta_1, ..., \theta_n)$.  $n$ is a unique named described below.
+  \item $\textrm{rand}(\tau, n, \theta_1, ...,\theta_n)$ returns a random sample from $p_\tau(\cdot \mid \theta_1, ..., \theta_n)$.  $n$ is a unique named described below.
   \item $\cond(y)$ conditions $\pi$.  It throws an error if $y \in \{0, 1\}$ is 0, and otherwise allows simulation to resume with no effect.
 \end{enumerate}
 
@@ -99,7 +99,7 @@ That is, let $\pi_{k \mid x_1, ..., x_{k-1}}$ be the k'th ERP encountered in whi
 \begin{equation}\label{productprob}
 p(x) = \prod_{k=1}^K p_\tau(x_k \mid \theta_1,..., \theta_n )
 \end{equation}
-Crucially, the parameters $\theta_1,..,\theta_n$ for each random variable may be fixed values or depend on values of other random variables in $\pi$.
+The parameters $\theta_1,..,\theta_n$ may be fixed values or depend on values of other random primitives $\pi$.
 
 \begin{exprogram}[tb]
 \caption{}
@@ -151,16 +151,6 @@ If $x = -1$ the condition fails, and the predicate relaxation will yield $x \sof
 \end{algorithmic}
 \end{exprogram}
 
-Problems of this form appear in all forms of program analysis.
-This problem is called the path explosion problem, since the number of possible paths often increases combinatorially with program size and runtime length.
-Automated program testing, which is concerned with finding program paths that yield to failure has developed various strategies \cite{cadar2008exe, sen2005cute}.
-% Broadly, these trace the execution of the program and derive in symbol form the branch constraints.
-% These constraints are solved to force the execution into branches of the program that incur error states.
-% These tools have been scaled to very large problems, in complex real world code.
-% Two methods that use heuristics toguide path exploration are [4] (which attempts to explore paths that hit less-often executed statements.
-Unlike automated testing, probabilistic inference has the stricter requirement of adhering to the true posterior distribution.
-However, in predicate exchange, we have a latitude on all nonunitary values.
-This opens up the potential for extending program analysis methods to the probabilistic domain in future work.
 
 
 \begin{algorithm}[tb]
