@@ -2,7 +2,8 @@
 \section{Experiments}
 
 \begin{figure}
-	\includegraphics[width=\linewidth]{grid3}
+	\centering
+	\includegraphics[width=0.9\linewidth]{grid33}
 	\caption{Posterior samples on different problems.  RE: replica exchange, SSMH: Single Site Metropolis Hastings, HMC: Hamiltonian Monte Carlo.  (Left) is target density, and following elements are histograms from computed samples.}
 	\label{fig:grid}
 \end{figure}
@@ -15,23 +16,25 @@ First we show that the conditioning can be used to truncate a Gaussian distribut
 
 \begin{figure}[!htb]
 \centering
-\begin{minipage}{0.45\linewidth}
-\includegraphics[width=\linewidth]{truncated}
-\end{minipage}%
-\begin{minipage}{0.45\linewidth}
-	%\includegraphics[width=.16\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{0-1}
-	\includegraphics[width=.45\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{1-0}
-	\includegraphics[width=.45\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{10-0}
+\includegraphics[width=0.8\linewidth]{truncated}
+
+% \begin{minipage}{0.45\linewidth}
+% \includegraphics[width=\linewidth]{truncated}
+% \end{minipage}%
+% \begin{minipage}{0.45\linewidth}
+% 	%\includegraphics[width=.16\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{0-1}
+% 	\includegraphics[width=.45\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{1-0}
+% 	\includegraphics[width=.45\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{10-0}
 	
-	\includegraphics[width=.45\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{100-0}
-	\includegraphics[width=.45\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{1000-0}				
+% 	\includegraphics[width=.45\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{100-0}
+% 	\includegraphics[width=.45\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{1000-0}				
 	
-%	\fbox{\includegraphics[width=.16\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{0-1}}
-%	\fbox{\includegraphics[width=.16\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{1-0}}
-%	\fbox{\includegraphics[width=.16\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{10-0}}
-%	\fbox{\includegraphics[width=.16\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{100-0}}
-%	\fbox{\includegraphics[width=.16\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{1000-0}}				
-	\end{minipage}
+% %	\fbox{\includegraphics[width=.16\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{0-1}}
+% %	\fbox{\includegraphics[width=.16\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{1-0}}
+% %	\fbox{\includegraphics[width=.16\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{10-0}}
+% %	\fbox{\includegraphics[width=.16\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{100-0}}
+% %	\fbox{\includegraphics[width=.16\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{1000-0}}				
+% 	\end{minipage}
 	\caption{Left: Density from samples of Gaussian truncated to $[0, 1]$ through conditioning. Right: Conditioning on $X = Y$ where $X$ and $Y$ are independent normal distributions; shown at different temperatures.}
 	\label{fig:density}
 \end{figure}
@@ -82,11 +85,11 @@ with only a short observed time-series.
 \begin{figure}[!htb]
 	\centering
     %\fbox{\includegraphics[width=0.30\linewidth, trim={1.cm, 0.1cm, 1.3cm, .5cm}, clip]{rnnsamples-no-tie-py}}
-	\includegraphics[width=0.30\linewidth, trim={1.cm, 0.1cm, 1.3cm, .5cm}, clip]{rnnsamples-no-tie-py}
-	\includegraphics[width=.30\linewidth, trim={1.cm, 0.1cm, 1.3cm, .5cm}, clip]{rnnsamples-py}
+	\includegraphics[width=0.45\linewidth, trim={1.cm, 0.1cm, 1.3cm, .5cm}, clip]{rnnsamples-no-tie-py}
+	\includegraphics[width=.45\linewidth, trim={1.cm, 0.1cm, 1.3cm, .5cm}, clip]{rnnsamples-py}
 	%\fbox{\includegraphics[width=0.30\linewidth, trim={1.cm, 0.1cm, 1.3cm, .5cm}, clip]{rnnsamples-py}}
 	%\fbox{\includegraphics[width=0.30\linewidth, trim={1.cm, 0.0cm, 1.0cm, .5cm}, clip]{delta_mse}}
-	\includegraphics[width=0.30\linewidth, trim={0.7cm, 0.0cm, .7cm, .1cm}, clip]{mse}
+	\includegraphics[width=0.9\linewidth, trim={0.7cm, 0.0cm, .7cm, .1cm}, clip]{mse}
 		
 		\caption{Left: Actual (dotted) and predicted trajectories that were learned using a partial trajectory. Center: Distribution of predicted trajectories learned only using the first ten data points and a tie with a secondary patient. Right, top: MSE when tie is present.  Right, bottom: without tie.  Tying expectations has dramatic influence on prediction error, while as more data is observed, the effect of tying decreases.}
 		\label{fig:rnn-samples}

@@ -8,16 +8,14 @@ $\softv{Y}$ is 1 iff $Y$ is 1, but otherwise takes nonzero values denoting the d
 \item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo procedure that exploits temperature. The strength by which $\softv{Y}$ relaxes $Y$ is modulated by a temperature parameter $\alpha$, which trades off between accuracy and ease of inference.  By simulating several replicas of $\softv{Y}$ at different temperatures, replica exchange is able to draw exact samples. 
 \end{enumerate}
 
-\subsection{Soft Conditioning}
-Conditioning is an operation that restricts a measure space by a set.
+% \subsection{Soft Conditioning}
+% Conditioning is an operation that restricts a measure space by a set.
 
-Let $(\Omega, \mathcal{H}, \mathcal{P})$ be a measure space.
-Soft conditioning on a function $Y: \Omega \to [0, 1]$ constructs a new measure $\mathcal{P}'$ defined as:
-\begin{equation}
-\mathcal{P}'(A) = \frac{\mathbb{E}(Y \mid A)}{\mathbb{E}(Y)}
-\end{equation}
-
-
+% Let $(\Omega, \mathcal{H}, \mathcal{P})$ be a measure space.
+% Soft conditioning on a function $Y: \Omega \to [0, 1]$ constructs a new measure $\mathcal{P}'$ defined as:
+% \begin{equation}
+% \mathcal{P}'(A) = \frac{\mathbb{E}(Y \mid A)}{\mathbb{E}(Y)}
+% \end{equation}
 
 \subsection{Predicate Relaxation}\label{predexchange}
 
@@ -46,17 +44,17 @@ A function $\softv{Y} : \Omega \to [0, 1]$ parameterized by $\alpha \in [0, \inf
 \end{enumerate}
 \end{definition}
 
-\paragraph{Graded Satisfiability}The degree to which a model realization $m = (x_1, \dots, x_n)$ satisfies $Y$ is a function $k_\alpha$ (described below) of the distance $\rho$ of $m$ to the satisfying set $A = \{(x_1, \dots, x_n) \mid \lk(x_1, \dots, x_n) = 1\}$.
-Let $\soft{\lk}_{\inf}(m)$ be the smallest such distance:
+\paragraph{Graded Satisfiability}$\softv{Y}$ relaxes $Y$ by mapping each realization $m$ of a model to a graded degree.
+$\soft{\lk}_{\inf}(m)$ represents the degree to which a model realization $m$ satisfies a predicate. That is, $m = (x_1, \dots, x_n)$ satisfies $Y$ is a function $k_\alpha$ (described below) of its distance to the satisfying set $A = \{(x_1, \dots, x_n) \mid \lk(x_1, \dots, x_n) = 1\}$.
+Let $\rho$ be a distance metric, $\soft{\lk}_{\inf}(m)$ is then:
 \begin{equation}
 \soft{\lk}_{\inf}(m) = k_\alpha(\rho(m, A))
 \end{equation}
 where $\rho(x, A) = \inf \left\{\rho(x, a) \mid a \in A\right\}$.
 % As shown in the Section \ref{implement}, $\soft{\lk}_{\inf}$ can be difficult to compute.
 
-\paragraph{Distance} A relaxation kernel $k_\alpha$ bounds potentially unbounded distances to the unit interval, and is paramterized by temperature $\alpha$.
+\paragraph{Distance} A relaxation kernel $k_\alpha$ bounds distances from $\rho$ to the unit interval, and is paramterized by temperature $\alpha$.
 % For example if $x$ and $y$ are real values, then $x \soft{=} y$ is defined as $k_\alpha(\rho(x, y))$ where $\rho$ is a distance function and $k_\alpha$ is a relaxation kernel paramterized by temperature $\alpha$.
-% In general, we use $\soft{p}$ to denote a relaxation of a predicate $p$.
 % A relaxation kernel maps distances to values in $[0, 1]$, and ensures that $\softv{Y}$ adheres to the outlined criteria.
 We restrict our attention to the squared exponential kernel:
 \begin{equation}
@@ -93,6 +91,7 @@ a \soft{\lor} b &= \min(a, b)
 \end{figure}
 
 \paragraph{Primitives} We construct  (Section \ref{implement}) $\softv{Y}$ from $Y$ compositionally, by substituting primitive predicates (equality, inequalities and logical operators) with soft counterparts.
+In general, we use $\soft{p}$ to denote a relaxation of a predicate $p$.
 
 A soft inequality such as $x \soft{>} y$ is function of the amount by which $x$ must be increased (or $y$ decreased) until $x > y$ is true.
 This is the distance between $x$ and the interval $[y, \infty]$, where the distance between a point and any interval $[a, b]$ is the smallest distance between $x$ and any element in $[a, b]$, and therefore 0 if $x \in [a, b]$:
@@ -190,10 +189,10 @@ This is modulated by the temperature $\alpha$ used in the  relaxation kernels wh
 At maximum temperature $\softv{\lk}$ has no effect, and the approximate posterior $f$ is equal to the prior $p$.
 At zero temperature, $f$ recovers the true posterior since parameter values which violate the condition are given zero weight.
 
-For illustration, let $\cM = (\mu, X)$ be a model where $\mu = \textrm{Beta}(3, 4), X = \mathcal{N}(\mu, 1)$  conditioned on $X = 0.5$.
+For illustration, let $\cM = (\mu, X)$ be a model where $\mu = \beta(3, 4), X = \mathcal{N}(\mu, 1)$  conditioned on $X = 0.5$.
 The approximate posterior is shown at different temperatures in Figure \ref{temppost} and defined as:
 \begin{equation}\label{approxposterior}
-f_\alpha(\mu, x) = \textrm{Beta}_{0,1}(\mu) \cdot \mathcal{N}_{\mu,1}(x) \cdot k_\alpha(\rho(x, 0.5)) 
+f_\alpha(\mu, x) = \beta_{0,1}(\mu) \cdot \mathcal{N}_{\mu,1}(x) \cdot k_\alpha(\rho(x, 0.5)) 
 \end{equation}
 
 \begin{figure}
@@ -214,7 +213,7 @@ Replica exchange swaps states between the chains while preserving the joint targ
 Swapping states is equivalent to swapping predicates, which motivates the name predicate exchange.
 Concretely, replica exchange proposes a swap from $(x, y)$ to $(y, x)$, and accepts it with probability $\min(1, A)$, where:
 \begin{equation}
-A = \frac{f_{\alpha_1, \alpha_2}(x^\star,y^\star)}{f_{\alpha_1, \alpha_2}(x,y)} = \frac{f_{\alpha_1, \alpha_2}(y,x)}{f_{\alpha_1, \alpha_2}(x,y)} = \frac{f_{\alpha_1}(y)f_{\alpha_2}(x)}{f_{\alpha_1}(x)f_{\alpha_2}(y)}
+A =  \frac{f_{\alpha_1, \alpha_2}(y,x)}{f_{\alpha_1, \alpha_2}(x,y)} = \frac{f_{\alpha_1}(y)f_{\alpha_2}(x)}{f_{\alpha_1}(x)f_{\alpha_2}(y)}
 \end{equation}
 
 We modify standard replica exchange in two ways: (i) for exact inference, states which violate the constraint are rejected, and (ii)
