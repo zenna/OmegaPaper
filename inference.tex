@@ -44,9 +44,10 @@ A function $\softv{Y} : \Omega \to [0, 1]$ parameterized by $\alpha \in [0, \inf
 \end{enumerate}
 \end{definition}
 
-\paragraph{Graded Satisfiability}$\softv{Y}$ relaxes $Y$ by mapping each realization $m$ of a model to a graded degree.
-$\soft{\lk}_{\inf}(m)$ represents the degree to which a model realization $m$ satisfies a predicate. That is, $m = (x_1, \dots, x_n)$ satisfies $Y$ is a function $k_\alpha$ (described below) of its distance to the satisfying set $A = \{(x_1, \dots, x_n) \mid \lk(x_1, \dots, x_n) = 1\}$.
-Let $\rho$ be a distance metric, $\soft{\lk}_{\inf}(m)$ is then:
+\paragraph{Graded Satisfiability}
+$\soft{\lk}_{\inf}(m)$ represents the degree to which a model realization $m$ satisfies a predicate.
+Let $k_\alpha$ be a kernel (described below), $\rho$ a distance metric, and $A = \{(x_1, \dots, x_n) \mid \lk(x_1, \dots, x_n) = 1\}$ the satisfying set.
+$\soft{\lk}_{\inf}(m)$ is then:
 \begin{equation}
 \soft{\lk}_{\inf}(m) = k_\alpha(\rho(m, A))
 \end{equation}
@@ -78,7 +79,11 @@ For composite elements $x, y \in \mathbb{T}_1 \times \cdots \times \mathbb{T}_n$
   % \end{center}
 
 
-\begin{figure}\label{softpreds}
+
+\paragraph{Composition} We construct $\softv{Y}$ from $Y$ compositionally, by substituting primitive predicates (equality, inequalities and logical operators) with soft counterparts.
+For instance the predicate $(x > y) \lor \neg(x^2 = 2)$ is transformed into $(x \soft{>} y) \soft{\lor} \softv{\neg}(x^2 \soft{=} 2)$.
+In general, we use $\soft{p}$ to denote a relaxation of a predicate $p$.
+\begin{figure}[H]\label{softpreds}
   \begin{align*}
 x \soft{=} y &= k_\alpha(\rho(x, y))\\
 x \soft{>} y &= k_\alpha(\rho(x, [y, \infty]))\\
@@ -86,12 +91,9 @@ x \soft{>} y &= k_\alpha(\rho(x, [y, \infty]))\\
 x \soft{<} y &= k_\alpha(\rho(y, [-\infty, x]))\\
 a \soft{\land} b &= \max(a, b)\\
 a \soft{\lor} b &= \min(a, b)
-  \end{align*}
+\end{align*}
 \caption{Soft Primitive Predicates}
 \end{figure}
-
-\paragraph{Primitives} We construct  (Section \ref{implement}) $\softv{Y}$ from $Y$ compositionally, by substituting primitive predicates (equality, inequalities and logical operators) with soft counterparts.
-In general, we use $\soft{p}$ to denote a relaxation of a predicate $p$.
 
 A soft inequality such as $x \soft{>} y$ is function of the amount by which $x$ must be increased (or $y$ decreased) until $x > y$ is true.
 This is the distance between $x$ and the interval $[y, \infty]$, where the distance between a point and any interval $[a, b]$ is the smallest distance between $x$ and any element in $[a, b]$, and therefore 0 if $x \in [a, b]$:
@@ -104,8 +106,7 @@ This is the distance between $x$ and the interval $[y, \infty]$, where the dista
 \end{cases}
 \end{equation}
 
-\paragraph{Negation}
-Negation is a necessary component of a Boolean algebra, but its relaxation introduces complications.
+Soft negation introduces complications.
 To illustrate, Figure \ref{negationimg} (a) shows $x \soft{>} 0$ as a function of $x$.
 In continuous logics \cite{kimmig2012short}, the negation of $a \in [0, 1]$ is $1 - a$.
 However, as shown in Figure \ref{negationimg} (b), this violates criteria (iii) of predicate relaxation; there are values which satisfy the hard predicate $\neg(x > 0)$ which do take a value of 1 in $1 - (x \soft{>} 0)$.
@@ -148,7 +149,7 @@ x \dsoft{>} y &= (k_\alpha(\rho(x, [-\infty, y])), k_\alpha(\rho(x, [y, \infty])
 x \dsoft{<} y &= (k_\alpha(\rho(y, [x, \infty])), k_\alpha(\rho(y, [-\infty, x])))\\
 (a_0, a_1) \dsoft{\land} (b_0, b_1) &= (a_0 \soft{\land} b_0, a_1 \soft{\land} b_1)\\
 (a_0, a_1) \dsoft{\lor} (b_0, b_1) &= (a_0 \soft{\lor} b_0, a_1 \soft{\lor} b_1)\\
-\dsoft{\neg}(a_0, a_1) &= (a_1, a_0)
+\softv{\neg}(a_0, a_1) &= (a_1, a_0)
 \end{align*}
 \caption{Two sided soft primitive predicates}
 \label{softw}
