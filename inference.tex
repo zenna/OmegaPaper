@@ -174,10 +174,10 @@ This is modulated by the temperature $\alpha$ used in the  relaxation kernels wh
 At maximum temperature $\softv{\lk}$ has no effect, and the approximate posterior $f$ is equal to the prior $p$.
 At zero temperature, $f$ recovers the true posterior since parameter values which violate the condition are given zero weight.
 
-For illustration, let $\cM = (\mu, X)$ be a model where $\mu = \textrm{Beta}(3, 4), X = \mathcal{N}(\mu, 1)$  conditioned on $X_2 = 0.5$.
+For illustration, let $\cM = (\mu, X)$ be a model where $\mu = \beta(3, 4), X = \mathcal{N}(\mu, 1)$  conditioned on $X_2 = 0.5$.
 The approximate posterior is shown at different temperatures in Figure \ref{temppost} and defined as:
 \begin{equation}\label{approxposterior}
-f_\alpha(\mu, x) = \textrm{Beta}_{0,1}(\mu) \cdot \mathcal{N}_{\mu,1}(x) \cdot k_\alpha(\rho(x, 0.5)) 
+f_\alpha(\mu, x) = \beta_{0,1}(\mu) \cdot \mathcal{N}_{\mu,1}(x) \cdot k_\alpha(\rho(x, 0.5)) 
 \end{equation}
 
 \begin{figure}
@@ -198,7 +198,7 @@ Replica exchange swaps states between the chains while preserving the joint targ
 Swapping states is equivalent to swapping predicates, which motivates the name predicate exchange.
 Concretely, replica exchange proposes a swap from $(x, y)$ to $(y, x)$, and accepts it with probability $\min(1, A)$, where:
 \begin{equation}
-A = \frac{f_{\alpha_1, \alpha_2}(x^\star,y^\star)}{f_{\alpha_1, \alpha_2}(x,y)} = \frac{f_{\alpha_1, \alpha_2}(y,x)}{f_{\alpha_1, \alpha_2}(x,y)} = \frac{f_{\alpha_1}(y)f_{\alpha_2}(x)}{f_{\alpha_1}(x)f_{\alpha_2}(y)}
+A =  \frac{f_{\alpha_1, \alpha_2}(y,x)}{f_{\alpha_1, \alpha_2}(x,y)} = \frac{f_{\alpha_1}(y)f_{\alpha_2}(x)}{f_{\alpha_1}(x)f_{\alpha_2}(y)}
 \end{equation}
 
 We modify standard replica exchange in two ways: (i) for exact inference, states which violate the constraint are rejected, and (ii)

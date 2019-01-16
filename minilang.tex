@@ -91,7 +91,7 @@ Concretely, a conditioned program $\pi$ is a any nullary program that contains t
   \item $\cond(y)$ conditions $\pi$.  It throws an error if $y \in \{0, 1\}$ is 0, and otherwise allows simulation to resume with no effect.
 \end{enumerate}
 
-Example Program 1 illustrates a simple conditioned model.
+Example Program \ref{prog:ex1} illustrates a simple conditioned model.
 
 \subsection{Tracked Soft Execution}
 The prior term $p$ is computed automatically as the product of random choices in the program. 
@@ -134,7 +134,7 @@ Programs may have control flow constructs, such as if-then-else statements.
 These may cause $\textrm{softexecute}$ to return a value that is significantly less than $\soft{\lk}_{\inf}$.
 This is because if a branch condition is a function of an uncertain value, then several unexplored alternative paths could produce values that are closer to the constraint set.
 $\textrm{softexecute}$ is ignorant of thees other possibilities
-For illustration, consider Example Program 2 \ref{prog:ex2}.
+For illustration, consider Example Program \ref{prog:ex2}.
 If $x = -1$ the condition fails, and the predicate relaxation will yield $x \soft{=} -100$, which is significantly larger than if the true branch were taken.
 
 \begin{exprogram}[tb]

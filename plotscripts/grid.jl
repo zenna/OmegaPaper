@@ -206,6 +206,7 @@ function makeplots(plots)
                            xticks = [-1, 1],
                            yticks = [-1, 1],
                            margin = 0mm,
+                           top_margin = 10mm,
                            size = (ncols, nrows) .* multiplier,
                           #  fontfamily = font(50),
                            guidefontsize = 30,
@@ -215,7 +216,7 @@ function makeplots(plots)
 end
 
 plt = makeplots(plots)
-savefig(plt, "grid3.pdf")
+savefig(plt, "grid4.png")
 # n = 8
 # temps = Omega.Inference.logtemps(n)
 # temps = [1e-9, 10000]
