@@ -1,12 +1,12 @@
 
 \section{Experiments}
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.9\linewidth]{grid33}
-	\caption{Posterior samples on different problems.  RE: replica exchange, SSMH: Single Site Metropolis Hastings, HMC: Hamiltonian Monte Carlo.  (Left) is target density, and following elements are histograms from computed samples.}
-	\label{fig:grid}
-\end{figure}
+% \begin{figure}
+% 	\centering
+% 	\includegraphics[width=0.9\linewidth,natwidth=2000,natheight=2400]{grid3.png}
+% 	\caption{Posterior samples on different problems.  RE: replica exchange, SSMH: Single Site Metropolis Hastings, HMC: Hamiltonian Monte Carlo.  (Left) is target density, and following elements are histograms from computed samples.}
+% 	\label{fig:grid}
+% \end{figure}
 	
 
 
@@ -85,11 +85,11 @@ with only a short observed time-series.
 \begin{figure}[!htb]
 	\centering
     %\fbox{\includegraphics[width=0.30\linewidth, trim={1.cm, 0.1cm, 1.3cm, .5cm}, clip]{rnnsamples-no-tie-py}}
-	\includegraphics[width=0.45\linewidth, trim={1.cm, 0.1cm, 1.3cm, .5cm}, clip]{rnnsamples-no-tie-py}
-	\includegraphics[width=.45\linewidth, trim={1.cm, 0.1cm, 1.3cm, .5cm}, clip]{rnnsamples-py}
+	\includegraphics[width=0.45\linewidth, trim={1.cm, 0.1cm, 1.3cm, .5cm}, clip]{rnnsamples-no-tie-py.eps}
+	\includegraphics[width=.45\linewidth, trim={1.cm, 0.1cm, 1.3cm, .5cm}, clip]{rnnsamples-py.eps}
 	%\fbox{\includegraphics[width=0.30\linewidth, trim={1.cm, 0.1cm, 1.3cm, .5cm}, clip]{rnnsamples-py}}
 	%\fbox{\includegraphics[width=0.30\linewidth, trim={1.cm, 0.0cm, 1.0cm, .5cm}, clip]{delta_mse}}
-	\includegraphics[width=0.9\linewidth, trim={0.7cm, 0.0cm, .7cm, .1cm}, clip]{mse}
+	\includegraphics[width=0.9\linewidth, trim={0.7cm, 0.0cm, .7cm, .1cm}, clip]{mse.eps}
 		
 		\caption{Left: Actual (dotted) and predicted trajectories that were learned using a partial trajectory. Center: Distribution of predicted trajectories learned only using the first ten data points and a tie with a secondary patient. Right, top: MSE when tie is present.  Right, bottom: without tie.  Tying expectations has dramatic influence on prediction error, while as more data is observed, the effect of tying decreases.}
 		\label{fig:rnn-samples}
