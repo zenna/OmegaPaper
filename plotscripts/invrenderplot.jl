@@ -29,3 +29,54 @@ losses = pred.(fakedata)
 plt = Plots.plot()
 plotloss!(plt, losses; label = "no intersect")
 plotloss!(plt, rand(length(losses)); label = "intersect")
+
+
+using LaTeXStrings
+function ℓvsiter(lines)
+  xs = [k.x for k in lines]
+  ys = [k.y for k in lines]
+  labels = [k.label for k in lines]
+  plot(xs, ys,
+    ylabel = L"\ell",
+    xlabel = L"iteration",
+    label = labels,
+  )
+end
+
+"Plot RMSE vs iteration"
+function rmsvsiter(lines)
+  xs = [k.x for k in lines]
+  ys = [k.y for k in lines]
+  labels = [k.label for k in lines]
+  plot(xs, ys,
+    ylabel = L"\ell",
+    xlabel = L"iteration",
+    label = labels,
+  )
+end
+
+# Fake data
+x = 1:100
+imgisobsy = rand(length(x))
+imgisobsx = x
+l1 = (y = imgisobsy, x = imgisobsx, label = L"obs")
+
+x2 = 1:2:100
+nointersecty = rand(length(x2))
+nointersectx = x2
+l2 = (y = nointersecty, x = nointersectx, label = L"nointersect \land obs")
+
+x3 = 1:2:100
+nointersecty = rand(length(x2))
+nointersectx = x2
+l3 = (y = nointersecty, x = nointersectx, label = "obs")
+
+## Fake RMSE data
+rmsey = rand(length(y))
+lrmse = (x = x, y = rmsey, label = "RMSE")
+
+rmsenointersect = rand(length(y))
+lrmsenointersect = (x = x, y = rmsenointersect, label = "RMSE - nointerect")
+
+p = ℓvstime([l1, l2, l3])
+nointersect = rand()
