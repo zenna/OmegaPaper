@@ -1,19 +1,36 @@
 \section{Related Work}
 
-Demand for likelihood-free inference methods emerged from problems in genetics ecology \cite{}, where high-fidelity simulations are plentiful but tractable likelihood functions are not.
-Approximate Bayesian Computation (ABC) methods refers to a class of methods that sample from the posterior distribution over latent variables by finding simulations that result in data that is sufficiently close to the data that was observed.
-ABC methods have been successfully used to X, to Y and to Z.
-Our approach falls within the ABC paradigm in the sense that (i) we target  simulation based models, and (ii) rely on distance functions.
-However, it departs from most ABC methods in motivation
-Second, ABC methods rely on summary statistics technically do not use distance functions.
-ABC, etc, etc 
+% Likelihood free inference
+Demand for likelihood-free inference emerged in genetics ecology.
+Tavar{\'e} et al. \yrcite{tavare1997inferring} compared summary statistics of the output of a simulation with that of observed data, and rejected mismatches.
+%  to perform one of the earliest forms of likelihood-free inference.
+Weiss et al. \yrcite{weiss1998inference} expanded on this with a tolerance term, so that simulations yielding data sufficiently close to the targets were accepted.
+% Such posterior samples are therefore approximate.
+Approximate Bayesian Computation (ABC) has come to refer to broad class of methods \cite{beaumont2002approximate,sisson2007sequential} in this general regime.
+Marjoram et al. \yrcite{marjoram2003markov} simulated Markov Chains according to the prior, but introduced the accept/reject stage to yield approximate posterior samples.
+A small tolerance leads to a high rejection rate, whereas a large tolerance results in an unacceptable approximation error.
+Among several solutions are dynamically decreasing the tolerance \cite{toni2008approximate}, importance reweighting samples based on distance \cite{wegmann2009efficient}, adapting the tolerance based on distance \cite{del2012adaptive,lenormand2013adaptive}, as well as annealing the tolerance as a temperature parameter \cite{albert2015simulated}.
 
-Probabilistic programming systems~\citep{milch20071, wood2014new,mansinghka2014venture,goodman2008church,carpenter2017stan} provide a formalism
-for declaring probabilistic models and performing inference
-in them. Traditional probabilistic programming approaches support model definition by simulation thereby, hiding the underlying probability space. 
-One exception to this is Blog \citep{milch20071} 
-that defines models in terms of the generating functions.
+Predicate exchange targets simulation models and uses distance metrics, but targets exact inference without summary statistics.
+A recent approach \cite{graham2017asymptotically}  with similar objectives develops a Hamiltonian Monte Carlo variant, using a quasi-Newton method during leap-frog integration to exactly solve the observation constraint.
+This is limited to differentiable models conditioned with equality.
 
-Our approach is related to smooth interpretation of programs \citep{chaudhuri2010smooth}.
+% \cite{Pseudo-Marginal Hamiltonian Monte Carlo}HMC methods cannot be implemented in scenarios where the likelihood function is intractable. However, we have shown here that if we have access to a non-negative unbiased likelihood estimator.
+% parameterized by normal random variables then it is possible to derive an algorithm which mimicsthe HMC algorithm having access to the exact likelihood. The resulting pseudo-marginal HMCalgorithm replaces the original intractable gradient of the log-likelihood by the gradient of thelog-likelihood estimator while preserving the target distribution as invariant distributi
 
-Talk about Soft logic
+% PPLS
+Probabilistic logics such as ProbLog \cite{richardson2006markov} and Markov logic networks \cite{de2007problog} allow extend first order logic to declare both models and conditions.
+More recent probabilistic programming systems~\citep{milch20071, wood2014new,mansinghka2014venture,goodman2008church,carpenter2017stan} have focused on stochastic simulation, and automatically automatically derive the likelihood function for a rich class of models.
+
+
+% ?
+% Our approach is related to smooth interpretation of programs \citep{chaudhuri2010smooth}
+
+Several continuous \cite{levin2000continuous} and fuzzy \cite{klir1995fuzzy} logics apply model-theoretic tools to metric structures.
+Continuous logics replace the Boolean structure $\{T, F\}$, quantifiers $\forall x$ and $\exists x$, and logical connectives with continuous counter-parts.
+Predicate relies uses a continuous logic only make inference more tractable. Semantically, our approach remains within measure theoretic foundations, which relies on hard predicates to condition.
+% Probabilistic Similarity Logic \cite{brocheler2012probabilistic,kimmig2012short} uses continuous logics 
+% Talk about Soft logic
+
+
+

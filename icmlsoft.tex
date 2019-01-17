@@ -1,43 +1,58 @@
-t%%%%%%%% ICML 2018 E XAMPLE LATEX SUBMISSION FILE %%%%%%%%%%%%%%%%%
+%%%%%%%% ICML 2019 EXAMPLE LATEX SUBMISSION FILE %%%%%%%%%%%%%%%%%
 
 \documentclass{article}
 
 % Recommended, but optional, packages for figures and better typesetting:
 \usepackage{microtype}
-\usepackage{graphicx}
+% \usepackage{graphicx}
 \usepackage{subfigure}
 \usepackage{booktabs} % for professional tables
 
 % hyperref makes hyperlinks in the resulting PDF.
 % If your build breaks (sometimes temporarily if a hyperlink spans a page)
 % please comment out the following usepackage line and replace
-% \usepackage{icml2018} with \usepackage[nohyperref]{icml2018} above.
+% \usepackage{icml2019} with \usepackage[nohyperref]{icml2019} above.
 \usepackage{hyperref}
 
 % Attempt to make hyperref and algorithmic work together better:
 \newcommand{\theHalgorithm}{\arabic{algorithm}}
 
-% Use the following line for the initial blind version submitted for review:
-\usepackage{icml2018}
+% \usepackage{icml2019}
+\usepackage[accepted]{icml2019}
+\input{includes.tex}
 
-\input{includes}
+
+\makeatletter
+\newenvironment{exprogram}[1][htb]{%
+    \renewcommand{\ALG@name}{Example Program}% Update algorithm name
+   \begin{algorithm}[#1]%
+  }{\end{algorithm}}
+\makeatother
+
+\makeatletter
+\newcommand{\ALOOP}[1]{\ALC@it\algorithmicloop\ #1%
+  \begin{ALC@loop}}
+\newcommand{\ENDALOOP}{\end{ALC@loop}\ALC@it\algorithmicendloop}
+\makeatother
+
+\renewcommand{\algorithmicloop}{\textbf{subroutine}}
 
 % If accepted, instead use the following line for the camera-ready submission:
-%\usepackage[accepted]{icml2018}
+%\usepackage[accepted]{icml2019}
 
 % The \icmltitle you define below is probably too long as a header.
 % Therefore, a short form for the running title is supplied here:
-\icmltitlerunning{Submission and Formatting Instructions for ICML 2018}
-
+\icmltitlerunning{Soft Constraints for Inference with Declarative Knowledge}
+% \usepackage[dvipdfm]{graphicx}
+% \usepackage{bmpsize}
 \begin{document}
 
 \twocolumn[
-
 \icmltitle{Soft Constraints for Inference with Declarative Knowledge}
 
 % It is OKAY to include author information, even for blind
 % submissions: the style file will automatically remove it for you
-% unless you've provided the [accepted] option to the icml2018
+% unless you've provided the [accepted] option to the icml2019
 % package.
 
 % List of affiliations: The first argument should be a (short)
@@ -51,31 +66,25 @@ t%%%%%%%% ICML 2018 E XAMPLE LATEX SUBMISSION FILE %%%%%%%%%%%%%%%%%
 \icmlsetsymbol{equal}{*}
 
 \begin{icmlauthorlist}
-\icmlauthor{Aeiau Zzzz}{equal,to}
-\icmlauthor{Bauiu C.~Yyyy}{equal,to,goo}
-\icmlauthor{Cieua Vvvvv}{goo}
-\icmlauthor{Iaesut Saoeu}{ed}
-\icmlauthor{Fiuea Rrrr}{to}
-\icmlauthor{Tateu H.~Yasehe}{ed,to,goo}
-\icmlauthor{Aaoeu Iasoh}{goo}
-\icmlauthor{Buiui Eueu}{ed}
-\icmlauthor{Aeuia Zzzz}{ed}
-\icmlauthor{Bieea C.~Yyyy}{to,goo}
-\icmlauthor{Teoau Xxxx}{ed}
-\icmlauthor{Eee Pppp}{ed}
+\icmlauthor{Zenna Tavares}{mit}
+\icmlauthor{Javier Burroni}{amhert}
+\icmlauthor{Edgar Minaysan}{princeton}
+\icmlauthor{Armando Solar Lezama}{mit}
+\icmlauthor{Rajesh Ranganath}{nyu}
 \end{icmlauthorlist}
 
-\icmlaffiliation{to}{Department of Computation, University of Torontoland, Torontoland, Canada}
-\icmlaffiliation{goo}{Googol ShallowMind, New London, Michigan, USA}
-\icmlaffiliation{ed}{School of Computation, University of Edenborrow, Edenborrow, United Kingdom}
+\icmlaffiliation{mit}{MIT, USA}
+\icmlaffiliation{nyu}{NYU, USA}
+\icmlaffiliation{amhert}{UMass Amherst, USA}
+\icmlaffiliation{princeton}{Princeton University, USA}
 
-\icmlcorrespondingauthor{Cieua Vvvvv}{c.vvvvv@googol.com}
-\icmlcorrespondingauthor{Eee Pppp}{ep@eden.co.uk}
+\icmlcorrespondingauthor{Zenna Tavares}{zenna@mit.edu}
+% \icmlcorrespondingauthor{Eee Pppp}{ep@eden.co.uk}
 
 % You may provide any keywords that you
 % find helpful for describing your paper; these are used to populate
 % the "keywords" metadata in the PDF but will not be shown in the document
-\icmlkeywords{Machine Learning, ICML}
+\icmlkeywords{Probabilistic Inference, Markov Chain Monte Carlo, Replica Exchange, Probabilistic Programming}
 
 \vskip 0.3in
 ]
@@ -89,7 +98,7 @@ t%%%%%%%% ICML 2018 E XAMPLE LATEX SUBMISSION FILE %%%%%%%%%%%%%%%%%
 % Remove it (just {}) if you do not need this facility.
 
 %\printAffiliationsAndNotice{}  % leave blank if no need to mention equal contribution
-%\printAffiliationsAndNotice{\icmlEqualContribution} % otherwise use the standard text.
+\printAffiliationsAndNotice{\icmlEqualContribution} % otherwise use the standard text.
 
 \begin{abstract}
 \input{abstract}
@@ -99,13 +108,13 @@ t%%%%%%%% ICML 2018 E XAMPLE LATEX SUBMISSION FILE %%%%%%%%%%%%%%%%%
 \input{related}
 \input{declarative-knowledge}
 \input{inference}
+\input{minilang}
 \input{experiments}
-\input{experiments}
-
-
+\input{discussion}
+% \input{key}
 
 
 \bibliography{bib}
-\bibliographystyle{icml2018}
+\bibliographystyle{icml2019}
 
 \end{document}

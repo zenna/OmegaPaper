@@ -3,7 +3,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{stmaryrd}
-\usepackage{graphicx}
+\usepackage{graphicx} 
 \usepackage{fancyvrb}
 \usepackage{amsthm}
 \usepackage{mathtools}
@@ -11,6 +11,7 @@
 \usepackage{array}
 \usepackage{enumitem}
 \usepackage{proof}
+% \usepackage[dvipdfmx]{graphicx}\usepackage{bmpsize}
 
 
 \theoremstyle{definition} % amsthm only
@@ -21,6 +22,7 @@
 \newtheorem{theorem}{Theorem}
 \graphicspath{{figures/}}
 
+\newcommand{\PE}{\textsc{PE}}
 
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator*{\argmax}{arg\,max}
@@ -32,8 +34,22 @@
 \DeclareMathOperator{\gathernd}{gather}
 \DeclareMathOperator{\scatter}{scatter}
 \DeclareMathOperator{\reshape}{reshape}
+\DeclareMathOperator{\lk}{\ell}
+
 
 \newcommand{\ciidg}[1]{\textrm{ciidgroup}({#1})}
+
+% \newcommand{\soft}[1]{\tilde{#1}}
+% \newcommand{\soft}[1]{\stackrel{\sim}{#1}}
+\newcommand{\soft}[1]{\mathrel{\tilde{#1}}}
+\newcommand{\softv}[1]{\tilde{#1}}
+\newcommand{\dsoft}[1]{\mathrel{\tilde{#1}}}
+
+
+\usepackage{accents}
+% \newcommand{\dsoft}[1]{\stackrel{\approx}{#1}}
+% \newcommand{\dsoft}[1]{\accentset{\approx}{#1}}
+% \newcommand{\dsoft}[1]{\approx{#1}}
 
 \newcommand{\card}[1]{\left\vert {#1} \right\vert}
 \newcommand{\apinv}[1]{\widetilde{#1}^{-1}}
@@ -66,7 +82,7 @@
 \DeclareMathOperator{\ciid}{ciid}
 \DeclareMathOperator{\fix}{fix}
 \DeclareMathOperator{\doo}{do}
-\DeclareMathOperator{\soft}{soft}
+% \DeclareMathOperator{\soft}{soft}
 \DeclareMathOperator{\rand}{rand}
 \DeclareMathOperator{\true}{true}
 \DeclareMathOperator{\false}{false}
@@ -77,8 +93,8 @@
 \DeclareMathOperator{\pair}{mix}
 \DeclareMathOperator{\var}{Var}
 
-\DeclareMathOperator{\bern}{Bernoulli}
-\DeclareMathOperator{\unif}{Uniform}
+\DeclareMathOperator{\bern}{Bern}
+\DeclareMathOperator{\unif}{Unif}
 
 \DeclareMathOperator{\stdunif}{unif}
 \DeclareMathOperator{\sumunif}{sumunif}

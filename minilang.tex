@@ -1,0 +1,242 @@
+\section{Implementation}\label{implement}
+% \begin{exprogram}
+% \begin{algorithmic}
+% \State Hello
+% \end{algorithmic}
+% \caption{A mega algorithm}
+% \end{exprogram} 
+
+% Our approach to inference is not black-box.
+% It requires a transformation of the model.
+% This can be realized in a number of ways.
+% To formalize this we introduce a very simple language for describing probabilistic models.
+% Following this, we demonstrate how these principle can be incorporated into existing languages.
+
+
+% \subsection{A Minimal Language}{\label{minilang}}
+
+
+% \begin{figure}[t]
+% 	\begin{align*}
+% 		\text { model term }  &  & \enspace m ::=               & e ; \cond f \\
+% 		\text { standard term }  &  & \enspace e ::=               & e ; e \mid v \sim f\\
+% 		\text { standard term }  &  & \enspace f ::=               & p \mid f \textrm{ bop }f \mid\textrm{ op } f \mid \\
+% 		\text { standard term }  &  & \enspace f ::=               & \text{ if } t_1 \text{ then } t_2 \text{ else } t_3 \\
+% 		\text { binary op }      &  & \enspace \textrm{bop} ::=    & + \mid - \mid / \mid * \mid \land \mid \lor \mid > \mid < \mid \\
+% 		\text { unary op }       &  & \enspace \textrm{uop} ::=    & \lnot                                                          \\
+% 		\text { primitive dist } &  & \enspace p ::= \bern(f) \mid & \unif(f, f) \mid N(f, f) \mid                                  \\
+% 	\end{align*}
+% 	\caption{Abstract Syntax}
+% 	\label{syntax}
+% \end{figure}
+
+% Figure \ref{Syntax} describes the abstract syntax of our language.
+% The language closey resembles statistical notation.
+% One difference is that conditions are stated at the end of each model in a single statement $\cond$.
+
+% Here is an example.
+
+% \begin{align*}
+% 	x \sim   & \unif(0, 1)           \\
+% 	y \sim   & \unif(0, 1)           \\
+% 	\cond \; & (x = y) \land (x > 3) \\
+% \end{align*}
+
+% \subsubsection{Semantics}\label{semantics}
+% \newcommand{\sem}[1]{\llbracket #1 \rrbracket}
+% Here we define a semantics denotationally.
+% The denotation $\sem{t}$ of a term $t$ is a value in a semantic domain corresponding to an \omegalang{} type, such as a Boolean, real number, or random variable.
+% Primitive 
+
+
+% \subsection{Syntactic Predicate Relaxation}
+
+% The transformation from the original model to a relaxed model is straight forward.
+% Algorithm substitutes X accepts as input the abstract syntax
+
+% \begin{figure}[t]
+% 	\begin{align*}
+% 		\text { model term }  &  & \enspace m ::=               & e ; \cond f \\
+% 		\text { standard term }  &  & \enspace e ::=               & e ; e \mid v \sim f\\
+% 		\text { standard term }  &  & \enspace f ::=               & p \mid f \textrm{ bop }f \mid\textrm{ op } f \mid \\
+% 		\text { standard term }  &  & \enspace f ::=               & \text{ if } t_1 \text{ then } t_2 \text{ else } t_3 \\
+% 		\text { binary op }      &  & \enspace \textrm{bop} ::=    & + \mid - \mid / \mid * \mid \land \mid \lor \mid > \mid < \mid \\
+% 		\text { unary op }       &  & \enspace \textrm{uop} ::=    & \lnot                                                          \\
+% 		\text { primitive dist } &  & \enspace p ::= \bern(f) \mid & \unif(f, f) \mid N(f, f) \mid                                  \\
+% 	\end{align*}
+% 	\caption{Abstract Syntax}
+% 	\label{syntax}
+% \end{figure}
+
+% \begin{align*}
+% 	x \sim \unif(0, 1)              \\
+% 	y \sim \unif(0, 1)              \\
+% 	ll \sim x =_s y \land_s x >_s 3 \\
+% \end{align*}
+
+% \subsection{A Lightweight Implementation}\label{rng}
+
+In this section we describe a generic, lightweight implementation of predicate exchange.
+Our approach closely mirrors \citep{wingate2011lightweight, milch20071} in the sense that it provides a language independent layer that can be implemented on top of existing programming languages and modeling formalisms.
+Our objective is to twofold: (i) to compute the prior term $p$, approximate likelihood term $\softv{\lk}$, and approximate posterior term $f$ (Equation \ref{approxposterior}) from an arbitrary simulator $\pi$, and (ii) to perform replica exchange MCMC to sample from this posterior.
+
+A simulator $\pi$ can be an arbitrary composition of deterministic and stochastic procedures, but all stochastic elements must come from a set of known \emph{elementary random primitives}, or ERPs.
+ERPs correspond to primitive parametric distribution families, such as the uniform or normal distribution.
+Let $\mathcal{T}$ be a set of ERP types.
+Each type $\tau \in \mathcal{T}$ must support (i) evaluation of the conditional density $p_\tau(x \mid \theta_1, ..., \theta_n)$, and (ii) sampling from the distribution.
+Concretely, $\pi$ is any nullary program that contains the statements:
+
+\begin{enumerate}
+  \item $\textrm{rand}(\tau, n, \theta_1, ...,\theta_n)$ returns a random sample from $p_\tau(\cdot \mid \theta_1, ..., \theta_n)$.  $n$ is a unique named described below.
+  \item $\cond(y)$ conditions $\pi$.  It throws an error if $y \in \{0, 1\}$ is 0, and otherwise allows simulation to resume with no effect.
+\end{enumerate}
+
+Example Program \ref{prog:ex1} illustrates a simple conditioned model.
+
+\subsection{Tracked Soft Execution}
+The prior term $p$ is computed automatically as the product of random choices in the program. 
+That is, let $\pi_{k \mid x_1, ..., x_{k-1}}$ be the k'th ERP encountered in while executing $\pi$, $x_k$ be the value it takes, and $x$ denote the set of all values of all ERPs constructed in the simulation of $\pi$, $p(x)$ is the product:
+\begin{equation}\label{productprob}
+p(x) = \prod_{k=1}^K p_\tau(x_k \mid \theta_1,..., \theta_n )
+\end{equation}
+The parameters $\theta_1,..,\theta_n$ may be fixed values or depend on values of other random primitives $\pi$.
+
+\begin{exprogram}[tb]
+\caption{}
+\label{prog:ex1}
+\begin{algorithmic}
+\STATE $x = \textrm{rand}(\mathcal{N}, x, 0, 1)$
+\STATE $y = \textrm{rand}(\mathcal{N}, y, 0, 1)$
+\STATE $\cond(x > y)$
+\STATE {\bfseries Return:} $(x, y)$
+\end{algorithmic}
+\end{exprogram}
+
+
+Predicate exchange relies on $\textrm{softexecute}$
+(Algorithm \ref{alg:softexecute}), which formalizes the soft execution of a program $\pi$ at temperature $\alpha$, in the context of dictionary $\mathbb{D}$.
+$\mathbb{D}$ is a mutable mapping from a set of names to values.
+In the context of a particular dictionary, the simulation of a program is deterministic.
+This allows the simulation of $\pi$ to be modulated by controlling the elements of $\mathbb{D}$.
+
+$\textrm{softexecute}$ simulates $\pi$ but within a context where (i) variables $\lk_\mathbb{D}$ and $p_\mathbb{D}$ accumulate prior and approximate posterior values, and (ii) the following operators are redefined:
+
+\begin{enumerate}
+  \item $\textrm{rand}(\tau, n, \theta_1, ...\theta_n)$ returns $\mathbb{D}(n)$, and in compliance with Equation \ref{productprob} updates $p_\mathbb{D}$ with the conditional density. If $n$ is not a key in $\mathbb{D}$, the distribution is sampled from and $\mathbb{D}(n)$ is updated with this value.  
+  \item $a \text{ op } b$ and $\textrm{op } a$ for $\textrm{op} \in \{>, <, =, \land, \lor, \neg\}$ are replaced with the softened counter-parts $\soft{\textrm{ op }} \in \{\soft{>}, \soft{<}, \soft{=}, \soft{\land}, \soft{\lor}, \soft{\neg}\}$.
+  \item $\cond(y)$ updates $\softv{\lk}_\mathbb{D}$ with $\softv{\lk}_\mathbb{D} \soft{\land} y$. $y \in [0,1]$ due to soft primitive operators.  
+\end{enumerate}
+
+$\textrm{softexecute}$ returns a real value for the approximate posterior of $f$ as a function of the dictionary $\mathbb{D}$.
+
+\paragraph{Control Flow}
+Programs may have control flow constructs, such as if-then-else statements.
+These may cause $\textrm{softexecute}$ to return a value that is significantly less than $\soft{\lk}_{\inf}$.
+This is because if a branch condition is a function of an uncertain value, then several unexplored alternative paths could produce values that are closer to the constraint set.
+$\textrm{softexecute}$ is ignorant of thees other possibilities
+For illustration, consider Example Program \ref{prog:ex2}.
+If $x = -1$ the condition fails, and the predicate relaxation will yield $x \soft{=} -100$, which is significantly larger than if the true branch were taken.
+
+\begin{exprogram}[tb]
+\caption{}
+\label{prog:ex2}
+\begin{algorithmic}
+\STATE $x = \textrm{rand}(\mathcal{N}, x, 0, 1)$
+\IF {$x > 0$}
+\STATE $\cond(x = 1)$
+\ELSE
+\STATE $\cond(x = -100)$
+\ENDIF
+\STATE {\bfseries Return:} $x$
+\end{algorithmic}
+\end{exprogram}
+
+
+
+\begin{algorithm}[tb]
+  \caption{Soft Execution: $\textrm{softexecute}(\pi, \alpha, \mathbb{D})$}
+  \label{alg:softexecute}
+\begin{algorithmic}
+\STATE {\bfseries Input:} program $\pi$, temperature $\alpha$, dictionary $\mathbb{D}$
+\STATE Initialize $\softv{\lk}_\mathbb{D} = 1, p_\mathbb{D} = 1$
+\STATE Simulate $\pi$ with following subroutines redefined as:   
+\ALOOP {$\textrm{rand}(\tau, n, \theta_1, ..., \theta_n)$}
+   \IF{$n \in \mathbb{D}$}
+   \STATE $x = \mathbb{D}(n)$
+ \ELSE
+   \STATE $x = $ sample from $p_\tau(x \mid \theta_1, ..., \theta_n)$
+   \STATE Update dictionary: $\mathbb{D}(n) = x$
+ \ENDIF
+ \STATE $p_\mathbb{D} = p_\mathbb{D} \cdot p_\tau(x \mid \theta_1, ..., \theta_m)$
+ \STATE Return from subroutine: $x$
+\ENDALOOP
+\STATE
+\ALOOP {$\cond(y)$}
+  \STATE $\softv{\lk}_\mathbb{D} = \softv{\lk}_\mathbb{D} \soft{\land} y$
+\ENDALOOP
+\STATE
+\ALOOP {$\textrm{op}(x, \dots)$ for $\textrm{op} \in \{>, <, =, \land, \lor, \neg\}$}
+  \STATE Return from subroutine: $\soft{\textrm{op}}(x, \dots)$ 
+\ENDALOOP
+\STATE
+% \IF{$s = \textrm{rand}(\tau, n, \theta_1, ..., \theta_n)$}
+%  \IF{$n \in \mathbb{D}$}
+%    \STATE $x = \mathbb{D}(n)$
+%  \ELSE
+%    \STATE $x = $ sample from $p_\tau(x \mid \theta_1, ..., \theta_n)$
+%    \STATE Update dictionary: $\mathbb{D}(n) = x$
+%  \ENDIF
+%  \STATE $p_\mathbb{D} = p_\mathbb{D} \cdot p_\tau(x \mid \theta_1, ..., \theta_m)$
+%  \ELSIF{$s = \cond(\lk')$}
+%    \STATE $\lk_\mathbb{D} = \lk_\mathbb{D} \cdot \lk_\mathbb{D}'$
+%  \ENDIF
+\STATE {\bfseries Return:} $p_\mathbb{D} \cdot \softv{\lk}_\mathbb{D}$
+%    \ENDFOR
+%    \UNTIL{$noChange$ is $true$}
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Replica Exchange}
+
+Predicate exchange (Algorithm \ref{alg:predexchange}) performs replica exchange using $\textrm{softexectute}$ as an approximate posterior.
+It takes as input an mcmc algorithm, which simulates an Markov Chain by manipulating elements of the $\mathbb{D}$.
+In our experiments, for finite dimensional continuous models we use the No U-Turn Sampler \cite{hoffman2014no}, a variant of Hamiltonion Monte Carlo.
+We use reverse-mode automatic differentiation \cite{griewank2008evaluating} to compute the negative log gradient of $f$.
+For other models we use standard Metropolis Hastings by defining proposals on elements in the dictionary.
+In particular we use the single site MH \cite{wingate2011lightweight} which modifies a single random variable at a time.
+
+% Rep
+% Each dictionary should contains all the information required to access values of variables of interest, either explicitly as values in the dictionary, or derivable with the simulator $\pi$. 
+
+
+
+\begin{algorithm}[tb]
+  \caption{Predicate Exchange}
+  \label{alg:predexchange}
+\begin{algorithmic}
+\STATE {\bfseries Input:} program $\pi$, temperatures $\alpha_1, ...,\alpha_m$, nsamples $n$
+\STATE {\bfseries Input:} mcmc, nsamples between swaps $q$ 
+\STATE Initialize $\mathcal{D} = $ empty collection of dictionarys
+\STATE Initialize $\mathbb{D}^{\textrm{init}}_1,...,\mathbb{D}^{\textrm{init}}_m$ empty dictionarys
+\STATE Define $f_{\alpha_i}(\mathbb{D}) = \textrm{softexecute}(\pi, \alpha_i, \mathbb{D})$
+\REPEAT
+  \FOR{$i=1$ {\bfseries to} $m$}
+    \STATE { $\mathbb{D}_1,...,\mathbb{D}_q = $ $q$ mcmc samples at temp $\alpha_i$}, from $\mathbb{D}^{\textrm{init}}_i$
+    \STATE $\mathbb{D}^{\textrm{init}}_i = \mathbb{D}_q$
+    \FOR{$j=1$ {\bfseries to} $q$}
+      \IF {$f_{\alpha_1}(\mathbb{D}_j) = 1$}
+        \STATE append $\mathbb{D}_j$ to $\mathcal{D}$
+      \ENDIF
+    \ENDFOR
+  \ENDFOR
+  \FOR{$i = m$ {\bfseries down to} $2$}
+    \STATE $j = i - 1$
+    \STATE $p = {f_{\alpha_i}(\mathbb{D}_j)f_{\alpha_j}(\mathbb{D}_i)}/{f_{\alpha_i}(\mathbb{D}_i)f_{\alpha_j}(\mathbb{D}_j)}$
+    \IF{$p >$ random sample in $[0, 1]$}
+      \STATE swap $\alpha_i$ with $\alpha_j$
+    \ENDIF
+  \ENDFOR
+\UNTIL{$\mathcal{D}$ has $n$ elements}
+\STATE {\bfseries Return:} $\mathcal{D}$
+\end{algorithmic}
+\end{algorithm}

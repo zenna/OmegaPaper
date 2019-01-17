@@ -1,266 +1,268 @@
-
-\subsection{Inference}
-In general it is easy to construct a transformation of a random variable 
-and simulate from it, but intractable to compute the corresponding transformed mass or density function. 
-% In Omega one can define and condition on arbitrary transformations of random variables with intractable  likelihood and as a result, more often than not we will be in the regime where computation of the likelihood is intractable and hence we develop a likelihood-free inference method
-To support conditioning on arbitrary transformations of random variables we develop a method of inference that avoids computing the likelihood all together.
-In particular, the inferential task we address is to sample from the conditional distribution $\conds{X}{Y}$, constructed with \texttt{cond(x,y)} in Omega.
-We:
+\section{Predicate Exchange}
+To condition a model $\cM$ on a predicate $Y$ we develop \emph{predicate exchange}, a likelihood-free inference procedure.  It is composed of two parts:
 \begin{enumerate}
-	\item Reframe the problem. Rather than sample from the random variable $\conds{X}{Y}$ directly, we aim to first sample from the \emph{conditional set} $C(Y) = \{ \omega \in \Omega \mid Y(\omega) = 1 \}$. 
-With a conditional sample in $\Omega$, a conditional sample from $X$ is straightforward to compute by forward execution of the function defining $X$, i.e. $X(\omega)$.
-\item Sampling $\omega \in C(Y)$ is often intractable, as it can require the inversion of a complex, nonlinear function.
-We instead approximate $Y$ with an unnormalized density function $U_Y: \Omega \to [0, 1]$, which is constructed to be consistent with $Y$ on values of $\omega \in C(Y)$, but smoothly degrade to zero on $\omega$ outside the conditioning set,  
-\item Perform inference on $U_Y$.  The softening of the constraint on $\Omega$ to a density allows us to apply inference algorithms.  In particular, we construct a Markov Chain exploring $\Omega$ whose stationary distribution is $U_Y$.  Intuitively, this is constructing a random walk through the random inputs of a probabilistic program to find those which satisfy specified conditions. At the end of this section we will describe how other inference techniques can be used as well.
+\item \textbf{Predicate Relaxation} constructs a soft predicate $\softv{Y}$ from $Y$. $\softv{Y}$ takes values   in a soft Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$. $\soft{\lor}$ and $\neg$. 
+$\softv{Y}$ is 1 iff $Y$ is 1, but otherwise takes nonzero values denoting the degree to which $Y$ is satisfied.
+% The relaxation is parameterized by a temperature.
+% Predicate relaxation allows us to apply likelihood based MCMC inference procedures.
+\item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo procedure that exploits temperature. The strength by which $\softv{Y}$ relaxes $Y$ is modulated by a temperature parameter $\alpha$, which trades off between accuracy and ease of inference.  By simulating several replicas of $\softv{Y}$ at different temperatures, replica exchange is able to draw exact samples. 
 \end{enumerate}
 
-There are three desiderata which govern how the unnormalized density -- or simply energy -- function  $U_Y$ approximates $Y$.  First, we would like $U_Y$ to have a temperature parameter $\alpha$ that controls the fidelity
-of the approximation. In particular, we want $U_Y$ to converge to $Y$ as $\alpha \to 0$, and to converge to a flat surface as $\alpha \to \infty$. Second, temperature should vary monotonically with the fidelity of the approximation, parameterizing a tradeoff between accuracy of samples and ease of inference. Third, we want to preserve consistency with $Y$. That is $Y(\omega) = U_Y(\omega)$ when $\omega \in C(Y)$, at all temperatures.  This consistency is one-sided; we do not, and could not, require it also hold at 0 and preserve the other desiderata.
+% \subsection{Soft Conditioning}
+% Conditioning is an operation that restricts a measure space by a set.
 
-% The family of approximations of the predicate $Y$ is parameterized through a temperature $\alpha$ that controls the smoothness of the approximation. In particular, $U_Y$ with $\alpha \to 0$ converges to $Y$ itself while increasing values of $\alpha$ yield smoother approximations eventually giving a flat surface when $\alpha \to \infty$. Moreover, the set of conditional samples $C(Y) = \{ \omega \in \Omega \text{ } | \text{ } Y(\omega) = 1 \}$ are assigned a value of $1$ in $U_Y$ for all temperatures. 
+% Let $(\Omega, \mathcal{H}, \mathcal{P})$ be a measure space.
+% Soft conditioning on a function $Y: \Omega \to [0, 1]$ constructs a new measure $\mathcal{P}'$ defined as:
+% \begin{equation}
+% \mathcal{P}'(A) = \frac{\mathbb{E}(Y \mid A)}{\mathbb{E}(Y)}
+% \end{equation}
 
-In most scenarios $U_Y$ is induced by defining a distance function on random variables in the model. 
-For example if $X_1$ and $X_2$ are real valued random variables, then replace the predicate $X_1 = X_2$ with the energy function $U_Y = e^{-\rho(X_1, X_2) / \alpha}$ where $\rho$ is a distance function on the outcome space of $X_1$ and $X_2$.
-This satisfies the desiderata outlined above.  We then call $U_Y$ a permissible approximation $Y$
-% To construct a $U_Y$ with such properties, we let $Y$ be the following predicate $a=b$ for standard Gaussians $a, b \sim \mathcal{N}(0, 1)$. We choose a distance
+\subsection{Predicate Relaxation}\label{predexchange}
+
+A soft predicate $\softv{Y}$ approximates $Y$ in the sense that when viewed as a likelihood function on model parameters, $\softv{Y}$ has a broader support, assigning nonzero weights to parameter values which have zero weight under $Y$.
+There are three desiderata which govern this approximation.
+First, $\softv{Y}$ should have a temperature parameter $\alpha$ that controls the fidelity of the approximation. In particular, $\softv{Y}$ should converge to $Y$ as $\alpha \to 0$, and to a flat surface as $\alpha \to \infty$. Second, the fidelity of the approximation should vary monotonically with temperature. Third, $\softv{Y}$ should be consistent with $Y$ on 1. That is $Y(\omega) = 1$ iff $\softv{Y}(\omega) = 1$ at all temperatures.  
+
+
+% The family of approximations of the predicate $Y$ is parameterized through a temperature $\alpha$ that controls the smoothness of the approximation. In particular, $\softv{Y}$ with $\alpha \to 0$ converges to $Y$ itself while increasing values of $\alpha$ yield smoother approximations eventually giving a flat surface when $\alpha \to \infty$. Moreover, the set of conditional samples $C(Y) = \{ \omega \in \Omega \text{ } | \text{ } Y(\omega) = 1 \}$ are assigned a value of $1$ in $\softv{Y}$ for all temperatures. 
+
+% To construct a $\softv{Y}$ with such properties, we let $Y$ be the following predicate $a=b$ for standard Gaussians $a, b \sim \mathcal{N}(0, 1)$. We choose a distance
 % $\rho(a, b)$ to indicate how close our sample is to $C(Y)$. To meet the desiderata
 % of having $C(Y)$ be $1$ over the constraint set and to ensure the constraint becomes
-% smoother with large $\alpha$, we use a function $k : [0, \infty] \to [0, 1]$ parameterized by $\alpha$ to wrap the distance $\rho(a, b)$. A simple choice for such a function is $k(d; \alpha) = e^{-d / \alpha}$ that provides the desired properties to $U_Y$ (see Appendix). The formal definition of $U_Y$ is as follows.
+% smoother with large $\alpha$, we use a function $k : [0, \infty] \to [0, 1]$ parameterized by $\alpha$ to wrap the distance $\rho(a, b)$. A simple choice for such a function is $k(d; \alpha) = e^{-d / \alpha}$ that provides the desired properties to $\softv{Y}$ (see Appendix). The formal definition of $\softv{Y}$ is as follows.
 
 \begin{definition}
-The function $U_Y : \Omega \to [0, 1]$ parameterized by $\alpha$ is an approximation of a predicate $Y$ if:
+A function $\softv{Y} : \Omega \to [0, 1]$ parameterized by $\alpha \in [0, \infty)$ is a relaxation of $Y: \Omega \to \{0, 1\}$ if:
 \begin{enumerate}[label=(\roman*)]
 	\label{def:temp}
-	\item For all $\omega \in \Omega$, the limits $\lim_{\alpha \to 0}U_Y(\omega; \alpha) = Y(\omega)$ and $\lim_{\alpha \to \infty}U_Y(\omega; \alpha) = 1$ hold.
-    \item For all $\alpha \in [0, \infty)$ and  $\omega \in C(Y)$, $U_Y(\omega; \alpha) = 1$.
-    \item The increasing fidelity is characterized by entropy, i.e. the entropy $H(U_Y(\omega; \alpha))$ of the unnormalized density $U_Y$ is an increasing function of $\alpha$.\footnote
+	\item For all $\omega \in \Omega$, $\lim_{\alpha \to 0}\softv{Y}(\omega; \alpha) = Y(\omega)$.
+	\item For all $\omega \in \Omega$, $\lim_{\alpha \to \infty}\softv{Y}(\omega; \alpha) = 1$.
+
+    \item For all $\alpha$, $\softv{Y}(\omega; \alpha) = 1$ iff $Y(\omega) = 1$.
+    \item The entropy $H(\softv{Y}(\omega; \alpha))$ (which characterizes the fidelity of the approximation ) is an increasing function of $\alpha$.\footnote
     {By compactness, it is integrable for all $\alpha$, when $\Omega$ has finite dimension}
 \end{enumerate}
 \end{definition}
 
-We derive $U_Y$ from $Y$ semi-automatically. 
-Recall that a probabilistic model $\mathcal{M}$ is a collection of random variables on a shared probability space, and that a predicate $Y \in \mathcal{M}$ is generally a composition of these variables.
-We derive $U_Y$ from $Y$ by replacing all predicates (Boolean valued functions) in $Y$ with corresponding relaxations defined on $\mathbb{R}$.
-In programming language terminology this is a nonstandard execution of $Y$ and can be implemented by a source to source transformation of the code which comprises $Y$.
-In Omega we achieve the same result through use of the multi-method dispatch, which is similar to operator overloading by allowing multiple methods to use the same name if distinguished by type.  That is, we define a distinct type for primitive types (such as $\mathbb{R}$), and redefine Boolean operators on these types to their softened counterparts.
+\paragraph{Graded Satisfiability}
+$\soft{\lk}_{\inf}(m)$ represents the degree to which a model realization $m$ satisfies a predicate.
+Let $k_\alpha$ be a kernel (described below), $\rho$ a distance metric, and $A = \{(x_1, \dots, x_n) \mid \lk(x_1, \dots, x_n) = 1\}$ the satisfying set.
+$\soft{\lk}_{\inf}(m)$ is then:
+\begin{equation}
+\soft{\lk}_{\inf}(m) = k_\alpha(\rho(m, A))
+\end{equation}
+where $\rho(x, A) = \inf \left\{\rho(x, a) \mid a \in A\right\}$.
+% As shown in the Section \ref{implement}, $\soft{\lk}_{\inf}$ can be difficult to compute.
 
-Probabilistic models are compositions of a small number of primitive operations, hence the burden of constructing softened predicates need only be done once.
-Generally our soft predicates $\tilde{z} = \soft(z)$ take the form $k(\rho(a, b); \alpha)$.
-Here the function $\rho(\cdot, \cdot)$ is a distance metric between two points (or with abuse of notation set of points).
-% On the other hand, $k : [0, \infty] \to [0, 1]$ parameterized by the temperature $\alpha$ maps a distance to the relaxation of the predicate such that $d = 0 \Longleftrightarrow k(d; \alpha) = 1$.
+\paragraph{Distance} A relaxation kernel $k_\alpha$ bounds distances from $\rho$ to the unit interval, and is paramterized by temperature $\alpha$.
+% For example if $x$ and $y$ are real values, then $x \soft{=} y$ is defined as $k_\alpha(\rho(x, y))$ where $\rho$ is a distance function and $k_\alpha$ is a relaxation kernel paramterized by temperature $\alpha$.
+% A relaxation kernel maps distances to values in $[0, 1]$, and ensures that $\softv{Y}$ adheres to the outlined criteria.
+We restrict our attention to the squared exponential kernel:
+\begin{equation}
+k_{\alpha}(r) = \exp\left(-\frac{r^2}{\alpha}\right)
+\end{equation}
 
-\begin{center}
-\begin{tabular}{ l | c | c | c | c |r }
-  \hline		
-  $z$ & $a = b$ & $a > b$ & $a < b$ & $a \land b$ & $a \lor b$  \\
-  $\tilde{z}$ & $k(\rho(a, b))$ & $k(\rho(a, [b, \infty]))$ & $k(\rho(a, [-\infty, b]))$ & $\min(\tilde{a}, \tilde{b})$ & $\max(\tilde{a}, \tilde{b})$\\
-  \hline  
-\end{tabular}
-\end{center}
+$\rho$ is parameterized by the type of input.
+For canonical spaces such as $\mathbb{R}$ and $\mathbb{N}$ we default to the Euclidean distance. 
+$x \soft{=} y$ is then defined as $\exp(\norm{x - y}/\alpha)$.
+For composite elements $x, y \in \mathbb{T}_1 \times \cdots \times \mathbb{T}_n$ of product type, by default $\rho$ takes a mean $\rho(x, y) = (1/n)\sum^n_{i=1}\rho(x_i, y_i)$.
 
 
-% The formal choice for $k(\cdot ; \cdot)$ that satisfies the conditions in Definition \ref{def:temp} is given by $k(d; \alpha) = \mathbbm{1}_{d=0} e^{-d \alpha} + \mathbbm{1}_{d \neq 0} e^{-d / \alpha}$ (see Appendix). 
-% Practically, we never encounter $\alpha = 0$ so we replace the aforementioned function with the equivalent and simpler $k(d; \alpha) = e^{-d / \alpha}$. 
-% Adjusting the value of the temperature $\alpha$ from $\infty$ to $0$ illustrates the fundamental tradeoff between ease of inference and accuracy of samples.
 
-\paragraph{Negation}
-Negation as an operation requires special treatment.
-The most obvious choice for defining relaxation for negation of a predicate $a$ is $\overset{\sim}{\neg a} = 1 - \tilde{a}$.
-This however leads to a collapse of the aforementioned desiderata for $U_Y$.
-In particular, the relaxation satisfies $\tilde{a}(\omega) = 1$ whenever $a(\omega) = 1$. If we use the given definition of soft predicate negation, then $\overset{\sim}{\neg a}(\omega) = 1$ whenever $\neg a(\omega) = 1$, i.e. $\tilde{a}(\omega) = 0$ whenever $a(\omega) = 0$. This means that $\tilde{a}$ has no relaxation part since it's always equal to $a$. To overcome this challenge, we simply keep two counterparts of relaxation: $\tilde{a}$ defined above, and $\tilde{a}'$ defined the same way but for the conditional set $a(\omega) = 0$. Keeping track of $\tilde{a}'$ is completely analogous to the same process for $\tilde{a}$ but when negating we switch the roles of the relaxations, i.e. $\overset{\sim}{\neg a} = 1 - \tilde{a}'$ and $(\overset{\sim}{\neg a})' = 1 - \tilde{a}$. Such construction of negation ensures the invariance of the properties stated in Definition \ref{def:temp}.
+  % \begin{center}
+  % \begin{tabular}{ c |  c | c }
+  %   \hline		
+  %   $x \soft{=} y$ & $x \soft{>} y$ & $x \soft{<} y$  \\
+  %   $k_\alpha(\rho(x, y))$ & $k_\alpha(\rho(x, [y, \infty]))$ & $k_\alpha(\rho(x, [-\infty, y]))$ \\
+  %   \hline  
+  % \end{tabular}
+  % \end{center}
 
-The temperature parameter trades off between tractability of inference and fidelity of the approximation.
-Too high and $U_Y$ will diverge too greatly from $Y$, too low and convergence will be slow.
-Several methods for controlling temperature such as parallel tempering \citep{swendsen1986replica}, simulated annealing \citep{kirkpatrick1983optimization}, Adiabatic Monte Carlo \citep{betancourt2014adiabatic} could provide sophisticated mechanisms to control the temperature, potentially dynamically through time.
-Heuristically, we look for the the lowest temperature which yields a reasonable acceptance rate. 
 
-% \paragraph{Implementations in Other Systems.} Energy functions are related to noise models, which means that this behavior can be implemented in standard probabilistic programming languages as WebPPL or Anglican. Using an exponential kernel with euclidean distance over $a, b$ and temperature $\alpha$ is equivalent to say that the difference between $a$ and $b$ is equal to a Gaussian noise centered around zero with variance equal to $\alpha/2$. Therefore, you could write the following helper in Anglican for using \texttt{softeq}.
+
+\paragraph{Composition} We construct $\softv{Y}$ from $Y$ compositionally, by substituting primitive predicates (equality, inequalities and logical operators) with soft counterparts.
+For instance the predicate $(x > y) \lor \neg(x^2 = 2)$ is transformed into $(x \soft{>} y) \soft{\lor} \softv{\neg}(x^2 \soft{=} 2)$.
+In general, we use $\soft{p}$ to denote a relaxation of a predicate $p$.
+\begin{figure}[H]\label{softpreds}
+  \begin{align*}
+x \soft{=} y &= k_\alpha(\rho(x, y))\\
+x \soft{>} y &= k_\alpha(\rho(x, [y, \infty]))\\
+% x \soft{<} y &= k_\alpha(\rho(x, [-\infty, y]))\\
+x \soft{<} y &= k_\alpha(\rho(y, [-\infty, x]))\\
+a \soft{\land} b &= \max(a, b)\\
+a \soft{\lor} b &= \min(a, b)
+\end{align*}
+\caption{Soft Primitive Predicates}
+\end{figure}
+
+A soft inequality such as $x \soft{>} y$ is function of the amount by which $x$ must be increased (or $y$ decreased) until $x > y$ is true.
+This is the distance between $x$ and the interval $[y, \infty]$, where the distance between a point and any interval $[a, b]$ is the smallest distance between $x$ and any element in $[a, b]$, and therefore 0 if $x \in [a, b]$:
+\begin{equation}
+\rho(x, [a, b]) =
+\begin{cases}
+  a - b & \text{ if } x < a\\
+  x - b & \text{ if } x < b\\
+  0              & \text{otherwise}
+\end{cases}
+\end{equation}
+
+Soft negation introduces complications.
+To illustrate, Figure \ref{negationimg} (a) shows $x \soft{>} 0$ as a function of $x$.
+In continuous logics \cite{kimmig2012short}, the negation of $a \in [0, 1]$ is $1 - a$.
+However, as shown in Figure \ref{negationimg} (b), this violates criteria (iii) of predicate relaxation; there are values which satisfy the hard predicate $\neg(x > 0)$ which do take a value of 1 in $1 - (x \soft{>} 0)$.
+
+
+\begin{figure}
+\includegraphics[width=\linewidth]{negation.eps}
+\caption{Soft predicates as function of $x$.  In all figures the blue line denotes the soft predicate, while the red line denotes the predicate to approximate.}\label{negationimg}
+\end{figure}
+
+
+The problem of negation arises because $\softv{Y}$ is consistent with $Y$ at 1 but not at 0.
+In other words, $\softv{Y}$ is a one-sided approximation.
+To overcome this challenge, soft primitives yield a pair $(a_0, a_1)$ where $a_0, a_0 \in [0, 1]$.
+$a_1$ preserves consistency with $Y$ on $1$, just as before, while $a_0$ preserves consistency with $\neg Y$ on $1$.
+For example if $x \dsoft{>} 0 = (a_0, a_1)$, then as a function of $x$, $a_0$ and $a_1$ correspond to Figure \ref{negationimg} (a) and (c) respectively.
+
+A complete two-sided soft logic is shown in Figure \ref{softw}.
+Although a two-sided predicate has two components, for the sake of conditioning we are still concerned only with the true side $a_1$ in the pair $(a_0, a_1)$.
+Soft negation simply swaps the elements of $(a_0, a_1)$ to yield $(a_1, a_0)$.
+
+% \begin{definition}
+% The function $\softv{Y} : \Omega \to [0, 1]^2$ parameterized by $\alpha \in [0, \infty)$ is a two-sided relaxation of a $Y: \Omega \to \{0, 1\}$ if:
+% \begin{enumerate}[label=(\roman*)]
+% 	\label{def:temp}
+% 	\item For all $\omega \in \Omega$, $\lim_{\alpha \to 0}\softv{Y}(\omega; \alpha) = (\neg Y(\omega), Y(\omega))$.
+% 	\item For all $\omega \in \Omega$, $\lim_{\alpha \to \infty}\softv{Y}(\omega; \alpha) = (0, 1)$.
+
+%     \item For all $\alpha$, $\softv{Y}(\omega; \alpha) = 1$ iff $Y(\omega) = 1$.
+%     \item The entropy $H(\softv{Y}(\omega; \alpha))$ (which characterizes the fidelity of the approximation ) is an increasing function of $\alpha$.\footnote
+%     {By compactness, it is integrable for all $\alpha$, when $\Omega$ has finite dimension}
+% \end{enumerate}
+% \end{definition}
+
+
+\begin{figure}
+\begin{align*}
+x \dsoft{=} y &= (\text{if } x = y  \text{ then } \exp(1/\alpha) \text{ else } 1, k_\alpha(\rho(x, y)))\\
+x \dsoft{>} y &= (k_\alpha(\rho(x, [-\infty, y])), k_\alpha(\rho(x, [y, \infty])))\\
+x \dsoft{<} y &= (k_\alpha(\rho(y, [x, \infty])), k_\alpha(\rho(y, [-\infty, x])))\\
+(a_0, a_1) \dsoft{\land} (b_0, b_1) &= (a_0 \soft{\land} b_0, a_1 \soft{\land} b_1)\\
+(a_0, a_1) \dsoft{\lor} (b_0, b_1) &= (a_0 \soft{\lor} b_0, a_1 \soft{\lor} b_1)\\
+\softv{\neg}(a_0, a_1) &= (a_1, a_0)
+\end{align*}
+\caption{Two sided soft primitive predicates}
+\label{softw}
+\end{figure}
 
 % \begin{center}
-% \begin{minipage}{5cm}
-% \begin{Verbatim}[fontsize=\small]
-% (let [kernel (fn [alpha]
-%                (fn [a, b]
-%                  let [n (normal 0 (/ alpha 2))]
-%                  (observe (n (- a b)))))
-%        softeq (kernel 1.0)]
-%   (softeq x y))
-% \end{Verbatim}
-% \end{minipage}
+% \begin{tabular}{ l | c | r }
+%   % \hline		
+%   $(a_0, a_1) \soft{\land} (b_0, b_1)$ & $(a_0, a_1) \soft{\lor} (b_0, b_1)$ & $\neg(a_0, a_1)$ \\
+%   $(a_0, a_1) \soft{\land} (b_0, b_1)$ & $(a_0, a_1) \soft{\lor} (b_0, b_1)$ & $\neg(a_0, a_1)$ \\
+%   % \hline  
+% \end{tabular}
 % \end{center}
 
-% Our method relies on a choice of $\rho$: a types-specific distance between objects.
-% The choice of a suitable distance function can only be made in relation to a corresponding inference procedure, because the inference procedure will be making moves based on the distance.
-% For example with Hamiltonian Monte Carlo we want the distance function to be continuous and differentiable.
 
-% For primitive types such as $\mathbb{R}$
-% Min Max are not only valid choice, what is the desiderata?
+\paragraph{Unsatisfiability}Predicate exchange is unable to determine if a predicate is unsatisfiable (e.g.  $(x > 1) \land (x < -1)$), and defers to the user to ensure this is the case.
 
-\subsection{MCMC Inference through Sample Space}
-An Omega model is completely distinct from any particular inference procedure, but in practice we perform inference using variants of Markov Chain Monte Carlo.
-We construct a Markov chain through the states of $\Omega$ to sample from the unnormalized target density, $U_Y$.  The simplest form of the algorithm applicable to any model is influenced by the approach of \citep{wingate2011lightweight, milch20071} to MCMC that mutates a database of named random variables:
-\begin{enumerate}
-\item Sample a random initial starting state $\omega_1$.
-\item Uniformly sample a random dimension $d$ of $\omega_i$, and construct a proposal $\omega^*_i$.
-\item Accept the proposal with probability $\min(1, U_Y(\omega_i) / U_Y(\omega^*_i))$.
-\end{enumerate}
+\subsection{Approximate Markov Chain Monte Carlo}
+A soft predicate can serve as an approximate likelihood, and as a result is amenable to likelihood based inference methods such as Markov Chain Monte Carlo.
+MCMC algorithms require a function $f$ that is proportional to the the target density.
+In Bayesian inference this is the posterior, dictated by Bayes' theorem as the product of the likelihood and the prior.
+Approximate inference using soft predicates takes a similar form.
 
-An unusual property of this form of MCMC is that it becomes unnecessary to compute the density of the data. Indeed, even though we are essentially sampling from the conditional distribution $\conds{X}{Y}$, at no point during the inference are we required to compute the density of $X$. The samples of $X$ are simply obtained via the forward execution of the samples from $\Omega$, i.e. $x_i = X(\omega_i)$ for $i = 1, 2, \dots$ The cost of this added flexibility lies in the definition of a distance function. When random variables are high dimensional objects, defining a useful distance can be very difficult.
+Let $\cM = (X_1, \dots, X_n)$ be a model, $Y$ be a predicate that conditions $\cM$, and  $\softv{Y}(\omega) = \softv{\lk}(X_1(\omega), ..., X_n(\omega))$ be a relaxation of $Y$.
+% % Random variables in $\cM$ may be exogenous or endogenous in the sense that
+% % given values for exogenous variables, the values of endogenous are determined.
+% % For example $X = \mathcal{N}(0,1)$ is exogenous while $Y = X^2$ is endogenous.
+% % Inference need only take place on exogenous random variables.
+% Both $Y$ and $\softv{Y}$ are random variables, and hence map from the sample space $\Omega$;
+% for convenience we define a soft predicate $\softv{\lk}$ as a function of its parameters (other random variables in the model) rather than the sample space.
+% That is, let $\softv{Y}(\omega) = \softv{\lk}(X_1(\omega), ..., X_n(\omega))$, where $X_i \in \cM$.
+Assuming a prior density $p$, the approximate posterior $f$ is the product:
+\begin{equation}
+f(m) = p(m) \cdot \softv{\lk}(m)
+\end{equation}
+$\softv{\lk}$ down weights parameter values which violate $Y$ by the degree to which they violate it. 
+This is modulated by the temperature $\alpha$ used in the  relaxation kernels which constitute $\softv{\lk}$.
+At maximum temperature $\softv{\lk}$ has no effect, and the approximate posterior $f$ is equal to the prior $p$.
+At zero temperature, $f$ recovers the true posterior since parameter values which violate the condition are given zero weight.
 
-This scenario closely resembles the reparameterization trick \citep{Kingma:2014, rezende2014stochastic} where one resorts to include all the uncertainty of a random variable $z$ in a simple, easy-to-sample, parameter-free noise source such as $\epsilon \sim \mathcal{N}(\mathbf{0}, I)$. The actual random variable $z$ is then obtained through a parametric transformation of the noise, $z = f(\epsilon; \theta)$. Both methods separate the 
-uncertainty of a random variable from the deterministic transformation that results in a complex density. However, in the reparameterization trick the noise source is constant and controlled while the parametric transformation is meant to infer the structure of the resulting random variable. Conversely, our forward model -- deterministic transformation -- is constant and controlled, hence we simply transfer our inference problem to a much simpler space of $\Omega$.
+For illustration, let $\cM = (\mu, X)$ be a model where $\mu = \beta(3, 4), X = \mathcal{N}(\mu, 1)$  conditioned on $X = 0.5$.
+The approximate posterior is shown at different temperatures in Figure \ref{temppost} and defined as:
+\begin{equation}\label{approxposterior}
+f_\alpha(\mu, x) = \beta_{0,1}(\mu) \cdot \mathcal{N}_{\mu,1}(x) \cdot k_\alpha(\rho(x, 0.5)) 
+\end{equation}
 
-There is also connection to approximate Bayesian computation (ABC) methods~\citep{beaumont2002approximate} in that ABC methods 
-sample using a distance function to induce a data likelihood. Our method differs in that conditionals can be any predicate not just
-one for an observed random variable.
-Finally for inference, with the soft predicates we define, we
-can use modern likelihood-free variational inference algorithms
-that construct an approximation to a conditional with only samples
-from the joint and samples from the conditional approximation~\citep{tran2017hierarchical}.
+\begin{figure}
+\includegraphics[width=\linewidth]{approxpost.eps}
+\caption{Approximate Posterior at varying temperatures.  Temperature decreases from top row to bottom.  Along each row: (left) is the prior term $p$, (center) is the soft likelihood term $\softv{\lk}$, and (right) is the approximate posterior $f$}
+\label{temppost}
+\end{figure}
 
-% Given a random variable $X$, the simplest inference procedure is rejection sampling: unconditionally simulate $X$, and accept the sample if some condition $Y$ holds, otherwise try again.
+The temperature parameter trades off between tractability of inference and the fidelity of the approximation.
+Too high and $\softv{Y}$ will diverge too greatly from $Y$. Too low and convergence will be slow.
+% Several temperatre methods for controlling temperature exist such as simulated annealing \citep{kirkpatrick1983optimization} and Adiabatic Monte Carlo \citep{betancourt2014adiabatic}.
+% We augment replica exchange , which combines information from several chains to sample more effectively, which an accept/reject phase, to sample from the unrelaxed model.
 
-% Rejection sampling is correct because it assigns zero measure to all events that are disjoint from the conditioning set $Y^{-1}(1)$, while preserving the original same measure on all events in the conditioning set.
-% % samples from the conditional measure $\mu_Y$  observes the measure theoretic semantics has straightforward semantics, which lead directly to the approximations used in this approach.
-% % With the objective of sampling from $X$ given $Y$, in measure theoretic terms we can first forget about $X$ and instead focus on generating $\omega$ such that $Y(\omega) = 1$.
-% Rejection sampling does not scale to high dimensions because 
-% Approximate bayesian computation (ABC) is a class of methods which approximate the rejection sampling approach by replacing equalities with bounds.
-% Rather than condition on $X = c$, we condition on $\rho(\tilde{D},D) \leq \epsilon$.
-% - 
-% \subsection{Implementation}
+\subsection{Replica Exchange}\label{replicaexchange}
+Replica exchange simulates \citep{swendsen1986replica} $M$ replicas at different temperatures, and uses a Metropolis-Hastings update to  periodically swap the temperatures of chains.
+If $f_{\alpha_i}$ is an approximate posterior function at temperature $\alpha_i$, two independent parallel chains simulating targets $f_{\alpha_1}(x)$, $f_{\alpha_2}(y)$ they follow a joint target $f_{\alpha_1, \alpha_2}(x,y) = f_{\alpha_1}(x)f_{\alpha_2}(y)$.
+Replica exchange swaps states between the chains while preserving the joint target.
+Swapping states is equivalent to swapping predicates, which motivates the name predicate exchange.
+Concretely, replica exchange proposes a swap from $(x, y)$ to $(y, x)$, and accepts it with probability $\min(1, A)$, where:
+\begin{equation}
+A =  \frac{f_{\alpha_1, \alpha_2}(y,x)}{f_{\alpha_1, \alpha_2}(x,y)} = \frac{f_{\alpha_1}(y)f_{\alpha_2}(x)}{f_{\alpha_1}(x)f_{\alpha_2}(y)}
+\end{equation}
+
+We modify standard replica exchange in two ways: (i) for exact inference, states which violate the constraint are rejected, and (ii)
+unlike conventional replica exchange which draws samples only from the zero-temperature chain, we accept states from any chain so long as $f_{\alpha_i}(x) = 1$.
+
+Replica exchange has a number of hyper-parameters: the number of parallel chains, the corresponding temperatures, the swapping schedule.
+Several good practices are outlined in \cite{earl2005parallel}.  In practice, we logarithmically space $\alpha$ between a lower and upper bound (e.g., $\log(\alpha_1) = 10^{-5}$, $\log(\alpha_M) = 10^5$), and swap states of chains that are adjacent in temperature ($\alpha_1$ with $\alpha_2$, $\alpha_2$ with $\alpha_3$, etc) periodically.
 
 
-% The role of the sample space $\Omega$ in probability theory closely resembles the global random number generator data structure found in most programming language, which leads directly to a metho implementation  for inference.
-% If inference as described in section $X$ is the problem of finding values in the measure space which are consistent with our observations, and that measure space is in one to one correspondance with the space on which the random number generator is defined.
-% And if for the MCMC procedures we need to construct a random walk throughg this space.
-% Our approach is to overload the random number generator.
-
-
-% \begin{figure}[h]
-% \centering
-% \begin{minipage}[t]{5cm}
-% 	\vspace{0pt}  
-
-% 	\begin{algorithm}[H]
-% 	\SetAlgoLined
-% 	\KwResult{Write here the result }
-% 	 initialization\;
-% 	 \While{While condition}{
-% 		instructions\;
-% 		\eIf{condition}{
-% 		 instructions1\;
-% 		 instructions2\;
-% 		 }{
-% 		 instructions3\;
-% 		}
-% 	 }
-% 	 \caption{Single Site Metropolis Hastings}
-% 	\end{algorithm}
-% \end{minipage}%
-% \begin{minipage}[t]{5cm}
-% 	\begin{algorithm}[H]
-% 	\SetAlgoLined
-% 	\KwResult{Write here the result }
-% 	 initialization\;
-% 	 \While{While condition}{
-% 		instructions\;
-% 		\eIf{condition}{
-% 		 instructions1\;
-% 		 instructions2\;
-% 		 }{
-% 		 instructions3\;
-% 		}
-% 	 }
-% 	 \caption{Hamiltonian Monte Carlo}
-% 	\end{algorithm}
-% \end{minipage}
-% \end{figure}
-
-%% I like this, but at this point the reader wants results.
-% \subsection{Generalized Model Contruction with Conditioning}
-
-% \paragraph{Encoding Prior Beliefs.}
-% The kinds of knowledge we described were fixed predicates the random variables need
-% to satisfy. This allowed for the construction of a wide array of models with complex random
-% variables without having to alter the definitions of the random variables. However 
-% directly transforming models via conditioning does not allow for the expression
-% of beliefs that are uncertain. That is instead of ruling out that $X_1 \leq 0$ by conditioning
-% on $X_1 > 0$, we would like to express that a priori $X_1 < 0$ is l.
-
-% To build new models that declare probabilistic beliefs rather than only
-% hard knowledge, we expand the probability space. Take a model 
-% $(\Omega, {\cal H}, {\cal P})$, $X_1,...X_n$, then create a new
-% probability space with an extra independent uniform
-% dimension $(\Omega^*, {\cal H}^*, {\cal P}^*)$. Similar
-% to conditioning, adding a dimension can be done without altering 
-% random variables,
+% \paragraph{Balancing Different Constraints}
+% The scales of variables effect their influence on
+% the conditional distribution at a fixed temperature.
+% For example consider two pairs of variables, where
+% the first pair is ten times larger than the second.
+% Conditioning on a greater than constraint on both
+% pairs of variables is well defined. However,
+% a softening of both constraints would have 
+% a much larger change in the energy function over
+% a standard deviation change in pairs of variables.
+% To mitigate this issue, Omega tries enforce equality
+% in magnitude between all basic predicates at each temperature.
+% % rr: zenna can you add the basic predicates
+% To accomplish this, consider the case of two 
+% softened predicates $k_1$ and $k_2$. For the
+% energy function, Omega introduces a weight
+% for all but the first constraint, in this
+% case $k_2$ in the energy function gets replaces
+% by $\gamma_2 k_2$. The weight $\gamma_2$ should
+% ensure that $\gamma_2 k_2$ has the same
+% magnitude effect as $k_1$ on the energy
+% function:
 % \begin{align*}
-% X(\omega^*) = X(\omega, \omega^{extra}) = X(\omega).
+% E_{p_{\alpha, \gamma_2}}[k_1] = E_{p_{\alpha, \gamma_2}}[\gamma_2 k_2] 
 % \end{align*}
-% The random variables ignore the added dimension to the sample space.
+% % Does such a gamma_2 always exist? Maybe rewrite it as
+% % an optimization problem over gamma to enforce a solution?
+% In practice, we set $\gamma_2$ using an exponential moving
+% average of the $k_1$ values over the $k_2$ values.
 
-% With this added dimension, the belief $b$ over a predicate $d$ 
-% can be expressed as a simple fixed predicate of above. 
-% First, define an additional random variable $X^*$,
-% \begin{align*}
-% X^*(\omega^*) = 1 \textrm{ if } d(X_1, ..., X_n) = 1, \\
-% X^*(\omega^*) = \omega^{extra} > b \textrm{ if } d(X_1, ..., X_n) = 0.
-% \end{align*}
-% Then given this random variable, we can build new models $\cM^*$ by
-% conditioning on the predicate $X^* = 1$ as in the previous section. 
-% If the belief $b$ is one, the new model
-% $M^*$ enforces the predicate $d$ is always true. If $b < 1$, then
-% $M^*$ allows for the predicate to be false with probability $1 - b$.
-% This also means if the belief in the predicate is zero, $M^* = M$.
 
-% The pullback measure on $\omega$ induced by conditioning on $X^* = 1$,
-% gets reweighed because $\omega$ where the predicate $d$ is true maintain
-% their mass, while $\omega$ where the predicate $d$ is false have their mass
-% reduced by $1-b$.
+% This scenario closely resembles the reparameterization trick \citep{Kingma:2014, rezende2014stochastic} where one resorts to include all the uncertainty of a random variable $z$ in a simple, easy-to-sample, parameter-free noise source such as $\epsilon \sim \mathcal{N}(\mathbf{0}, I)$. The actual random variable $z$ is then obtained through a parametric transformation of the noise, $z = f(\epsilon; \theta)$. Both methods separate the 
+% uncertainty of a random variable from the deterministic transformation that results in a complex density. However, in the reparameterization trick the noise source is constant and controlled while the parametric transformation is meant to infer the structure of the resulting random variable. Conversely, our forward model -- deterministic transformation -- is constant and controlled, hence we simply transfer our inference problem to a much simpler space of $\Omega$.
 
-% \paragraph{General Conditioning.}
-% Conditioning has the ability to morph one model into
-% almost any other model if we condition on flexible enough
-% extra dimensions. Let $\beta$ be an independent random
-% variable, then let $f_\beta(X_{1}, ..., X_{n})$
-% be an arbitrary function. Then let $\sigma$ is the sigmoid function,
-% and define an additional random variable $X^*$ as 
-% \begin{align*}
-% X^* \sim \textrm{Poisson}(\exp(f_\beta(X_{1}, ..., X_{n}))).
-% \end{align*}
-% The model family generated by conditioning on $X^* = 0$, 
-% has prior support over any joint distribution whose Radon-Nikodym
-% derivative difference with respect to a dominating measure  
-% with that of the model $M$ can be represented as $f_\beta$.
-% This follows since $f_\beta$ can arbitrarily reweight the pullback
-% measure.
+% Predicate Exchange has a connection to approximate Bayesian computation (ABC) methods~\citep{beaumont2002approximate} in that ABC methods 
+% sample using a distance function to induce a data likelihood. Our method differs in that conditionals can be any predicate not just
+% one for an observed random variable.
+% Finally for inference, with the soft predicates we define, we
+% can use modern likelihood-free variational inference algorithms
+% that construct an approximation to a conditional with only samples
+% from the joint and samples from the conditional approximation~\citep{tran2017hierarchical}.
 
-\paragraph{Balancing Different Constraints}
-The scales of variables effect their influence on
-the conditional distribution at a fixed temperature.
-For example consider two pairs of variables, where
-the first pair is ten times larger than the second.
-Conditioning on a greater than constraint on both
-pairs of variables is well defined. However,
-a softening of both constraints would have 
-a much larger change in the energy function over
-a standard deviation change in pairs of variables.
-To mitigate this issue, Omega tries enforce equality
-in magnitude between all basic predicates at each temperature.
-% rr: zenna can you add the basic predicates
-To accomplish this, consider the case of two 
-softened predicates $k_1$ and $k_2$. For the
-energy function, Omega introduces a weight
-for all but the first constraint, in this
-case $k_2$ in the energy function gets replaces
-by $\gamma_2 k_2$. The weight $\gamma_2$ should
-ensure that $\gamma_2 k_2$ has the same
-magnitude effect as $k_1$ on the energy
-function:
-\begin{align*}
-E_{p_{\alpha, \gamma_2}}[k_1] = E_{p_{\alpha, \gamma_2}}[\gamma_2 k_2] 
-\end{align*}
-% Does such a gamma_2 always exist? Maybe rewrite it as
-% an optimization problem over gamma to enforce a solution?
-In practice, we set $\gamma_2$ using an exponential moving
-average of the $k_1$ values over the $k_2$ values.
