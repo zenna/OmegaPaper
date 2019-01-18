@@ -8,15 +8,6 @@ For instance, the question of whether a variable is equal to a particular value,
 In principle, a predicate can be used to declare any fact about a domain, not only the observation of data.
 In practice, sampling from models conditioned on most predicates presents severe challenges to existing inference procedures.
 
-Predicates can be used to update a model to adhere to known facts about a domain, without the burden of specifying how to revise the model.
-For example, in inverse graphics \cite{marschner1998inverse,kulkarni2015deep} (inferring three dimensional geometry from observed images), the proposition ``rigid bodies do not intersect'' is a predicate on latent configurations of geometry.
-To manually revise a model to constructively adhere to this fact is ranges between inconvenient and infeasible.
-Instead, we would ideally simply condition on it being true, concentrating probability mass on physically plausible geometric configurations, ultimately to yield more accurate posterior inferences in the inverse graphics problem.
-
-Predicates can also express observations that are more abstract than variables in a model.
-In diabetes research for example, probabilistic models have been used to relate physiological factors to glucose levels over time \citep{levine2017offline,murata2004probabilistic}.
-Rather than concrete, numerical glucose measurements, a medical practitioner may observe (or be told) that a patient suffers from recurrent hypoglycemia, i.e., that their glucose levels periodically fall below a critical value.
-Even if the occurrence of hypoglycemia does not appear as an explicit variable in the model, it could be constructed as a predicate on glucose levels, and conditioned on to infer the posterior distribution over latent physiological factors.
 
 
 % ``glucose curves are similar across patients''.	
@@ -124,6 +115,17 @@ Continuing the previous example, we may know that a person does \emph{not} have 
 % In contrast to most distance based inference methods (notably Approximate Bayesian Computation \cite{beaumont2002approximate}), we develop a form of replica exchange Markov Chain Monte Carlo \cite{earl2005parallel} to target inference that is exact in convergence of the chain.
 % Predicate relaxation is modulated by temperature such that at zero temperature the relaxed predicate mirrors its hard counter-part, while at maximal temperatures, it is virtually always satisfied.
 % Predicate Exchange simulates several Markov chains in parallel at different temperatures.
+
+Predicates can be used to update a model to adhere to known facts about a domain, without the burden of specifying how to revise the model.
+For example, in inverse graphics \cite{marschner1998inverse,kulkarni2015deep} (inferring three dimensional geometry from observed images), the proposition ``rigid bodies do not intersect'' is a predicate on latent configurations of geometry.
+To manually revise a model to constructively adhere to this fact is ranges between inconvenient and infeasible.
+Instead, we would ideally simply condition on it being true, concentrating probability mass on physically plausible geometric configurations, ultimately to yield more accurate posterior inferences in the inverse graphics problem.
+
+Predicates can also express observations that are more abstract than variables in a model.
+In diabetes research for example, probabilistic models have been used to relate physiological factors to glucose levels over time \citep{levine2017offline,murata2004probabilistic}.
+Rather than concrete, numerical glucose measurements, a medical practitioner may observe (or be told) that a patient suffers from recurrent hypoglycemia, i.e., that their glucose levels periodically fall below a critical value.
+Even if the occurrence of hypoglycemia does not appear as an explicit variable in the model, it could be constructed as a predicate on glucose levels, and conditioned on to infer the posterior distribution over latent physiological factors.
+
 
 Predicate exchange is motivated by probabilistic programming languages, which have vastly expanded the class of probabilistic models that can be expressed,, but still heavily restrict the kinds of predicates that can be conditioned on.
 Rather than introduce a new language or modeling formalism, we mirror   \cite{wingate2011lightweight} and provide a light-weight implementation that performs inference by modulating the execution of a stochastic simulation based model.
