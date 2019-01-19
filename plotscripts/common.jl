@@ -1,5 +1,5 @@
 import Plots
-using Plots.PlotMeasures
+using Plots.PlotMeasures: mm
 using LaTeXStrings
 
 colwidth = 82

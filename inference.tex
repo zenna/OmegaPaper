@@ -3,21 +3,25 @@
 
 To condition a model $\cM$ on a predicate $Y$ we develop \emph{predicate exchange}, a likelihood-free inference procedure.  It is composed of two parts:
 \begin{enumerate}
-\item \textbf{Predicate Relaxation} constructs a soft predicate $\softv{Y}$ from $Y$. $\softv{Y}$ takes values   in a soft Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$. $\soft{\lor}$ and $\neg$. 
+\item \textbf{Predicate Relaxation} constructs a soft predicate $\softv{Y}$ from $Y$. $\softv{Y}$ takes values   in a soft Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$. $\soft{\lor}$ and $\neg$. `'
 $\softv{Y}$ is 1 iff $Y$ is 1, but otherwise takes nonzero values denoting the degree to which $Y$ is satisfied.
 % The relaxation is parameterized by a temperature.
 % Predicate relaxation allows us to apply likelihood based MCMC inference procedures.
 \item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo procedure that exploits temperature. The strength by which $\softv{Y}$ relaxes $Y$ is modulated by a temperature parameter $\alpha$, which trades off between accuracy and ease of inference.  By simulating several replicas of $\softv{Y}$ at different temperatures, replica exchange is able to draw exact samples. 
 \end{enumerate}
 
-% \subsection{Soft Conditioning}
-% Conditioning is an operation that restricts a measure space by a set.
+\subsection{Soft Conditioning}
+Conditioning is defined classically as an operation that restricts a measure space.
+However, the probability of an event is equal to the expectation of the function that indicates that event.
+This means that we can instead formulate conditioning as an operation between measures.
+Conditioning is an operation that restricts a measure space by a set.
+Let $(\Omega, \mathcal{H}, \mathcal{P})$ be a measure space.
+Soft conditioning on a function $Y: \Omega \to [0, 1]$ constructs a new measure $\mathcal{P}'$ defined as:
+\begin{equation}\label{eq:softcond}
+\mathcal{P}'(A) = \frac{E(1_A\softv{Y})}{E(\softv{Y})}
+\end{equation}
 
-% Let $(\Omega, \mathcal{H}, \mathcal{P})$ be a measure space.
-% Soft conditioning on a function $Y: \Omega \to [0, 1]$ constructs a new measure $\mathcal{P}'$ defined as:
-% \begin{equation}
-% \mathcal{P}'(A) = \frac{\mathbb{E}(Y \mid A)}{\mathbb{E}(Y)}
-% \end{equation}
+If $Y$ is a predicate, i.e. an indicator function defined on $[0, 1]$ then \ref{eq:softcond} is equivalent to hard conditioning on predicates/events.
 
 \subsection{Predicate Relaxation}\label{predexchange}
 

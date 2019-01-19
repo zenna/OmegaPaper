@@ -1,13 +1,20 @@
 include("common.jl")
 
-using InvRayTrace: img, img_obs
+using InvRayTrace: img, img_obs, nointersect, scene
 import InvRayTrace
+include(joinpath(dirname(pathof(InvRayTrace)), "viz.jl")) # Include Viz
 import RayTrace
 using JLD2
 using Omega
 using Omega.Space
 using FileIO
+
 using Images
+using Plots
+using LaTeXStrings
+pyplot()
+
+
 
 # TODO
 # 1. Get data
@@ -18,39 +25,82 @@ using Images
 # 3. Sort out formatting details
 
 # 1. Capture the log likelihood
-# 2. Capture The distance to the truth
-# 3. Get a wireframe mesh image
+# - Capture The distance to the truth
+# - Get a wireframe mesh image
 
-# const intersectdatapath = "/home/zenna/repos/OmegaModels.jl/models/InvRayTrace.jl/lgMy6nVd/omega957.jld2"
-# const intersectdata = load(intersectdatapath)["data"]
+# TODO: Save the loss value
 
-# const nointersectdatapath = "/home/zenna/repos/OmegaModels.jl/models/InvRayTrace.jl/lgMy6nVd/omega957.jld2"
-# const nointersectdata = load(intersectdatapath)["data"]
+# TODO:
+# Get second dataset in
+# RMSE plot
+# Which image plots to show
+# Run again but
+  #  saving the loss value and
+  # - Saving the exchange rate
+  # And maybe do the chaisn in parallel? maybe unnecessary
 
-# fakedata =  [intersectdata for i = 1:1000]
-# function plotloss!(plt, y; label)
-#   plot!(plt,
-#         y,
-#         ylabel = L"\log f",
-#         xlabel = L"\textrm{iteration}",
-#         label = label)
-# end
 
-# pred = logerr(img ==ₛ img_obs)
-# losses = pred.(fakedata)
-# plt = Plots.plot()
-# plotloss!(plt, losses; label = "no intersect")
-# plotloss!(plt, rand(length(losses)); label = "intersect")
+const noi = Omega.lift(nointersect)(scene)
+const intersectdatapath = "/home/zenna/sketch4/repos/XH3lgZKo/omegas.jld2"
+const intersectdata = load(intersectdatapath)["data"].vals
+lastscene = scene(intersectdata[end])
+# Predicates
+const obs = logerr(img ==ₛ img_obs)
+const noi = Omega.lift(nointersect)(scene)
 
+# Data
+noi_x = noi.(intersectdata)
+# obs_x = obs.(intersectdata)
+obs_x = load("obs_x.jld2")["obs_x"]
+
+function parsedata(noi_y, obs_y)
+  n = length(noi_y)
+  [(y = noi_y, x = 1:n, label = L"\textrm{nointersect}"),
+   (y = obs_y, x = 1:n, label = L"img ==_s obs")]
+end
+
+## Conversions
+## ==========
+iters = Int.(range(1, length = 5, stop = length(obs_y)))
+scenes = [scene(intersectdata[i]) for i in iters]
+imgs = [img(intersectdata[i]).img for i in iters]
+imgs = shapeup.(imgs)
+intersectplots = [saveandplot(scene) for scene in scenes]
+
+function saveandplot(scene)
+  voxels = vizintersectvoxels(intersectvoxels(scene.geoms[1:end-2]))
+  save("temp.png", voxels)
+  voxelimg = load("temp.png")
+  Plots.plot(voxelimg, widen = false, margin = 0mm, aspectratio = 1,
+                                      framestyle = :none)
+end
+
+"Gr id of images"
+function images(scenes)
+  img_plots = [Plots.plot(img, ticks = false, margin = 0mm, widen = false) for img in imgs]
+  Plots.plot(img_plots..., intersectplots..., layout = (2, length(imgs)),
+                       widen = false,
+                       margin = 0mm,
+                       aspectratio = 1,
+                       size = (colwidth*up,colwidth*up*2/3),
+                      #  framestyle = :none,
+                       )
+end
+
+lines = vcat(parsedata(obs_x, logerr.(noi_x)))
+p1 = ℓvsiter(lines)
+
+rs(x::Vector) = reshape(x, (1, length(x))) 
 
 function ℓvsiter(lines)
   xs = [k.x for k in lines]
   ys = [k.y for k in lines]
   labels = [k.label for k in lines]
+  labels = [L"nointersect",L"img \tilde{=} obs"]
   Plots.plot(xs, ys,
     ylabel = L"\ell",
     xlabel = L"iteration",
-    # label = labels,
+    label = rs(labels),
   )
 end
 
@@ -90,7 +140,8 @@ rmsenointersect = rand(length(x))
 lrmsenointersect = (x = x, y = rmsenointersect, label = "RMSE - nointerect")
 
 "Turn image from array into colours and rotate"
-shapeup(img) = RayTrace.rgbimg(permutedims(min.(1.0, img), (2,1,3)))
+shapeup(img) = RayTrace.rgbimg(permutedims(min.(1.0, img), (2,1,3)) .* )
+
 
 "Grid of images"
 function images()
@@ -113,9 +164,9 @@ function plot_invg(; save)
   plt = Plots.plot(pimg, p1, p2,
                     layout = layout,
                     #  title = "Big Plot",
-                     size = (colwidth*up, colwidth*up*4/3),
+                     size = (colwidth*up, coImproving ABC for quantile distributionsdth*up*4/3),
                      tickfontsize = 32,
-                    #  legendfontsize = 32m,
+                    #  legendfontsize = 32m,Improving ABC for quantile distributions
                      margin = 0mm,
                      widen = false,
                      legend = :topright,
