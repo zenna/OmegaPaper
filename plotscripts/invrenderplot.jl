@@ -40,18 +40,26 @@ pyplot()
   # And maybe do the chaisn in parallel? maybe unnecessary
 
 
-const noi = Omega.lift(nointersect)(scene)
-const intersectdatapath = "/home/zenna/sketch4/repos/XH3lgZKo/omegas.jld2"
-const intersectdata = load(intersectdatapath)["data"].vals
-lastscene = scene(intersectdata[end])
 # Predicates
 const obs = logerr(img ==ₛ img_obs)
 const noi = Omega.lift(nointersect)(scene)
+
+const intersectdatapath = "/home/zenna/sketch4/repos/XH3lgZKo/omegas.jld2"
+const intersectdata = load(intersectdatapath)["data"].vals
+
+const nointersectdatapath = "/home/zenna/sketch3/repos/data/7vwt0cn1/omegas.jld2"
+const nointersectdata = load(nointersectdatapath)["data"].vals
+
 
 # Data
 noi_x = noi.(intersectdata)
 # obs_x = obs.(intersectdata)
 obs_x = load("obs_x.jld2")["obs_x"]
+
+# Data
+noi_noi = noi.(nointersectdata)
+ℓ_noi =  obs.(nointersectdata)
+
 
 function parsedata(noi_y, obs_y)
   n = length(noi_y)
