@@ -1,12 +1,20 @@
-using Plots
+include("common.jl")
+import Plots
 using Omega
 using Parameters
 using Callbacks
-using StatPlots: marginalhist
-using Plots.PlotMeasures
+# using StatPlots: marginalhist
+using Plots.PlotMeasures: mm
 using Flux
 using LaTeXStrings
 include(joinpath(dirname(pathof(Omega)), "viz.jl"))
+
+# Problems
+
+import ForwardDiff
+val(x::ForwardDiff.Dual) = x.value
+val(x::TrackedArray) = Flux.data(x)
+val(x) = x
 
 function prob1()
   x = uniform(-1.0, 1.0)  
@@ -53,64 +61,45 @@ function prob7(k = 3, thresh = 0.8)
   (x = x, y = y, c = c, xlims = (-1, 1), ylims = (-100, 100))
 end
 
+# Get Data
 function allsamples(prob, n; algkwargs...)
-  # ωsamples = rand(defΩ(), logerr(prob.c), n, alg, kwargs...)
-  # xy = randtuple((prob.x, prob.yy))
-  # samples = map(ω -> applynotrackerr(x, ω), ωsamples)
-
-  # ωsamples = rand((prob.x, prob.y), prob.c, n; alg = alg, kwargs...)
-  # (ωsamples = ωsamples, samples = samples)
   cb, losses = Callbacks.capturevals(:p, Float64)
   samples = rand((prob.x, prob.y), prob.c, n; cb = cb, algkwargs...)
-  (samples = samples, ωsamples = nothing, losses = losses)
+  (samples = samples, losses = losses)
 end
 
-# """
-# Contour Plot of two dimensions of Ω
+function getdata(probs, algs, n)
+  plots = []
+  data = []
+  for prob in probs
+    for alg in algs
+      try
+        println("Trying $prob on $alg")
+        @unpack samples, losses = allsamples(prob, n; alg...)
+        res = (prob = prob, alg = alg, samples = samples, losses = losses, fail = false)
+        push!(data, res)
+      catch e
+        println("Failed")
+        res = (prob = prob, alg = alg, fail = true)
+        push!(data, res)
+        # display(e)
+        rethrow(e)
+      end
+    end
+  end
+  data
+end
 
-# ```
-# x = normal(0.0, 1.0)
-# y = normal(0.0, 1.0)
-# c1 = err(x ==ₛ y)
-# c2 = err(x >ₛ y)
-# ωcontour(c2)
-# ```
-
-# """
-# function XYcontour(xx::RandVar,
-#                    yy::RandVar,
-#                    zz::RandVar;
-#                    ΩT = defΩ(),
-#                    xdim = 1,
-#                    ydim = 2,
-#                    xrng = 0:0.005:1,
-#                    yrng = 0:0.005:1,
-#                    plt = plot(),
-#                    fill = true,
-#                    kwargs...)
-#   ω = ΩT()
-#   zz(ω)
-#   function f(x, y)
-#     global ω = Omega.Space.update(ω, xdim, x)
-#     global ω = Omega.Space.update(ω, ydim, y)
-#     xx(ω), yy(ω), zz(ω)
-#   end
-#   res = f.(xrng, yrng')
-#   xs = [a[1] for a in res]
-#   ys = [a[2] for a in res]
-#   zs = [a[3] for a in res]
-#   contour!(plt, xrng, yrng, f; fill = fill, kwargs...)
-# end
-
+# Plot data
 function ωcontourhack(xrv::RandVar;
-                  ΩT = defΩ(),
-                  xdim = 1,
-                  ydim = 2,
-                  xrng = -1:0.005:1,
-                  yrng = -1:0.005:1,
-                  plt = plot(),
-                  fill = true,
-                  kwargs...)
+                      ΩT = defΩ(),
+                      xdim = 1,
+                      ydim = 2,
+                      xrng = -1:0.005:1,
+                      yrng = -1:0.005:1,
+                      plt = plot(),
+                      fill = true,
+                      kwargs...)
   ω = ΩT()
   xrv(ω)
   function f(x, y)
@@ -120,7 +109,6 @@ function ωcontourhack(xrv::RandVar;
   end
   contour!(plt, xrng, yrng, f; fill = fill, kwargs...)
 end
-
 
 function scatterxy(samples;
                    label = nothing, legend = nothing, xlims = (-1, 1),
@@ -142,8 +130,7 @@ end
 function vizall(probs, algs, n)
   plots = []
   for prob in probs
-    probplots = []
-    @unpack x, y, c, xlims, ylims = prob
+    # @unpack x, y, c, xlims, ylims = prob
     push!(probplots, ωcontourhack(err(c); label = nothing,
                                   legend = nothing,
                                   colorbar = nothing,
@@ -172,12 +159,13 @@ function vizall(probs, algs, n)
   plots
 end
 
+# Do it all!
 probs = [prob1(), prob2(), prob3(), prob4(), prob5(), prob6()]
 algs = [
         (alg = SSMH,),
         (alg = NUTS,),
         (alg = Replica, nreplicas = 4, inneralg = SSMH),
-        (alg = Replica, nreplicas = 4, inneralg = NUTS),
+        (alg = Replica, nreplicas = 4, inneralg = NUTS, ΩT = defΩ(NUTS)),
         # (alg = HMCFAST, stepsize = 0.001, nsteps = 100),
         # (alg = Replica, nreplicas = 4, inneralg = HMCFAST,
         #  ΩT = SimpleΩ{Vector{Int}, Flux.TrackedArray}, algargs = (stepsize = 0.001, nsteps = 100))
@@ -185,38 +173,38 @@ algs = [
 
 flatten(xs) = vcat([x for x in xs]...)
 
+data = getdata(probs, algs, 10)
+# plots = vizdata(data)
 
-plots = vizall(probs, algs, 10000)
+# plots = vizall(probs, algs, 10000)
+# st = L"x + y < 0"
+# ltxstrings = [L"x = y", L"x > y", L"|x| > |y|", L"x^2 = y^2", L"\sin(kx)\cos(kx) < \epsilon_1", L"\sin(kx)\cos(kx) < \epsilon_2"] 
+# algstrings = ["", "SSMH", "NUTS", "RE-SSMH", "RE-NUTS"]
 
+# function makeplots(plots)
+#   # foreach((plt, st) -> ylabel!(plt[1], st), plots, ltxstrings)
+#   foreach((plt, st) -> title!(plt, st), plots[1], algstrings)
+#   flatplots = flatten(plots)
+#   @show nrows, ncols = length(plots), length(plots[1])
+#   multiplier = 400
+#   plt = plot(flatplots..., layout = (nrows, ncols),
+#                            markersize=0.01,
+#                            tickfontsize = 24,
+#                            aspectratio = 1,
+#                            xticks = [-1, 1],
+#                            yticks = [-1, 1],
+#                            margin = 0mm,
+#                            top_margin = 10mm,
+#                            size = (ncols, nrows) .* multiplier,
+#                           #  fontfamily = font(50),
+#                            guidefontsize = 30,
+#                            legendfontsize = 24,
+#                            titlefontsize = 30
+#                           )
+# end
 
-st = L"x + y < 0"
-ltxstrings = [L"x = y", L"x > y", L"|x| > |y|", L"x^2 = y^2", L"\sin(kx)\cos(kx) < \epsilon_1", L"\sin(kx)\cos(kx) < \epsilon_2"] 
-algstrings = ["", "SSMH", "NUTS", "RE-SSMH", "RE-NUTS"]
-
-function makeplots(plots)
-  # foreach((plt, st) -> ylabel!(plt[1], st), plots, ltxstrings)
-  foreach((plt, st) -> title!(plt, st), plots[1], algstrings)
-  flatplots = flatten(plots)
-  @show nrows, ncols = length(plots), length(plots[1])
-  multiplier = 400
-  plt = plot(flatplots..., layout = (nrows, ncols),
-                           markersize=0.01,
-                           tickfontsize = 24,
-                           aspectratio = 1,
-                           xticks = [-1, 1],
-                           yticks = [-1, 1],
-                           margin = 0mm,
-                           top_margin = 10mm,
-                           size = (ncols, nrows) .* multiplier,
-                          #  fontfamily = font(50),
-                           guidefontsize = 30,
-                           legendfontsize = 24,
-                           titlefontsize = 30
-                          )
-end
-
-plt = makeplots(plots)
-savefig(plt, "grid4.png")
+# plt = makeplots(plots)
+# savefig(plt, "grid4.png")
 # n = 8
 # temps = Omega.Inference.logtemps(n)
 # temps = [1e-9, 10000]

@@ -1,21 +1,6 @@
 
 \section{Experiments}
 
-% \begin{figure}
-% 	\centering
-% 	\includegraphics[width=0.9\linewidth,natwidth=2000,natheight=2400]{grid3.png}
-% 	\caption{Posterior samples on different problems.  RE: replica exchange, SSMH: Single Site Metropolis Hastings, HMC: Hamiltonian Monte Carlo.  (Left) is target density, and following elements are histograms from computed samples.}
-% 	\label{fig:grid}
-% \end{figure}
-
-\begin{figure}
-	\centering
-	\includegraphics[width=0.9\linewidth]{invg2.pdf}
-	\includegraphics[width=0.9\linewidth]{invgb.pdf}
-	\caption{Posterior samples on different problems.  RE: replica exchange, SSMH: Single Site Metropolis Hastings, HMC: Hamiltonian Monte Carlo.  (Left) is target density, and following elements are histograms from computed samples.}
-	\label{fig:invrtmcmc}
-\end{figure}
-
 
 \paragraph{Small Models}
 In Figure \ref{fig:density} we demonstrate two examples of conditioning on predicates which are non trivial.
@@ -44,6 +29,32 @@ First we show that the conditioning can be used to truncate a Gaussian distribut
 % 	\end{minipage}
 	\caption{Left: Density from samples of Gaussian truncated to $[0, 1]$ through conditioning. Right: Conditioning on $X = Y$ where $X$ and $Y$ are independent normal distributions; shown at different temperatures.}
 	\label{fig:density}
+\end{figure}
+
+
+
+\paragraph{Inverse Ray Tracing}
+The objective is to infer the posterior distribution over geometry conditioned on a rendering of that geometry being equal to an observed image.
+Let $S$ be a space of scenes.
+A rendering function is a map $r: S \to I$, where $I$ the space of images.
+A scene is a collection of spheres, where each sphere.
+
+
+Describe Prior
+
+$$
+\ell(s) = r(s) = i_o \land \textrm{nointersect}(s)
+$$
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.9\linewidth]{invg2.pdf}
+	\includegraphics[width=0.9\linewidth]{invgb.pdf}
+	\includegraphics[width=0.9\linewidth]{lvstime.pdf}
+	\includegraphics[width=0.9\linewidth]{Hausdorf.pdf}
+	\caption{ Samples from inverse graphics.}
+	\label{fig:invrtmcmc}
 \end{figure}
 
 

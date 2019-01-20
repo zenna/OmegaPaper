@@ -47,11 +47,7 @@ noi_obs = noipred.(ωs)
 noi_noi = noipred.(noiωs)
 ℓ_noi = load("/home/zenna/sketch3/repos/data/ellother.jld2")["ℓ_noi"]
 
-function parsedata(noi_y, obs_y)
-  n = length(noi_y)
-  [(y = noi_y, x = 1:n, label = L"\textrm{nointersect}"),
-   (y = obs_y, x = 1:n, label = L"img ==_s obs")]
-end
+
 
 ## Images
 ## ======
@@ -107,22 +103,65 @@ plot_figinvrtmcmc(noiωs, save = true, fname = "invgb.pdf")
 
 ## Convergence
 ## ===========
-lines = vcat(parsedata(obs_x, logerr.(noi_x)))
-p1 = ℓvsiter(lines)
+rs(x::Vector) = reshape(x, (1, length(x)))
 
-rs(x::Vector) = reshape(x, (1, length(x))) 
+function parsedata(noi_y, obs_y)
+  n = length(noi_y)
+  [(y = noi_y, x = 1:n, label = L"\textrm{nointersect}"),
+   (y = obs_y, x = 1:n, label = L"img ==_s obs")]
+end
 
 function ℓvsiter(lines)
   xs = [k.x for k in lines]
   ys = [k.y for k in lines]
   labels = [k.label for k in lines]
-  labels = [L"nointersect",L"img \tilde{=} obs"]
+  fntsm = Plots.font("sans-serif", 12)
   Plots.plot(xs, ys,
-    ylabel = L"\ell",
+    ylabel = L"\log f",
     xlabel = L"iteration",
     label = rs(labels),
+    # margin = 0mm,
+    size = (colwidth*up,colwidth*up/3),
+    # framestyle = :none,
+    titlefont=fntsm,
+    guidefont=fntsm,
+    tickfont=fntsm,
+    legendfont=fntsm,
+    dpi = 100
   )
 end
+
+n = length(ℓ_obs)
+p1a = (y = ℓ_obs, x = 1:n, label = L"(a) nointersect")
+p1b = (y = ℓ_noi, x = 1:n, label = L"(a) img = obs")
+
+n = length(ℓ_noi)
+p2a = (y = noi_obs, x = 1:n, label = L"(b) nointersect")
+p2b = (y = noi_noi, x = 1:n, label = L"(b) img = obs")
+
+plt = ℓvsiter([p1a, p1b, p2a, p2b])
+savefig(plt, joinpath(FIGURESPATH, "lvstime.pdf"))
+
+## Hausdorf Error
+## ==============
+
+"distance to observed"
+obs_scene = InvRayTrace.obs_scene()
+hausobs(scene, obs = InvRayTrace.obs_scene()) = hausdorff(scene.geoms, obs.geoms)
+somobs(scene, obs = InvRayTrace.obs_scene()) = sumofmin(scene.geoms, obs.geoms)
+iscenes = scene.(iωs)
+noiscenes = scene.(noiωs)
+
+ihaus = hausobs.(iscenes)
+noihaus = hausobs.(noiscenes)
+ihaus = somobs.(iscenes)
+noihaus = somobs.(noiscenes)
+p1 = (y = ihaus, x = 1:length(ihaus), label = "Intersection")
+p2 = (y = noihaus, x = 1:length(ihaus), label = "No Intersection")
+
+plt = ℓvsiter([p1, p2])
+savefig(plt, joinpath(FIGURESPATH, "Hausdorf.pdf"))
+
 
 "Plot RMSE vs iteration"
 function rmsvsiter(lines)
@@ -130,29 +169,36 @@ function rmsvsiter(lines)
   ys = [k.y for k in lines]
   labels = [k.label for k in lines]
   Plots.plot(xs, ys,
-    ylabel = L"\ell",
+    ylabel = L"\log f",
     xlabel = L"iteration",
     # label = labels,
   )
 end
 
-## Everything 
-## ==========
-function plot_invg(; save)
-  pimg = images()
-  layout = Plots.grid(3, 1, heights=[1/2,1/4,1/4])
-  p1 = ℓvsiter([l1, l2, l3])
-  p2 = rmsvsiter([lrmse, lrmsenointersect])
-  plt = Plots.plot(pimg, p1, p2,
-                    layout = layout,
-                    #  title = "Big Plot",
-                     size = (colwidth*up, coImproving ABC for quantile distributionsdth*up*4/3),
-                     tickfontsize = 32,
-                    #  legendfontsize = 32m,Improving ABC for quantile distributions
-                     margin = 0mm,
-                     widen = false,
-                     legend = :topright,
-                     legendfont = fntsm)
-  save && Plots.savefig(plt, joinpath(PAPERHOME, "invg.pdf"))
-  plt
-end
+
+# ## Everything 
+# ## ==========
+# function plot_invg(; save)
+#   pimg = images()
+#   layout = Plots.grid(3, 1, heights=[1/2,1/4,1/4])
+#   p1 = ℓvsiter([l1, l2, l3])
+#   p2 = rmsvsiter([lrmse, lrmsenointersect])
+#   plt = Plots.plot(pimg, p1, p2,
+#                     layout = layout,
+#                     #  title = "Big Plot",
+#                      size = (colwidth*up, coImproving ABC for quantile distributionsdth*up*4/3),
+#                      tickfontsize = 32,
+#                     #  legendfontsize = 32m,Improving ABC for quantile distributions
+#                      margin = 0mm,
+#                      widen = false,
+#                      legend = :topright,
+#                      legendfont = fntsm)
+#   save && Plots.savefig(plt, joinpath(PAPERHOME, "invg.pdf"))
+#   plt
+# end
+
+# TODO
+# Use RayTrace.jl to make the image
+# Fix scaling
+# Have more than once trace
+# 
