@@ -88,6 +88,17 @@ In practice, sampling from models conditioned on most predicates presents severe
 
 % Outline: Non-observational predicates induce intractable likelihoods
 % and are largely unsupported by current methods of inference
+
+% Conditioning relieves the modeller from the burden of specifying how
+Predicates can be used to update a model to adhere to known facts about a domain, without the burden of specifying how to revise the model.
+For example, in inverse graphics \cite{marschner1998inverse,kulkarni2015deep} (inferring three dimensional geometry from observed images), the proposition ``rigid bodies do not intersect'' is a predicate on latent configurations of geometry.
+To manually revise a model to constructively adhere to this fact is ranges between inconvenient and infeasible.
+% Instead, we would ideally simply condition on it being true, concentrating probability mass on physically plausible geometric configurations, ultimately to yield more accurate posterior inferences in the inverse graphics problem.
+Predicates can also express observations that are more abstract than variables in a model.
+In diabetes research for example, probabilistic models have been used to relate physiological factors to glucose levels over time \citep{levine2017offline,murata2004probabilistic}.
+Rather than concrete, numerical glucose measurements, a medical practitioner may observe (or be told) that a patient suffers from recurrent hypoglycemia, i.e., that their glucose levels periodically fall below a critical value.
+Even if the occurrence of hypoglycemia does not appear as an explicit variable in the model, it could be constructed as a predicate on glucose levels, and conditioned on to infer the posterior distribution over latent physiological factors.
+
 Several effective sampling  \citep{andrieu2003introduction} and variational  \citep{jordan1999introduction, ranganath2014black} approaches to inference require only a black-box likelihood function, i.e., one evaluable on arbitrary input.
 The likelihood function quantifies the extent to which values of latent variables are consistent with observations. 
 However, most models conditioned on most predicates have likelihood functions that are intractable to compute or unknown.
@@ -116,15 +127,6 @@ Continuing the previous example, we may know that a person does \emph{not} have 
 % Predicate relaxation is modulated by temperature such that at zero temperature the relaxed predicate mirrors its hard counter-part, while at maximal temperatures, it is virtually always satisfied.
 % Predicate Exchange simulates several Markov chains in parallel at different temperatures.
 
-Predicates can be used to update a model to adhere to known facts about a domain, without the burden of specifying how to revise the model.
-For example, in inverse graphics \cite{marschner1998inverse,kulkarni2015deep} (inferring three dimensional geometry from observed images), the proposition ``rigid bodies do not intersect'' is a predicate on latent configurations of geometry.
-To manually revise a model to constructively adhere to this fact is ranges between inconvenient and infeasible.
-Instead, we would ideally simply condition on it being true, concentrating probability mass on physically plausible geometric configurations, ultimately to yield more accurate posterior inferences in the inverse graphics problem.
-
-Predicates can also express observations that are more abstract than variables in a model.
-In diabetes research for example, probabilistic models have been used to relate physiological factors to glucose levels over time \citep{levine2017offline,murata2004probabilistic}.
-Rather than concrete, numerical glucose measurements, a medical practitioner may observe (or be told) that a patient suffers from recurrent hypoglycemia, i.e., that their glucose levels periodically fall below a critical value.
-Even if the occurrence of hypoglycemia does not appear as an explicit variable in the model, it could be constructed as a predicate on glucose levels, and conditioned on to infer the posterior distribution over latent physiological factors.
 
 
 Predicate exchange is motivated by probabilistic programming languages, which have vastly expanded the class of probabilistic models that can be expressed,, but still heavily restrict the kinds of predicates that can be conditioned on.

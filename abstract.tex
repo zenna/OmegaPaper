@@ -15,14 +15,15 @@
 
 % We describe a lightweight implementation of predicate exchange that it provides a language independent layer that can be implemented on top of existingn modeling formalisms.
 
-% Conditioning a model on a predicate incorporates information into the model, but often renders the likelihood function intractable.
+% Probabilistic models conditioned on predicates incorporates information into the model, but often renders the likelihood function intractable.
 % To sample from them likelihood-free inference is required, 
 
-% ---
-Conditioning models on predicates incorporates information
-into models. 
-Models conditioned on predicates rarely have a tractable likelihood; sampling from them requires likelihood-free inference.
-However, traditional approaches to likelihood-free 
+% Conditioning models on predicates incorporates information
+% into models. 
+
+Conditioning a probabilistic model on a predicate is a generic way to incorporate a fact into the model.
+However, models conditioned on predicates rarely have a tractable likelihood; sampling from them requires likelihood-free inference.
+Traditional approaches to likelihood-free 
 inference focus on predicates involving observed data.
 We develop a likelihood free inference procedure for a broader class of
 predicates called predicate exchange. 
