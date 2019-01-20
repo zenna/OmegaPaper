@@ -12,3 +12,4 @@ Plots.default(size=(colwidth*up,colwidth*up)) #Plot canvas size
 Plots.default(dpi=300) #Only for PyPlot - presently broken
 
 PAPERHOME = "/home/zenna/repos/papers/OmegaPaper/"
+FIGURESPATH = joinpath(PAPERHOME, "figures")
