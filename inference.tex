@@ -248,6 +248,14 @@ E_{p_{\alpha, \gamma_2}}[k_1] = E_{p_{\alpha, \gamma_2}}[\gamma_2 k_2]
 In practice, we set $\gamma_2$ using an exponential moving
 average of the $k_1$ values over the $k_2$ values.
 
+
+\begin{figure}
+  \centering
+  \includegraphics[width=0.6\linewidth]{scaling.pdf}
+  \caption{Scaling Properties}\label{scaling}
+  \end{figure}
+
+  
 \subsection{Replica Exchange}\label{replicaexchange}
 Replica exchange \citep{swendsen1986replica} simulates $M$ replicas at different temperatures, and uses a Metropolis-Hastings update to  periodically swap the temperatures of chains.
 If $f_{\alpha_i}$ is an approximate posterior function at temperature $\alpha_i$, two independent parallel chains simulating targets $f_{\alpha_1}(x)$, $f_{\alpha_2}(y)$ they follow a joint target $f_{\alpha_1, \alpha_2}(x,y) = f_{\alpha_1}(x)f_{\alpha_2}(y)$.

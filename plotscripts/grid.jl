@@ -7,8 +7,9 @@ using Callbacks
 using Plots.PlotMeasures: mm
 using Flux
 using LaTeXStrings
-# Plots.pyplot()
 include(joinpath(dirname(pathof(Omega)), "viz.jl"))
+
+# Problems
 
 import ForwardDiff
 val(x::ForwardDiff.Dual) = x.value
@@ -68,15 +69,15 @@ function allsamples(prob, n; algkwargs...)
 end
 
 function getdata(probs, algs, n)
+  plots = []
   data = []
   for prob in probs
-    rowdata = []
     for alg in algs
       try
         println("Trying $prob on $alg")
         @unpack samples, losses = allsamples(prob, n; alg...)
         res = (prob = prob, alg = alg, samples = samples, losses = losses, fail = false)
-        push!(rowdata, res)
+        push!(data, res)
       catch e
         println("Failed")
         res = (prob = prob, alg = alg, fail = true)
@@ -85,7 +86,6 @@ function getdata(probs, algs, n)
         rethrow(e)
       end
     end
-    push!(data, rowdata)
   end
   data
 end
@@ -116,8 +116,8 @@ function scatterxy(samples;
   xs, ys = ntranspose(samples)
   # scatter(xs, ys, label = label, legend = legend, xlims = xlims, ylims = ylims)
   # marginalhist(xs, ys, label = label, legend = legend, xlims = xlims, ylims = ylims, nbins = 50)
-  @show typeof(val.(xs))
-  histogram2d(val.(xs), val.(ys), nbins=50, bottom_margin=0mm,  widen=false, framestyle=:box,
+  @show typeof(Flux.data(xs))
+  histogram2d(Flux.data.(xs), Flux.data.(ys), nbins=50, bottom_margin=0mm,  widen=false, framestyle=:box,
               margin=0mm, legend=false, xlims = xlims, ylims = ylims,
               color=:amp)
 end
@@ -127,20 +127,62 @@ function convergence!(data, plt)
   plot!(plt, data, legend = nothing)
 end
 
-function vizdata(rows)
+function vizall(probs, algs, n)
   plots = []
-  for row in rows
-    c = row[1].prob.c
-    push!(plots, ωcontourhack(err(c); label = nothing,
-                              legend = nothing,
-                              colorbar = nothing,
-                              color = :amp))
-    for datum in row
-      push!(plots, scatterxy(val.(datum.samples)))
+  for prob in probs
+    # @unpack x, y, c, xlims, ylims = prob
+    push!(probplots, ωcontourhack(err(c); label = nothing,
+                                  legend = nothing,
+                                  colorbar = nothing,
+                                  color = :amp))
+    # Convergence Plot                                  
+    # convergenceplot = plot()
+    # push!(probplots, convergenceplot)
+    for alg in algs
+      try
+        @unpack samples, ωsamples, losses = allsamples(prob, n; alg...)
+        push!(probplots, scatterxy(samples,
+                                  #  xlims = xlims,
+                                  #  ylims = ylims
+                                   )
+                                   )
+        # convergence!(losses, convergenceplot)
+      catch e
+        println("Failed")
+        display(e)
+        # rethrow(e)
+        push!(probplots, plot())
+      end
+    end
+  push!(plots, probplots)  
+  end
+  plots
+end
+
+
+function vizdata(data)
+  plots = []
+  for datum in data
+    @unpack prob, alg, samples = datum
+    push!(probplots, ωcontourhack(err(prob.c); label = nothing,
+                                                legend = nothing,
+                                                colorbar = nothing,
+                                                color = :amp))
+  for prob in probs
+    push!(probplots, ωcontourhack(err(c); label = nothing,
+                                  legend = nothing,
+                                  colorbar = nothing,
+                                  color = :amp))
+    for alg in algs
+      push!(probplots, scatterxy(samples,
+                                #  xlims = xlims,
+                                #  ylims = ylims
+      )
     end
   end
   plots
 end
+
 
 # Do it all!
 probs = [prob1(), prob2(), prob3(), prob4(), prob5(), prob6()]
@@ -156,43 +198,38 @@ algs = [
 
 flatten(xs) = vcat([x for x in xs]...)
 
-
-function makeplots(plots, nprobs)
-  # foreach((plt, st) -> ylabel!(plt[1], st), plots, ltxstrings)
-  # foreach((plt, st) -> title!(plt, st), plots[1], algstrings)
-  @show nrows, ncols = nprobs, div(length(plots), nprobs)
-  multiplier = 400
-  plt = plot(plots..., layout = (nrows, ncols),
-                           markersize=0.01,
-                           tickfontsize = 24,
-                           aspectratio = 1,
-                           xticks = [-1, 1],
-                           yticks = [-1, 1],
-                           margin = 0mm,
-                           top_margin = 10mm,
-                           size = (colwidth*up, colwidth*up/5*6),
-                          #  fontfamily = font(50),
-                           guidefontsize = 6,
-                           legendfontsize = 6,
-                           titlefontsize = 6
-                          )
-end
-
 data = getdata(probs, algs, 10)
 plots = vizdata(data)
-plt = makeplots(plots, length(probs))
-# savefig(plt, joinpath(FIGURESPATH, "grid5.pdf"))
 
 # plots = vizall(probs, algs, 10000)
 # st = L"x + y < 0"
 # ltxstrings = [L"x = y", L"x > y", L"|x| > |y|", L"x^2 = y^2", L"\sin(kx)\cos(kx) < \epsilon_1", L"\sin(kx)\cos(kx) < \epsilon_2"] 
 # algstrings = ["", "SSMH", "NUTS", "RE-SSMH", "RE-NUTS"]
 
-  
-
+# function makeplots(plots)
+#   # foreach((plt, st) -> ylabel!(plt[1], st), plots, ltxstrings)
+#   foreach((plt, st) -> title!(plt, st), plots[1], algstrings)
+#   flatplots = flatten(plots)
+#   @show nrows, ncols = length(plots), length(plots[1])
+#   multiplier = 400
+#   plt = plot(flatplots..., layout = (nrows, ncols),
+#                            markersize=0.01,
+#                            tickfontsize = 24,
+#                            aspectratio = 1,
+#                            xticks = [-1, 1],
+#                            yticks = [-1, 1],
+#                            margin = 0mm,
+#                            top_margin = 10mm,
+#                            size = (ncols, nrows) .* multiplier,
+#                           #  fontfamily = font(50),
+#                            guidefontsize = 30,
+#                            legendfontsize = 24,
+#                            titlefontsize = 30
+#                           )
+# end
 
 # plt = makeplots(plots)
-# 
+# savefig(plt, "grid4.png")
 # n = 8
 # temps = Omega.Inference.logtemps(n)
 # temps = [1e-9, 10000]

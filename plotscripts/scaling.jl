@@ -7,30 +7,58 @@ using GeometryTypes: HyperRectangle
 using FileIO
 using QuadGK
 
+
 x = uniform(-1, 1)
 y = uniform(-2, 2)
 px = x ==ₛ 0
 ==ᵧ, γ = Omega.softeqgamma(1.0)
 py = y ==ᵧ 0
 z = px | py
+function getdata(γ_)
+  γ[] = γ_
 
-val(x) = x.value
-
-γ[] = 1.0
-
-samples = withkernel(kseα(5)) do
-  rand((px, py, x, y), z, 100000; alg = NUTS)
+  samples = withkernel(kseα(10)) do
+    rand((px, py, x, y), z, 100000; alg = NUTS)
+  end
+  pxs_, pys_, xs_, ys_ = ntranspose(samples)
+  xs = val.(x_)
+  ys = val.(y_)
+  (pxs = pxs_, pys_ = pys_, xs = xs_, ys = ys_, γ = γ_)
+  # histogram2d(xs, ys, nbins = 50)
 end
 
-px_, py_, x_, y_ = ntranspose(samples)
-xs = val.(x_)
-ys = val.(y_)
-histogram2d(xs, ys, nbins = 50)
+d1 = getdata(1.0)
+d2 = getdata(2.546392e-01)
+
+using LaTeXStrings
+# Plot Data
+p1a = histogram2d(val.(d1.xs), val.(d1.ys), color = :amp, nbin = 50, label = false,
+                  legend = false, title = L"x = y ∧ y = 0, \gamma = 1", xticks = [-1, 0, 1], yticks = [-2, 0, 2], frame = :box, top_margin = 3mm)
+p1b = histogram(val.(err.(d1.pxs)), legend = false, xticks = [0, 0.5, 1], normalize = true, widen = false, title = "f_x, \gamma = 1")
+p1c = histogram(val.(err.(d1.pys_)), legend = false, xticks = [0, 0.5, 1], normalize = true, widen = false, title = "f_y, \gamma = 1")
+
+p2a = histogram2d(val.(d2.xs), val.(d2.ys), color = :amp, nbin = 50, label = false,
+                  legend = false, title = L"x = y ∧ y = 0, \gamma = 0.25", xticks = [-1, 0, 1], yticks = [-2, 0, 2], frame = :box, top_margin = 3mm)
+p2b = histogram(val.(err.(d2.pxs)), legend = false, xticks = [0, 0.5, 1], normalize = true, widen = false, title = "f_x, \gamma = 0.25")
+p2c = histogram(val.(err.(d2.pys_)), legend = false, xticks = [0, 0.5, 1], normalize = true, widen = false, title = "f_y, \gamma = 0.25")
+
+plt = plot(p1a, p1b, p1c, p2a, p2b, p2c,
+           layout = (2,3),
+          #  widen = false,
+           label = false,
+           size = (3, 2) .* colwidth .* up,
+           tickfontsize = 40,
+          #  legendfontsize = 32m,Improving ABC for quantile distributions
+           margin = 30mm,
+           titlefontsize = 40,
+           legendfontsize = 40)
+
+savefig(plt, joinpath(FIGURESPATH, "scaling.pdf"))
 
 function loss(v)
   @show v
   γ[] = v[1]
-  samples = withkernel(kseα(5)) do
+  samples = withkernel(kseα(10)) do
     rand((px, py, x, y), z, 10000; alg = NUTS)
   end
   px_, py_, x_, y_ = ntranspose(samples)
@@ -102,7 +130,7 @@ function scalediff()
   p1 = contour(x, y, f.(x, y'),
             legend = false,
             # limits = limits
-            )``
+            )
   p2 = lines(xlb:0.001:xub, fx)
   p3 = lines(ylb:0.001:yub, fy)
   hbox(p2,
