@@ -208,6 +208,46 @@ Too high and $\softv{Y}$ will diverge too greatly from $Y$. Too low and converge
 % Several temperatre methods for controlling temperature exist such as simulated annealing \citep{kirkpatrick1983optimization} and Adiabatic Monte Carlo \citep{betancourt2014adiabatic}.
 % We augment replica exchange , which combines information from several chains to sample more effectively, which an accept/reject phase, to sample from the unrelaxed model.
 
+\paragraph{Balancing Different Constraints}
+At a fixed, nonzero temperature, the scales of variables affects their influence on
+the conditional distribution.
+For instance, consider two uniformly distributed random variables $X \sim \unif(-1, 1)$ and $y \sim \unif(-10, 10)$,
+and predicates $p_x = x \soft{=} 0$ and $p_y = y \soft{=} 0$.
+The expectation of a soft predicate quantifies the degree to which it is true (see Section \ref{simmodels}).
+The prior expectation of $p_x$ can be significantly larger than that of $p_y$.
+because values far from the 0 are more likely under $y$ than $x$.
+
+This disparity persists if the conditioned model.
+If $\cM$ is conditioned on $p1 \soft{\land} p2$.
+This disparity  decreases with decreasing temperature, and disappears at zero.
+This disparity is undesirable because it means that the approximation error is distributed unevenly over constraints we wish to be true in a manner which arbitrarily depends on the scale of variables.
+% For example consider two pairs of variables, where
+% the first pair is ten times larger than the second.
+% Conditioning on a greater than constraint on both
+% pairs of variables is well defined. However,
+% a softening of both constraints would have 
+% a much larger change in the energy function over
+% a standard deviation change in pairs of variables.
+To mitigate this issue, we attempt to enforce equality
+in magnitude between all basic predicates at each temperature.
+% rr: zenna can you add the basic predicates
+To accomplish this, consider the case of two 
+softened predicates $k_1$ and $k_2$. For the
+energy function, we introduce a weight
+for all but the first constraint.
+In this case $k_2$ in the energy function gets replaces
+by $\gamma_2 k_2$. The weight $\gamma_2$ should
+ensure that $\gamma_2 k_2$ has the same
+magnitude effect as $k_1$ on the energy
+function:
+\begin{align*}
+E_{p_{\alpha, \gamma_2}}[k_1] = E_{p_{\alpha, \gamma_2}}[\gamma_2 k_2] 
+\end{align*}
+% Does such a gamma_2 always exist? Maybe rewrite it as
+% an optimization problem over gamma to enforce a solution?
+In practice, we set $\gamma_2$ using an exponential moving
+average of the $k_1$ values over the $k_2$ values.
+
 \subsection{Replica Exchange}\label{replicaexchange}
 Replica exchange \citep{swendsen1986replica} simulates $M$ replicas at different temperatures, and uses a Metropolis-Hastings update to  periodically swap the temperatures of chains.
 If $f_{\alpha_i}$ is an approximate posterior function at temperature $\alpha_i$, two independent parallel chains simulating targets $f_{\alpha_1}(x)$, $f_{\alpha_2}(y)$ they follow a joint target $f_{\alpha_1, \alpha_2}(x,y) = f_{\alpha_1}(x)f_{\alpha_2}(y)$.
@@ -227,36 +267,6 @@ Several good practices are outlined in \cite{earl2005parallel}.  In practice, we
 \paragraph{Unsatisfiability}Predicate exchange is unable to determine if a predicate is unsatisfiable (e.g.  $(x > 1) \land (x < -1)$), and defers to the user to ensure this is the case.
 
 
-
-% \paragraph{Balancing Different Constraints}
-% The scales of variables effect their influence on
-% the conditional distribution at a fixed temperature.
-% For example consider two pairs of variables, where
-% the first pair is ten times larger than the second.
-% Conditioning on a greater than constraint on both
-% pairs of variables is well defined. However,
-% a softening of both constraints would have 
-% a much larger change in the energy function over
-% a standard deviation change in pairs of variables.
-% To mitigate this issue, Omega tries enforce equality
-% in magnitude between all basic predicates at each temperature.
-% % rr: zenna can you add the basic predicates
-% To accomplish this, consider the case of two 
-% softened predicates $k_1$ and $k_2$. For the
-% energy function, Omega introduces a weight
-% for all but the first constraint, in this
-% case $k_2$ in the energy function gets replaces
-% by $\gamma_2 k_2$. The weight $\gamma_2$ should
-% ensure that $\gamma_2 k_2$ has the same
-% magnitude effect as $k_1$ on the energy
-% function:
-% \begin{align*}
-% E_{p_{\alpha, \gamma_2}}[k_1] = E_{p_{\alpha, \gamma_2}}[\gamma_2 k_2] 
-% \end{align*}
-% % Does such a gamma_2 always exist? Maybe rewrite it as
-% % an optimization problem over gamma to enforce a solution?
-% In practice, we set $\gamma_2$ using an exponential moving
-% average of the $k_1$ values over the $k_2$ values.
 
 
 % This scenario closely resembles the reparameterization trick \citep{Kingma:2014, rezende2014stochastic} where one resorts to include all the uncertainty of a random variable $z$ in a simple, easy-to-sample, parameter-free noise source such as $\epsilon \sim \mathcal{N}(\mathbf{0}, I)$. The actual random variable $z$ is then obtained through a parametric transformation of the noise, $z = f(\epsilon; \theta)$. Both methods separate the 
