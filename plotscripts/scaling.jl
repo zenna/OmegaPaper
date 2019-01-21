@@ -31,7 +31,7 @@ function scalediff()
   p1 = contour(x, y, f.(x, y'),
             legend = false,
             # limits = limits
-            )
+            )``
   p2 = lines(xlb:0.001:xub, fx)
   p3 = lines(ylb:0.001:yub, fy)
   hbox(p2,
