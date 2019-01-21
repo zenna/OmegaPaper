@@ -3,29 +3,19 @@
 
 To condition a model $\cM$ on a predicate $Y$ we develop \emph{predicate exchange}, a likelihood-free inference procedure.  It is composed of two parts:
 \begin{enumerate}
-\item \textbf{Predicate Relaxation} constructs a soft predicate $\softv{Y}$ from $Y$. $\softv{Y}$ takes values   in a soft Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$. $\soft{\lor}$ and $\neg$. `'
+\item \textbf{Predicate Relaxation} constructs a soft predicate $\softv{Y}$ from $Y$. $\softv{Y}$ takes values   in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$. $\soft{\lor}$ and $\neg$.
 $\softv{Y}$ is 1 iff $Y$ is 1, but otherwise takes nonzero values denoting the degree to which $Y$ is satisfied.
 % The relaxation is parameterized by a temperature.
 % Predicate relaxation allows us to apply likelihood based MCMC inference procedures.
 \item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo procedure that exploits temperature. The strength by which $\softv{Y}$ relaxes $Y$ is modulated by a temperature parameter $\alpha$, which trades off between accuracy and ease of inference.  By simulating several replicas of $\softv{Y}$ at different temperatures, replica exchange is able to draw exact samples. 
 \end{enumerate}
 
-\subsection{Soft Conditioning}
-Conditioning is defined classically as an operation that restricts a measure space.
-However, the probability of an event is equal to the expectation of the function that indicates that event.
-This means that we can instead formulate conditioning as an operation between measures.
-Conditioning is an operation that restricts a measure space by a set.
-Let $(\Omega, \mathcal{H}, \mathcal{P})$ be a measure space.
-Soft conditioning on a function $Y: \Omega \to [0, 1]$ constructs a new measure $\mathcal{P}'$ defined as:
-\begin{equation}\label{eq:softcond}
-\mathcal{P}'(A) = \frac{E(1_A\softv{Y})}{E(\softv{Y})}
-\end{equation}
-
-If $Y$ is a predicate, i.e. an indicator function defined on $[0, 1]$ then \ref{eq:softcond} is equivalent to hard conditioning on predicates/events.
+In this section we formalize the relationship between $\softv{Y}$ and $Y$, the construction of $\softv{Y}$ from the composition of $Y$, and sampling from models conditioned on $\soft{Y}$.
 
 \subsection{Predicate Relaxation}\label{predexchange}
 
-A soft predicate $\softv{Y}$ approximates $Y$ in the sense that when viewed as a likelihood function on model parameters, $\softv{Y}$ has a broader support, assigning nonzero weights to parameter values which have zero weight under $Y$.
+A soft predicate $\softv{Y}$ approximates $Y$ in the sense that \todo{IN WHICH WAY?}when viewed as a likelihood function on model parameters, $\softv{Y}$ has a broader support, assigning nonzero weights to parameter values which have zero weight under $Y$.
+
 There are three desiderata which govern this approximation.
 First, $\softv{Y}$ should have a temperature parameter $\alpha$ that controls the fidelity of the approximation. In particular, $\softv{Y}$ should converge to $Y$ as $\alpha \to 0$, and to a flat surface as $\alpha \to \infty$. Second, the fidelity of the approximation should vary monotonically with temperature. Third, $\softv{Y}$ should be consistent with $Y$ on 1. That is $Y(\omega) = 1$ iff $\softv{Y}(\omega) = 1$ at all temperatures.  
 
@@ -52,6 +42,7 @@ A function $\softv{Y} : \Omega \to [0, 1]$ parameterized by $\alpha \in [0, \inf
 
 \paragraph{Graded Satisfiability}
 $\soft{\lk}_{\inf}(m)$ represents the degree to which a model realization $m$ satisfies a predicate.
+\begin{definition}
 Let $k_\alpha$ be a kernel (described below), $\rho$ a distance metric, and $A = \{(x_1, \dots, x_n) \mid \lk(x_1, \dots, x_n) = 1\}$ the satisfying set.
 $\soft{\lk}_{\inf}(m)$ is then:
 \begin{equation}
@@ -59,6 +50,7 @@ $\soft{\lk}_{\inf}(m)$ is then:
 \end{equation}
 where $\rho(x, A) = \inf \left\{\rho(x, a) \mid a \in A\right\}$.
 % As shown in the Section \ref{implement}, $\soft{\lk}_{\inf}$ can be difficult to compute.
+\end{definition}
 
 \paragraph{Distance} A relaxation kernel $k_\alpha$ bounds distances from $\rho$ to the unit interval, and is paramterized by temperature $\alpha$.
 % For example if $x$ and $y$ are real values, then $x \soft{=} y$ is defined as $k_\alpha(\rho(x, y))$ where $\rho$ is a distance function and $k_\alpha$ is a relaxation kernel paramterized by temperature $\alpha$.
@@ -120,18 +112,18 @@ However, as shown in Figure \ref{negationimg} (b), this violates criteria (iii) 
 
 \begin{figure}
 \includegraphics[width=\linewidth]{negation.eps}
-\caption{Soft predicates as function of $x$.  In all figures the blue line denotes the soft predicate, while the red line denotes the predicate to approximate.}\label{negationimg}
+\caption{Negation: soft (blue) and hard (red, dashed) predicates as a function of $x$.  }\label{negationimg}
 \end{figure}
 
 
 The problem of negation arises because $\softv{Y}$ is consistent with $Y$ at 1 but not at 0.
 In other words, $\softv{Y}$ is a one-sided approximation.
-To overcome this challenge, soft primitives yield a pair $(a_0, a_1)$ where $a_0, a_0 \in [0, 1]$.
+To resolve this, soft primitives yield a pair $(a_0, a_1)$ where $a_0, a_0 \in [0, 1]$.
 $a_1$ preserves consistency with $Y$ on $1$, just as before, while $a_0$ preserves consistency with $\neg Y$ on $1$.
 For example if $x \dsoft{>} 0 = (a_0, a_1)$, then as a function of $x$, $a_0$ and $a_1$ correspond to Figure \ref{negationimg} (a) and (c) respectively.
 
 A complete two-sided soft logic is shown in Figure \ref{softw}.
-Although a two-sided predicate has two components, for the sake of conditioning we are still concerned only with the true side $a_1$ in the pair $(a_0, a_1)$.
+However, conditioning is still concerned only with the true side $a_1$ in the pair $(a_0, a_1)$.
 Soft negation simply swaps the elements of $(a_0, a_1)$ to yield $(a_1, a_0)$.
 
 % \begin{definition}
@@ -169,9 +161,12 @@ x \dsoft{<} y &= (k_\alpha(\rho(y, [x, \infty])), k_\alpha(\rho(y, [-\infty, x])
 %   % \hline  
 % \end{tabular}
 % \end{center}
+\begin{theorem}Criteria is preserved under composition.
+Let $\softv{\ell}_1, \softv{\ell}_1$  be two predicates satisfying X, the composition $\softv{\ell}_1 \circ \softv{\ell}_1$ satisfies X.
+\end{theorem}
+\emph{proof} Prove it.
 
 
-\paragraph{Unsatisfiability}Predicate exchange is unable to determine if a predicate is unsatisfiable (e.g.  $(x > 1) \land (x < -1)$), and defers to the user to ensure this is the case.
 
 \subsection{Approximate Markov Chain Monte Carlo}
 A soft predicate can serve as an approximate likelihood, and as a result is amenable to likelihood based inference methods such as Markov Chain Monte Carlo.
@@ -214,7 +209,7 @@ Too high and $\softv{Y}$ will diverge too greatly from $Y$. Too low and converge
 % We augment replica exchange , which combines information from several chains to sample more effectively, which an accept/reject phase, to sample from the unrelaxed model.
 
 \subsection{Replica Exchange}\label{replicaexchange}
-Replica exchange simulates \citep{swendsen1986replica} $M$ replicas at different temperatures, and uses a Metropolis-Hastings update to  periodically swap the temperatures of chains.
+Replica exchange \citep{swendsen1986replica} simulates $M$ replicas at different temperatures, and uses a Metropolis-Hastings update to  periodically swap the temperatures of chains.
 If $f_{\alpha_i}$ is an approximate posterior function at temperature $\alpha_i$, two independent parallel chains simulating targets $f_{\alpha_1}(x)$, $f_{\alpha_2}(y)$ they follow a joint target $f_{\alpha_1, \alpha_2}(x,y) = f_{\alpha_1}(x)f_{\alpha_2}(y)$.
 Replica exchange swaps states between the chains while preserving the joint target.
 Swapping states is equivalent to swapping predicates, which motivates the name predicate exchange.
@@ -227,7 +222,10 @@ We modify standard replica exchange in two ways: (i) for exact inference, states
 unlike conventional replica exchange which draws samples only from the zero-temperature chain, we accept states from any chain so long as $f_{\alpha_i}(x) = 1$.
 
 Replica exchange has a number of hyper-parameters: the number of parallel chains, the corresponding temperatures, the swapping schedule.
-Several good practices are outlined in \cite{earl2005parallel}.  In practice, we logarithmically space $\alpha$ between a lower and upper bound (e.g., $\log(\alpha_1) = 10^{-5}$, $\log(\alpha_M) = 10^5$), and swap states of chains that are adjacent in temperature ($\alpha_1$ with $\alpha_2$, $\alpha_2$ with $\alpha_3$, etc) periodically.
+Several good practices are outlined in \cite{earl2005parallel}.  In practice, we logarithmically space $\alpha$ between a lower and upper bound (e.g., $\log(\alpha_1) = 10^{-5}$ to $\log(\alpha_M) = 10^5$), and swap states of chains that are adjacent in temperature ($\alpha_1$ with $\alpha_2$, $\alpha_2$ with $\alpha_3$, etc) periodically.
+
+\paragraph{Unsatisfiability}Predicate exchange is unable to determine if a predicate is unsatisfiable (e.g.  $(x > 1) \land (x < -1)$), and defers to the user to ensure this is the case.
+
 
 
 % \paragraph{Balancing Different Constraints}

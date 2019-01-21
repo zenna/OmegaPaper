@@ -1,6 +1,6 @@
 % !TEX root = nips_2018.tex
 
-\section{Simulation Models}\label{simmodels}
+\section{Soft Conditioning of Simulation Models}\label{simmodels}
 
 
 % The density function of the resulting model, if it exists, is not explicitly represented, but rather implicitly defined.
@@ -8,12 +8,12 @@
 
 % Simulator-based models are useful because they interface easily with models typicallyencountered in the natural sciences. In particular, hypotheses of how the observed datayowere generated can be implemented without making excessive compromises in order tohave an analytically tractable model
 
-Probabilistic simulation based models specify the step-by-step causal mechanisms of a domain, and use probability distributions for any uncertain parameters.
-A simulation model can be stochastically executed, using a random number generator to sample from primitive random variables in the model.
-Inference means to simulate the model while imposing constraints on variables in the model.
-This is difficult, since simulation based models lack an explicit likelihood function, which is necessary for most inference procedures.
+% Probabilistic simulation based models specify the step-by-step causal mechanisms of a domain, and use probability distributions for any uncertain parameters.
+% A simulation model can be stochastically executed, using a random number generator to sample from primitive random variables in the model.
+% Inference means to simulate the model while imposing constraints on variables in the model.
+% This is difficult, since simulation based models lack an explicit likelihood function, which is necessary for most inference procedures.
 
-Conditioning on predicates requires a measure-theoretic foundation, in which a simulation model is a random variable:
+Conditioning on predicates requires a measure-theoretic foundation, in which a model is a collection of random variables:
 
 \begin{figure}
 	\centering
@@ -39,7 +39,7 @@ uniform over that hypercube. To build a normal random variable, we need a functi
 that maps from $\Omega \to \mathbb{R}$. If the underlying probability space is uniform, then
 this function is the inverse cumulative distribution function of the normal.
 
-A \emph{model} $\cM$ is a collection of random variables along with a probability space.
+\paragraph{Model} A \emph{model} $\cM$ is a collection of random variables along with a probability space.
 % To fully specify a model, we need both the measure space and the
 % collection of random variables on which it acts.
 
@@ -68,6 +68,21 @@ on sets of measure zero. This process can be made rigorous
 via disintegration \citep{chang1997conditioning}. Disintegration can
 be thought of as the reversal of building joint distributions through
 product measure constructions.
+
+\paragraph{Soft Conditioning}
+Conditioning is defined classically as an operation that restricts a measure space.
+However, the probability of an event is equal to the expectation of the function that indicates that event.
+This means that we can instead formulate conditioning as an operation between measures.
+Conditioning is an operation that restricts a measure space by a set.
+
+\begin{definition}Let $(\Omega, \mathcal{H}, \mathcal{P})$ be a measure space.
+Soft conditioning on a function $Y: \Omega \to [0, 1]$ constructs a new measure $\mathcal{P}'$ defined as:
+\begin{equation}\label{eq:softcond}
+\mathcal{P}'(A) = \frac{E(1_A\softv{Y})}{E(\softv{Y})}
+\end{equation}
+
+If $Y$ is a predicate, i.e. an indicator function defined on $[0, 1]$ then \ref{eq:softcond} is equivalent to hard conditioning on predicates/events.
+\end{definition}
 
 
 % When building models with prior beliefs via conditioning, we would like

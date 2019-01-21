@@ -2,16 +2,17 @@
 
 % Likelihood free inference
 Demand for likelihood-free inference emerged in genetics ecology.
-Tavar{\'e} et al. \yrcite{tavare1997inferring} compared summary statistics of the output of a simulation with that of observed data, and rejected mismatches.
+Tavar{\'e} et al. \yrcite{tavare1997inferring} 
+filtered samples from a stochastic simulator to only those which matched (according to summary statistics) observed data. 
 %  to perform one of the earliest forms of likelihood-free inference.
-Weiss et al. \yrcite{weiss1998inference} expanded on this with a tolerance term, so that simulations yielding data sufficiently close to the targets were accepted.
+Weiss et al. \yrcite{weiss1998inference} extended this with a tolerance term, so that simulations sufficiently close to the data were accepted.
 % Such posterior samples are therefore approximate.
-Approximate Bayesian Computation (ABC) has come to refer to broad class of methods \cite{beaumont2002approximate,sisson2007sequential} in this general regime.
-Marjoram et al. \yrcite{marjoram2003markov} simulated Markov Chains according to the prior, but introduced the accept/reject stage to yield approximate posterior samples.
-A small tolerance leads to a high rejection rate, whereas a large tolerance results in an unacceptable approximation error.
+Approximate Bayesian Computation (ABC) now refers methods \cite{beaumont2002approximate,sisson2007sequential} in this general regime.
+Marjoram et al. \yrcite{marjoram2003markov} simulated Markov Chains according to the prior, but applied the same summary static based filtering to yield approximate posterior samples.
+A small tolerance leads to a high rate of rejected simulations, whereas a large tolerance results in an unacceptable approximation error.
 Among several solutions are dynamically decreasing the tolerance \cite{toni2008approximate}, importance reweighting samples based on distance \cite{wegmann2009efficient}, adapting the tolerance based on distance \cite{del2012adaptive,lenormand2013adaptive}, as well as annealing the tolerance as a temperature parameter \cite{albert2015simulated}.
 
-Predicate exchange targets simulation models and uses distance metrics, but targets exact inference without summary statistics.
+Predicate exchange targets simulation models and uses distance metrics, but targets asymptotically exact inference without summary statistics.
 A recent approach \cite{graham2017asymptotically}  with similar objectives develops a Hamiltonian Monte Carlo variant, using a quasi-Newton method during leap-frog integration to exactly solve the observation constraint.
 This is limited to differentiable models conditioned with equality.
 
