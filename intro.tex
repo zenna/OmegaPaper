@@ -4,100 +4,32 @@
 
 Conditioning in Bayesian inference incorporates observed data into a model.
 In a broader sense, conditioning revises a model such that a yes/no question (a predicate) is resolved to a true proposition (a fact).
-For instance, the question of whether a variable is equal to a particular value, changes from a predicate of uncertain truth, to a fact, once it is observed.
-In principle, a predicate can be used to declare any fact about a domain, not only the observation of data.
-In practice, sampling from models conditioned on most predicates presents severe challenges to existing inference procedures.
+In the case of an observation, the question of whether a variable is equal to the observed value, changes from a predicate of uncertain truth, to a fact, once it is observed.
 
-
-
+% 
+% 
+% 
+% 
 % ``glucose curves are similar across patients''.	
-
+% 
 % It is difficult to define priors of latent geometry that satisfies non-intersection constructively.
 % A scientist could define a generative model that captures prior knowledge of how glucose levels evolve over time -- for example, the model may use latent variables to identify when a person eats and the glycemic loads a person consumes, and encode physiological knowledge of how those meals will affect glucose levels.
 % The scientist could also condition the model on observations of glucose measurements of a given patient and use existing inference algorithms to sample from the posterior distributions over latent variables.
 % However, there are various pieces of declarative knowledge the scientist may possess which are difficult or impossible to encode in this form.
 % For instance, she may know that ``human glucose curves are similar across patients'',   is surprisingly challenging even in the most expressive probabilistic programming systems. 
 % Rather than observations, these propositions are facts which condition the prior. These propositions are not observations.
-
-
-% WTP: What are simulation based models, what is bayesian inference in them.  Why is it necessary. 
-% Inference on models conditioned on more general predicates yield challenging inference problems, especially when the models are represented as stochastic simulators.
-% For many phenomena in the world, we can build models that 
-% attempt to simulate how they evolve. One purpose of 
-% these models is to draw samples from unobserved variables 
-% conditional on the output of the simulation, i.e, perform
-% posterior inference.
-% Most algorithms which draw samples from posterior distributions rely on
-% the likelihood function, which quantifies the extent to which values of 
-% unobserved variables are consistent with observations.
-% Simulation models, however leave the likelihood functions implicit
-% and difficult to derive.
-% %This can occur, for example, when non-latent variables are unobserved, since they must be margainalized out, or when transformed densities are conditioned.
-% Simulation based models can apply arbitrary, non-injective transformations to their input, and hence induce intractable likelihoods for any or all of these reasons.
-
-% A less explored cause of intractability is propositions that are not observations in the conventional sense.
-% To observe data $x$ as the output of a simulation model $X$ means to condition the model on the proposition $X = x$.
-% There are several propositions that do not conform to this structure, which we would nevertheless like to condition our models on.
-% These propositions may impose constraints on latent variables, or even jointly on latent and observations.
-% For example.
-% They could also be observational but more abstract than concrete data.
-% For example,.
-% All such statements can be enforced through conditioning, but generally the resulting likelihood will be intractable or may not exist,
-
-
-% Problems of inference, on the other hand, are typically anti-causal: having observed the result of the simulation we wish to infer the causes.
-
-
-
-% lack succinct equations governing their behavior but nevertheless understand the causal mechanisms by which they evolve.
-% Such phenomena can be simulated, which means to execute a program and associate states which arise in its execution with entities in the domain.
-% as an algorithm which solves the equations which govern it. Values, states, and transitions in the execution of the algorithm correspond to entities in the domain.
-% This execution generally follows the causal direction of the domain in the sense that if $a$ causes $b$, $b$ is computed from $a$ in simulation.
-% Problems of inference, on the other hand, are typically anti-causal: having observed the result of the simulation we wish to infer the causes.
-
-
-
-% WTP: What are likelihood functions, why are they use useful, and why are they intractable
-% The Bayesian approach to inference is to first quantify all uncertainty with probability distributions, and as a result uniquely specify the posterior distribution given observed values.
-% % Bayesian inference is a principled framework for inferring probable causes of observed values, but relies on terms which are often intractable.
-% Most algorithms which draw samples from posterior distributions rely on
-% % Bayes theorem dictates that the posterior distribution over latent variables given observations is is proportional to the product of the likelihood function and prior.
-% the likelihood function, which quantifies the extent to which values of latent variables are consistent with observations.
-% Simulation models explicitly represent the processes which generate data, but leave the likelihood functions implicit. 
-% The likelihood  difficult to derive from a simulation model and is often intractable to evaluate.
-% This can occur, for example, when non-latent variables are unobserved, since they must be margainalized out, or when transformed densities are conditioned.
-% Simulation based models can apply arbitrary, non-injective transformations to their input, and hence induce intractable likelihoods for any or all of these reasons.
-
-% Morever, approximate inference algorithm 
-
-% % A less explored cause of intractability occurs when we condition on propositions that are not observations of data.
-% For example, if $X$ and $Y$ are normally distributed random variables, then conditioning on $X = Y$ does not permit a density function, let alone a tractable one.
-% Conditioning on inequalities such $X > 4$, transformations such $X^2  = 0$, and logical formulas such as  $X = 3 \lor X = 5$ falls outside the domain of virtually all conditional sampling algorithms.
-% % As a consequence, conditioning in practice is significantly more limited than its theoretical counterpart.
-
-% The value of probabilistic programming systems hinges on how easily a practitioner can encode domain knowledge into a model. Existing probabilistic programming systems support two main mechanisms for encoding knowledge: implicitly in the generative model, and explicitly by conditioning on observations. There are many contexts, however, for which neither of these two mechanisms are sufficient to encode the knowledge that practitioners have about a process.
-
-% WTP: Implications of the Problem
-
-
-% WTP: Non-obvious benefits of solving the problem:  Prior conditioning.
-% Declarative knowledge has the potential to serve as the bridge between classical parametric models, and recent trend towards nonparameric or highly parameterized families such as deep neural networks.
-% For example, inverse graphics attempts to infer the three dimensional scene (geometry, lights, camera, etc) which caused an observed image.
-% A Bayesian formulation of the problem requires a prior distributions over scenes.
-% Simple parametric stand little chance of capturing the complexity of real world scenes.
-
-% Outline: Non-observational predicates induce intractable likelihoods
-% and are largely unsupported by current methods of inference
-
-% Conditioning relieves the modeller from the burden of specifying how
-Predicates can be used to update a model to adhere to known facts about a domain, without the burden of specifying how to revise the model.
-For example, in inverse graphics \cite{marschner1998inverse,kulkarni2015deep} (inferring three dimensional geometry from observed images), the proposition ``rigid bodies do not intersect'' is a predicate on latent configurations of geometry.
-To manually revise a model to constructively adhere to this fact is ranges between inconvenient and infeasible.
+In principle, a predicate can be used to declare any fact about a domain, not only the observation of data.
+% Predicates can be used to update a model to adhere to known facts about a domain, without the burden of specifying how to revise the model.
+For example, inverse rendering  \cite{marschner1998inverse,kulkarni2015deep} aims to infer three dimensional geometry from observed images.
+The proposition ``rigid bodies do not intersect'' is a predicate on latent configurations of geometry.
+To manually revise a model to constructively adhere to this fact ranges between inconvenient and infeasible.
 % Instead, we would ideally simply condition on it being true, concentrating probability mass on physically plausible geometric configurations, ultimately to yield more accurate posterior inferences in the inverse graphics problem.
-Predicates can also express observations that are more abstract than variables in a model.
-In diabetes research for example, probabilistic models have been used to relate physiological factors to glucose levels over time \citep{levine2017offline,murata2004probabilistic}.
+Predicates can be used to express facts that are observations, but that are more abstract than variables	 in a model.
+In diabetes research, probabilistic models have been used to relate physiological factors to glucose levels over time \citep{levine2017offline,murata2004probabilistic}.
 Rather than concrete, numerical glucose measurements, a medical practitioner may observe (or be told) that a patient suffers from recurrent hypoglycemia, i.e., that their glucose levels periodically fall below a critical value.
 Even if the occurrence of hypoglycemia does not appear as an explicit variable in the model, it could be constructed as a predicate on glucose levels, and conditioned on to infer the posterior distribution over latent physiological factors.
+In practice, sampling from models conditioned on most predicates presents severe challenges to existing inference procedures.
+
 
 Several effective sampling  \citep{andrieu2003introduction} and variational  \citep{jordan1999introduction, ranganath2014black} approaches to inference require only a black-box likelihood function, i.e., one evaluable on arbitrary input.
 The likelihood function quantifies the extent to which values of latent variables are consistent with observations. 
@@ -106,18 +38,23 @@ For example, conditioning random variables that are deterministic transformation
 % For example, given three variables, it is possible to condition on the sum
 % of the variables being positive; this sum is never an explicit random variable.
 In other cases, the likelihood function is implicit to a generative process, rather than explicitly specified, and hence unavailable even when the condition is a conventional observation.
+Inference methods for an unnormalized likelihood functions are largely inapplicable to problems  when the likelihood is unknown, and vice versa.
+In a similar vein, conditioning on predicates introduces challenges unaddressed by either.
 
 In this paper we present predicate exchange:
 a likelihood-free method to sample from distributions conditioned on predicates from a broad class.
 It is composed of two parts:
 \begin{enumerate}
-\item \textbf{Predicate Relaxation} transforms a predicate such that it returns a value in a soft Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$. $\soft{\lor}$ and $\neg$.
-\item  \textbf{Replica Exchange} simulates several Markov chains of a model at different temperatures.  Temperature is a parameter of predicate relaxation which controls the amount of approximation it introduces.  We adapt standard replica exchange to draw samples that are asymptotically exact from the unrelaxed model. 
+\item \textbf{Predicate Relaxation} constructs soft predicates which return values in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$. $\soft{\lor}$ and $\neg$.
+\item  \textbf{Replica Exchange} simulates several Markov chains of a model at different temperatures.  Temperature is a parameter of predicate relaxation which controls the amount of approximation introduced.  We adapt standard replica exchange to draw samples that are asymptotically exact from the unrelaxed model. 
 \end{enumerate}
 
 % WTP? Show that soft Boolean is useful for (i) tractability of inference show that rather th	an 
 By returning a value in $[0, 1]$ instead of $\{0, 1\}$, a soft predicate quantifies the extent to which values of latent variables are consistent with the predicate.
 This allows it to serve a role similar to a likelihood function, and opens up the use of likelihood-based inference procedures.
+Conditioning is conventionally formalized as a restriction of a probability space to an event.
+To formalize soft conditioning, we generalize this to transformation of probability measure.
+
 Orthogonally, we embed $]0, 1]$ in a Boolean algebra to support the expression of domain knowledge of composite Boolean structure.
 Continuing the previous example, we may know that a person does \emph{not} have hypoglycemia, or that they have hypoglycemia \emph{or} hyperglycemia, or \emph{neither}.
 % Few likelihood-based likelihood-free approaches to inference offer effective means to condition non-trivial models on compound predicates.
@@ -130,7 +67,7 @@ Continuing the previous example, we may know that a person does \emph{not} have 
 
 
 Predicate exchange is motivated by probabilistic programming languages, which have vastly expanded the class of probabilistic models that can be expressed,, but still heavily restrict the kinds of predicates that can be conditioned on.
-Rather than introduce a new language or modeling formalism, we mirror   \cite{wingate2011lightweight} and provide a light-weight implementation that performs inference by modulating the execution of a stochastic simulation based model.
+Rather than introduce a new language or modeling formalism, we mirror   \cite{wingate2011lightweight} and provide a light-weight implementation modulates the execution of a stochastic simulation based model to perform inference.
 This means predicate exchange is easily incorporated into most frameworks. 
 
 Our approach comes with certain limitations.
@@ -144,10 +81,10 @@ In summary we address the problem of conditioning probabilistic models on predic
 In detail, we:
 
 \begin{enumerate}
-	\item Formalize simulation based probabilistic models in measure theoretic probability, and conditioning as the imposition of constraints expressed as predicates (Section \ref{simmodels}).
-	\item Motivate predicate relaxation (Section \ref{predexchange}), and provide a complete soft Boolean algebra. 
-	\item Provide a light-weight implementation of predicate exchange (Section \ref{implement}) through nonstandard execution of a simulation based model.
-	\item Evaluate our approach on examples, including a case study in glycemic forecasting.
+	\item Formalize soft conditioning of simulation based  models in measure theoretic probability as a transformation of a probability measure (Section \ref{simmodels}).
+	\item Motivate predicate relaxation (Section \ref{predexchange}), and provide a complete continuous Boolean algebra.
+	\item Implement predicate exchange as nonstandard execution of a simulation based model (Section \ref{implement}).
+	\item Evaluate our approach on examples, including a case study in glycemic forecasting (Section \ref{experiments}).
 \end{enumerate}
 
 

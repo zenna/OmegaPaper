@@ -1,42 +1,19 @@
-% We develop a likelihood free inference procedure for conditioning a probabilistic model on a predicate.
-
-% A predicate is a Boolean valued function which expresses a yes/no question about a domain.
-
-% Our contribution, which we call predicate exchange, 
-% constructs a softened predicate which takes value in the unit interval [0, 1] as opposed to a simply true or false. 
-
-% Intuitively, 1 corresponds to true, and a high value (such as 0.999) corresponds to ``nearly true'' as determined by a distance metric.
-
-% We define Boolean algebra for soft predicates,  such that they can be negated, conjoined and disjoined arbitrarily.
-
-% A softened predicate can serve as a tractable proxy to a likelihood function for approximate posterior inference.
-
-% However, to target exact inference, we temper the relaxation by a temperature parameter, and add a accept/reject phase use to replica exchange Markov Chain Mont Carlo, which exchanges states between a sequence of models conditioned on predicates at varying temperatures.
-
-% We describe a lightweight implementation of predicate exchange that it provides a language independent layer that can be implemented on top of existingn modeling formalisms.
-
-% Probabilistic models conditioned on predicates incorporates information into the model, but often renders the likelihood function intractable.
-% To sample from them likelihood-free inference is required, 
-
-% Conditioning models on predicates incorporates information
-% into models. 
-
 Conditioning a probabilistic model on a predicate is a generic way to incorporate a fact into the model.
 However, models conditioned on predicates rarely have a tractable likelihood; sampling from them requires likelihood-free inference.
 Traditional approaches to likelihood-free 
-inference focus on predicates involving observed data.
+focus on predicates which express observations.
 We develop a likelihood free inference procedure for a broader class of
 predicates called predicate exchange. 
 Predicate exchange constructs \emph{soft} predicates, which return values in a continuous Boolean algebra: the unit interval with continuous logical connectives.
 A soft predicate can serve as a proxy likelihood function in inference,
-but introduces an approximation error.
-The error depends on a temperature setting, such that zero-temperature corresponds to the original predicate, but higher temperatures mix faster.
-To draw samples from the model conditional on the original predicate,
+but introduces an approximation error which depends on a temperature setting.
+Zero-temperature corresponds to the original predicate without error, but higher temperatures mix faster.
+To draw samples from the model condition on the original predicate,
 we construct Markov chains at different temperatures and use 
 replica exchange to swap between chains.
 We implement predicate exchange as a language-independent layer
 that can be implemented on top of existing probabilistic programming formalisms. 
-We demonstrate the approach on sequence models of health and probabilistic renderers.
+We demonstrate the approach on sequence models of health and probabilistic inverse rendering.
 
 
 
