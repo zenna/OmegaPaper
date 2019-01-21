@@ -34,8 +34,10 @@ using LaTeXStrings
 # Plot Data
 p1a = histogram2d(val.(d1.xs), val.(d1.ys), color = :amp, nbin = 50, label = false,
                   legend = false, title = L"x = y ∨ y = 0, \gamma = 1", xticks = [-1, 0, 1], yticks = [-2, 0, 2], frame = :box, top_margin = 3mm)
-p1b = histogram(val.(err.(d1.pxs)), legend = false, xticks = [0, 0.5, 1], normalize = true, widen = false, title = L"f_x, \gamma = 1")
-p1c = histogram(val.(err.(d1.pys_)), legend = false, xticks = [0, 0.5, 1], normalize = true, widen = false, title = L"f_y, \gamma = 1")
+p1b = histogram(val.(err.(d1.pxs)), legend = false, xticks = [0, 0.5, 1], normalize = true,
+                widen = false, title = L"f_x, \gamma = 1", yticks = [0, 5, 10], ylims = (0, 11))
+p1c = histogram(val.(err.(d1.pys_)), legend = false, xticks = [0, 0.5, 1], normalize = true,
+                widen = false, title = L"f_y, \gamma = 1", yticks = [0, 5, 10], ylims = (0, 11))
 
 p2a = histogram2d(val.(d2.xs), val.(d2.ys), color = :amp, nbin = 50, label = false,
                   legend = false, title = L"x = y ∨ y = 0, \gamma = 0.25", xticks = [-1, 0, 1], yticks = [-2, 0, 2], frame = :box, top_margin = 3mm)
