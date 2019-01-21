@@ -33,14 +33,14 @@ d2 = getdata(2.546392e-01)
 using LaTeXStrings
 # Plot Data
 p1a = histogram2d(val.(d1.xs), val.(d1.ys), color = :amp, nbin = 50, label = false,
-                  legend = false, title = L"x = y ∧ y = 0, \gamma = 1", xticks = [-1, 0, 1], yticks = [-2, 0, 2], frame = :box, top_margin = 3mm)
-p1b = histogram(val.(err.(d1.pxs)), legend = false, xticks = [0, 0.5, 1], normalize = true, widen = false, title = "f_x, \gamma = 1")
-p1c = histogram(val.(err.(d1.pys_)), legend = false, xticks = [0, 0.5, 1], normalize = true, widen = false, title = "f_y, \gamma = 1")
+                  legend = false, title = L"x = y ∨ y = 0, \gamma = 1", xticks = [-1, 0, 1], yticks = [-2, 0, 2], frame = :box, top_margin = 3mm)
+p1b = histogram(val.(err.(d1.pxs)), legend = false, xticks = [0, 0.5, 1], normalize = true, widen = false, title = L"f_x, \gamma = 1")
+p1c = histogram(val.(err.(d1.pys_)), legend = false, xticks = [0, 0.5, 1], normalize = true, widen = false, title = L"f_y, \gamma = 1")
 
 p2a = histogram2d(val.(d2.xs), val.(d2.ys), color = :amp, nbin = 50, label = false,
-                  legend = false, title = L"x = y ∧ y = 0, \gamma = 0.25", xticks = [-1, 0, 1], yticks = [-2, 0, 2], frame = :box, top_margin = 3mm)
-p2b = histogram(val.(err.(d2.pxs)), legend = false, xticks = [0, 0.5, 1], normalize = true, widen = false, title = "f_x, \gamma = 0.25")
-p2c = histogram(val.(err.(d2.pys_)), legend = false, xticks = [0, 0.5, 1], normalize = true, widen = false, title = "f_y, \gamma = 0.25")
+                  legend = false, title = L"x = y ∨ y = 0, \gamma = 0.25", xticks = [-1, 0, 1], yticks = [-2, 0, 2], frame = :box, top_margin = 3mm)
+p2b = histogram(val.(err.(d2.pxs)), legend = false, xticks = [0, 0.5, 1], normalize = true, widen = false, title = L"f_x, \gamma = 0.25")
+p2c = histogram(val.(err.(d2.pys_)), legend = false, xticks = [0, 0.5, 1], normalize = true, widen = false, title = L"f_y, \gamma = 0.25")
 
 plt = plot(p1a, p1b, p1c, p2a, p2b, p2c,
            layout = (2,3),
