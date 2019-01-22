@@ -160,7 +160,9 @@ p1 = (y = ihaus, x = 1:length(ihaus), label = "Intersection")
 p2 = (y = noihaus, x = 1:length(ihaus), label = "No Intersection")
 
 plt = ℓvsiter([p1, p2])
-savefig(plt, joinpath(FIGURESPATH, "Hausdorf.pdf"))
+# savefig(plt, joinpath(FIGURESPATH, "Hausdorf.pdf"))
+savefig(plt, joinpath(FIGURESPATH, "sumofmins.pdf"))
+
 
 
 "Plot RMSE vs iteration"

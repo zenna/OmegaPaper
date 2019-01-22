@@ -1,17 +1,6 @@
 % !TEX root = nips_2018.tex
 
-\section{Soft Conditioning of Simulation Models}\label{simmodels}
-
-
-% The density function of the resulting model, if it exists, is not explicitly represented, but rather implicitly defined.
-% For this reason simulator models are often called implicit or generative models.
-
-% Simulator-based models are useful because they interface easily with models typicallyencountered in the natural sciences. In particular, hypotheses of how the observed datayowere generated can be implemented without making excessive compromises in order tohave an analytically tractable model
-
-% Probabilistic simulation based models specify the step-by-step causal mechanisms of a domain, and use probability distributions for any uncertain parameters.
-% A simulation model can be stochastically executed, using a random number generator to sample from primitive random variables in the model.
-% Inference means to simulate the model while imposing constraints on variables in the model.
-% This is difficult, since simulation based models lack an explicit likelihood function, which is necessary for most inference procedures.
+\section{Soft Conditioning}\label{simmodels}
 
 Conditioning on predicates requires a measure-theoretic foundation, in which a model is a collection of random variables:
 
@@ -33,11 +22,7 @@ Conditioning on predicates requires a measure-theoretic foundation, in which a m
 \paragraph{Random Variables.} Probability models lie on top of probability
 spaces. A probability space is a measure space $(\Omega, {\cal H}, {\cal P})$,
 where ${\cal H}$ is a sigma algebra and ${\cal P}(\Omega) = 1$ \citep{ccinlar2011probability}. Random variables are
-functions from the space $\Omega$ to a realization space ${\cal X}$. As a concrete
-example the space $\Omega$ can be thought of as a hypercube, with ${\cal P}$ being
-uniform over that hypercube. To build a normal random variable, we need a function
-that maps from $\Omega \to \mathbb{R}$. If the underlying probability space is uniform, then
-this function is the inverse cumulative distribution function of the normal.
+functions from the space $\Omega$ to a realization space ${\cal X}$. For example, if ${\cal P}$ is a uniform measure over subsets of the unit interval $\Omega$, a normal random variable $\Omega \to \mathbb{R}$ is the inverse cumulative distribution function of the normal.
 
 \paragraph{Model} A \emph{model} $\cM$ is a collection of random variables along with a probability space.
 % To fully specify a model, we need both the measure space and the
@@ -51,7 +36,7 @@ random variables $X_1$ and $X_2$ that both take real values. Conditioning
 $\cM$ on $X_1 = 1$, defines a new model $\cM_{|A}$ based on limiting the measure space
 $\Omega$ to the set $A = \{ \omega : X_1(\omega) = 1\}$.
 The new model is defined on a new probability space
-\begin{align}
+\begin{align}\label{eq:condhard}
 	(\Omega \cap A, \{A \cap B, B \in {\cal H} \}, {\cal P} / {\cal P}(A))
 \end{align}
 with the same random variables $X_1$ and $X_2$.
@@ -63,17 +48,14 @@ defines a new model defined exactly as above, where $A = \{\omega : \lk(X_1(\ome
 % This predicate may include a comparisonsuch as $X_i < X_j$, restrict deterministic function of variables in in the model such as $\exp(X_i) = 2$, or be a Boolean combination such as $(X_i < X_j) \lor \neg(\exp(X_i) = 2)$.
 Sampling from $\cM_{|A}$ generates $(x_1, ..., x_n)$ where $\lk$ is true.
 
-The general construction of new models might require conditioning
-on sets of measure zero. This process can be made rigorous
-via disintegration \citep{chang1997conditioning}. Disintegration can
-be thought of as the reversal of building joint distributions through
-product measure constructions.
+% The general construction of new models might require conditioning
+% on sets of measure zero. This process can be made rigorous
+% via disintegration \citep{chang1997conditioning}. Disintegration can
+% be thought of as the reversal of building joint distributions through
+% product measure constructions.
 
 \paragraph{Soft Conditioning}
-Conditioning is defined classically as an operation that restricts a measure space.
-However, the probability of an event is equal to the expectation of the function that indicates that event.
-This means that we can instead formulate conditioning as an operation between measures.
-Conditioning is an operation that restricts a measure space by a set.
+Rather than a restriction of a probability space to an event, we can define conditioning as a transformation of a measure.
 
 \begin{definition}Let $(\Omega, \mathcal{H}, \mathcal{P})$ be a measure space.
 Soft conditioning on a function $Y: \Omega \to [0, 1]$ constructs a new measure $\mathcal{P}'$ defined as:
@@ -81,7 +63,7 @@ Soft conditioning on a function $Y: \Omega \to [0, 1]$ constructs a new measure 
 \mathcal{P}'(A) = \frac{E(1_A\softv{Y})}{E(\softv{Y})}
 \end{equation}
 
-If $Y$ is a predicate, i.e. an indicator function defined on $[0, 1]$ then \ref{eq:softcond} is equivalent to hard conditioning on predicates/events.
+If $Y$ is a predicate, i.e. an indicator function defined on $[0, 1]$ then Equation \ref{eq:softcond} is equivalent to hard conditioning on events (Equation \ref{eq:condhard}).
 \end{definition}
 
 
