@@ -1,6 +1,8 @@
 import Plots
 using Plots.PlotMeasures: mm
 using LaTeXStrings
+import Flux
+import ForwardDiff
 
 colwidth = 82
 
@@ -13,3 +15,8 @@ Plots.default(dpi=300) #Only for PyPlot - presently broken
 
 PAPERHOME = "/home/zenna/repos/papers/OmegaPaper/"
 FIGURESPATH = joinpath(PAPERHOME, "figures")
+
+val(x::ForwardDiff.Dual) = x.value
+val(x::Flux.TrackedArray) = Flux.data(x)
+val(x::Flux.Tracker.TrackedReal) = Flux.data(x)
+val(x) = x

@@ -1,19 +1,16 @@
-Conditioning a probabilistic model on a predicate is a generic way to incorporate a fact into the model.
-However, models conditioned on predicates rarely have a tractable likelihood; sampling from them requires likelihood-free inference.
-Traditional approaches to likelihood-free 
+We address the problem of conditioning probabilistic models on predicates, as a means to express declarative knowledge.
+Models conditioned on predicates rarely have a tractable likelihood; sampling from them requires likelihood-free inference.
+Existing likelihood-free inference methods
 focus on predicates which express observations.
-We develop a likelihood free inference procedure for a broader class of
-predicates called predicate exchange. 
-Predicate exchange constructs \emph{soft} predicates, which return values in a continuous Boolean algebra: the unit interval with continuous logical connectives.
+To address a broader class of predicates, we develop an inference procedure called predicate exchange, which constructs \emph{soft} predicates that return values in a continuous Boolean algebra: the unit interval with continuous logical connectives.
 A soft predicate can serve as a proxy likelihood function in inference,
 but introduces an approximation error which depends on a temperature setting.
-Zero-temperature corresponds to the original predicate without error, but higher temperatures mix faster.
-To draw samples from the model condition on the original predicate,
-we construct Markov chains at different temperatures and use 
+Zero-temperature predicates yield no error, but are often intractable to condition on.
+Higher temperature predicates are easier to sample from, but introduce more error. 
+To mitigate this trade-off, we simulate Markov chains at different temperatures and use 
 replica exchange to swap between chains.
-We implement predicate exchange as a language-independent layer
-that can be implemented on top of existing probabilistic programming formalisms. 
-We demonstrate the approach on sequence models of health and probabilistic inverse rendering.
+We implement predicate exchange through a nonstandard execution of a simulation based model, and provide a light-weight tool that can be supplanted on top of existing probabilistic programming formalisms. 
+We demonstrate the approach on sequence models of health and inverse rendering.
 
 
 

@@ -11,10 +11,6 @@ include(joinpath(dirname(pathof(Omega)), "viz.jl"))
 
 # Problems
 
-import ForwardDiff
-val(x::ForwardDiff.Dual) = x.value
-val(x::TrackedArray) = Flux.data(x)
-val(x) = x
 
 function prob1()
   x = uniform(-1.0, 1.0)  
@@ -159,29 +155,45 @@ function vizall(probs, algs, n)
   plots
 end
 
-
-function vizdata(data)
+function vizdata(rows)
   plots = []
-  for datum in data
-    @unpack prob, alg, samples = datum
-    push!(probplots, ωcontourhack(err(prob.c); label = nothing,
-                                                legend = nothing,
-                                                colorbar = nothing,
-                                                color = :amp))
-  for prob in probs
-    push!(probplots, ωcontourhack(err(c); label = nothing,
-                                  legend = nothing,
-                                  colorbar = nothing,
-                                  color = :amp))
-    for alg in algs
-      push!(probplots, scatterxy(samples,
-                                #  xlims = xlims,
-                                #  ylims = ylims
-      )
+  for row in rows
+    c = row[1].prob.c
+    push!(plots, ωcontourhack(err(c); label = nothing,
+                              legend = nothing,
+                              colorbar = nothing,
+                              color = :amp))
+    for datum in row
+      push!(plots, scatterxy(val.(datum.samples)))
     end
   end
   plots
 end
+
+
+
+# function vizdata(data)
+#   plots = []
+#   for datum in data
+#     @unpack prob, alg, samples = datum
+#     push!(probplots, ωcontourhack(err(prob.c); label = nothing,
+#                                                 legend = nothing,
+#                                                 colorbar = nothing,
+#                                                 color = :amp))
+#   for prob in probs
+#     push!(probplots, ωcontourhack(err(c); label = nothing,
+#                                   legend = nothing,
+#                                   colorbar = nothing,
+#                                   color = :amp))
+#     for alg in algs
+#       push!(probplots, scatterxy(samples,
+#                                 #  xlims = xlims,
+#                                 #  ylims = ylims
+#       )
+#     end
+#   end
+#   plots
+# end
 
 
 # Do it all!
@@ -198,8 +210,9 @@ algs = [
 
 flatten(xs) = vcat([x for x in xs]...)
 
-data = getdata(probs, algs, 10)
+data = getdata(probs, algs, 10000)
 plots = vizdata(data)
+@save "data2.jld2" data
 
 # plots = vizall(probs, algs, 10000)
 # st = L"x + y < 0"
