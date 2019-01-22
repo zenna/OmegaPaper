@@ -15,6 +15,7 @@ Among several solutions are dynamically decreasing the tolerance \cite{toni2008a
 Predicate exchange targets simulation models and uses distance metrics, but targets asymptotically exact inference without summary statistics.
 A recent approach \cite{graham2017asymptotically}  with similar objectives develops a Hamiltonian Monte Carlo variant, using a quasi-Newton method during leap-frog integration to exactly solve the observation constraint.
 This is limited to differentiable models conditioned with equality.
+Predicate exchange is not limited to differentiable models, but can be but is approximate when the condition is of measure zero.
 
 % \cite{Pseudo-Marginal Hamiltonian Monte Carlo}HMC methods cannot be implemented in scenarios where the likelihood function is intractable. However, we have shown here that if we have access to a non-negative unbiased likelihood estimator.
 % parameterized by normal random variables then it is possible to derive an algorithm which mimicsthe HMC algorithm having access to the exact likelihood. The resulting pseudo-marginal HMCalgorithm replaces the original intractable gradient of the log-likelihood by the gradient of thelog-likelihood estimator while preserving the target distribution as invariant distributi
@@ -29,7 +30,7 @@ More recent probabilistic programming systems~\citep{milch20071, wood2014new,man
 
 Several continuous \cite{levin2000continuous} and fuzzy \cite{klir1995fuzzy} logics apply model-theoretic tools to metric structures.
 Continuous logics replace the Boolean structure $\{T, F\}$, quantifiers $\forall x$ and $\exists x$, and logical connectives with continuous counter-parts.
-Predicate relies uses a continuous logic only make inference more tractable. Semantically, our approach remains within measure theoretic foundations, which relies on hard predicates to condition.
+Predicate relies uses continuous logic only make inference more tractable. Semantically, our approach remains within measure theoretic foundations, which relies on hard predicates to condition.
 % Probabilistic Similarity Logic \cite{brocheler2012probabilistic,kimmig2012short} uses continuous logics 
 % Talk about Soft logic
 

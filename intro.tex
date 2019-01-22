@@ -4,7 +4,7 @@
 
 Conditioning in Bayesian inference incorporates observed data into a model.
 In a broader sense, conditioning revises a model such that a yes/no question (a predicate) is resolved to a true proposition (a fact).
-In the case of an observation, the question of whether a variable is equal to the observed value, changes from a predicate of uncertain truth, to a fact, once it is observed.
+Conditioning on an observation, for instance, resolves the question of whether a variable is equal to a particular value, from a predicate of uncertain truth, to a fact.
 
 % 
 % 
@@ -18,23 +18,21 @@ In the case of an observation, the question of whether a variable is equal to th
 % However, there are various pieces of declarative knowledge the scientist may possess which are difficult or impossible to encode in this form.
 % For instance, she may know that ``human glucose curves are similar across patients'',   is surprisingly challenging even in the most expressive probabilistic programming systems. 
 % Rather than observations, these propositions are facts which condition the prior. These propositions are not observations.
-In principle, a predicate can be used to declare any fact about a domain, not only the observation of data.
-% Predicates can be used to update a model to adhere to known facts about a domain, without the burden of specifying how to revise the model.
-For example, inverse rendering  \cite{marschner1998inverse,kulkarni2015deep} aims to infer three dimensional geometry from observed images.
-The proposition ``rigid bodies do not intersect'' is a predicate on latent configurations of geometry.
-To manually revise a model to constructively adhere to this fact ranges between inconvenient and infeasible.
+Predicates can be used to declare any fact about a domain. For example, inverse rendering  \cite{marschner1998inverse,kulkarni2015deep} aims to infer three dimensional geometry from observed images.
+A prior over geometric configurations conditioned on the fact that rigid bodies do not intersect,  will yield better posterior inferences than otherwise, since implausible hypotheses are eliminated.
 % Instead, we would ideally simply condition on it being true, concentrating probability mass on physically plausible geometric configurations, ultimately to yield more accurate posterior inferences in the inverse graphics problem.
-Predicates can be used to express facts that are observations, but that are more abstract than variables	 in a model.
+Predicates can express facts that are observations, but that are more abstract than variables	 in a model.
 In diabetes research, probabilistic models have been used to relate physiological factors to glucose levels over time \citep{levine2017offline,murata2004probabilistic}.
 Rather than concrete, numerical glucose measurements, a medical practitioner may observe (or be told) that a patient suffers from recurrent hypoglycemia, i.e., that their glucose levels periodically fall below a critical value.
 Even if the occurrence of hypoglycemia does not appear as an explicit variable in the model, it could be constructed as a predicate on glucose levels, and conditioned on to infer the posterior distribution over latent physiological factors.
+In principle, these facts can be incorporated into the model directly through conditioning.	
 In practice, sampling from models conditioned on most predicates presents severe challenges to existing inference procedures.
 
 
 Several effective sampling  \citep{andrieu2003introduction} and variational  \citep{jordan1999introduction, ranganath2014black} approaches to inference require only a black-box likelihood function, i.e., one evaluable on arbitrary input.
 The likelihood function quantifies the extent to which values of latent variables are consistent with observations. 
-However, most models conditioned on most predicates have likelihood functions that are intractable to compute or unknown.
-For example, conditioning random variables that are deterministic transformations of other random variables (e.g., the presence of hypoglycemia in the example above, or the mean of a collection of variables) often results in likelihoods that are normalized by intractable integrals.	
+However, most models conditioned on most predicates have likelihood functions that are either intractable to compute or unknown.
+For example, conditioning random variables that are deterministic transformations of other random variables (e.g., the presence of hypoglycemia in the example above, or the mean of a collection of variables) often results in likelihoods that are normalized by intractable integrals or summations.	
 % For example, given three variables, it is possible to condition on the sum
 % of the variables being positive; this sum is never an explicit random variable.
 In other cases, the likelihood function is implicit to a generative process, rather than explicitly specified, and hence unavailable even when the condition is a conventional observation.
@@ -52,12 +50,16 @@ It is composed of two parts:
 % WTP? Show that soft Boolean is useful for (i) tractability of inference show that rather th	an 
 By returning a value in $[0, 1]$ instead of $\{0, 1\}$, a soft predicate quantifies the extent to which values of latent variables are consistent with the predicate.
 This allows it to serve a role similar to a likelihood function, and opens up the use of likelihood-based inference procedures.
-Conditioning is conventionally formalized as a restriction of a probability space to an event.
-To formalize soft conditioning, we generalize this to transformation of probability measure.
+TALK ABOUT REPLICA EXCHANGE.
+% Conditioning is conventionally formalized as a restriction of a probability space to an event.
+% To formalize soft conditioning, we generalize this to transformation of probability measure.
 
-Orthogonally, we embed $]0, 1]$ in a Boolean algebra to support the expression of domain knowledge of composite Boolean structure.
+Predicates exist in a Boolean algebra; they can be conjoined, disjoined and negated.
+This allows predicates to express knowledge that has complex Boolean structure.
 Continuing the previous example, we may know that a person does \emph{not} have hypoglycemia, or that they have hypoglycemia \emph{or} hyperglycemia, or \emph{neither}.
+To accommodate this, we construct a soft Boolean algebra, with continuous counterparts to equality, inequalities and logical connectives.
 % Few likelihood-based likelihood-free approaches to inference offer effective means to condition non-trivial models on compound predicates.
+
 
 % This degree to which a is is determined by a notion of distance.
 % In contrast to most distance based inference methods (notably Approximate Bayesian Computation \cite{beaumont2002approximate}), we develop a form of replica exchange Markov Chain Monte Carlo \cite{earl2005parallel} to target inference that is exact in convergence of the chain.
@@ -67,7 +69,7 @@ Continuing the previous example, we may know that a person does \emph{not} have 
 
 
 Predicate exchange is motivated by probabilistic programming languages, which have vastly expanded the class of probabilistic models that can be expressed,, but still heavily restrict the kinds of predicates that can be conditioned on.
-Rather than introduce a new language or modeling formalism, we mirror   \cite{wingate2011lightweight} and provide a light-weight implementation modulates the execution of a stochastic simulation based model to perform inference.
+Rather than introduce a new language or modeling formalism, we mirror   \cite{wingate2011lightweight} and provide a light-weight implementation that modulates the execution of a stochastic simulation based model to perform inference.
 This means predicate exchange is easily incorporated into most frameworks. 
 
 Our approach comes with certain limitations.
