@@ -7,6 +7,8 @@ using Callbacks
 using Plots.PlotMeasures: mm
 using Flux
 using LaTeXStrings
+using FileIO
+using JLD2
 include(joinpath(dirname(pathof(Omega)), "viz.jl"))
 
 # Problems
@@ -212,7 +214,7 @@ flatten(xs) = vcat([x for x in xs]...)
 
 data = getdata(probs, algs, 10000)
 plots = vizdata(data)
-@save "data2.jld2" data
+@save "data3.jld2" data
 
 # plots = vizall(probs, algs, 10000)
 # st = L"x + y < 0"
