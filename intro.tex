@@ -20,18 +20,11 @@ Conditioning on a broader class of predicates can be used to refine a weak prior
 For example, inverse rendering  \cite{marschner1998inverse,kulkarni2015deep} aims to infer three dimensional geometry from observed images.
 A prior over geometric configurations conditioned on the fact that rigid bodies do not intersect,  will yield better posterior inferences than otherwise, since implausible configurations are eliminated.
 % Instead, we would ideally simply condition on it being true, concentrating probability mass on physically plausible geometric configurations, ultimately to yield more accurate posterior inferences in the inverse graphics problem.
-Predicates can also express observations and are more abstract than variables in a model.
+Predicates can also express observations that are more abstract than variables in a model.
 In diabetes research, probabilistic models have been used to relate physiological factors to glucose levels over time \citep{levine2017offline,murata2004probabilistic}.
-<<<<<<< HEAD
-Rather than concrete, numerical glucose measurements, a medical practitioner may observe (or be told) that a patient suffers from recurrent hypoglycemia, i.e., that their glucose levels periodically fall below a critical value.
-Even if the occurrence of hypoglycemia does not appear as an explicit variable in the model, it could be constructed as a predicate that maps a time series of glucose values to true if  it repeatedly rises below and above the threshold.
-In principle, these facts can be incorporated into the model directly through conditioning.	
-In practice, sampling from models conditioned on most predicates presents severe challenges to existing inference procedures.
-=======
 Instead of numerical glucose measurements, a medical practitioner may observe (or be told) that a patient suffers from hypoglycemia, i.e., that their glucose levels fall below a critical value.
 Even if the occurrence of hypoglycemia does not appear as an explicit variable in the model, we can construct it as a predicate that maps a time series of glucose values to true if and only if it falls below the threshold.
 Unfortunately, sampling from models conditioned on predicates such as these presents severe challenges to existing inference procedures.
->>>>>>> master
 
 
 Several effective sampling  \citep{andrieu2003introduction} and variational  \citep{jordan1999introduction, ranganath2014black} approaches to inference require only a black-box likelihood function, i.e., one evaluable on arbitrary input.
