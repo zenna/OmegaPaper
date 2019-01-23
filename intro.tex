@@ -4,26 +4,40 @@
 
 Conditioning in Bayesian inference incorporates observed data into a model.
 In a broader sense, conditioning revises a model such that a predicate is resolved to a true proposition (a fact).
-That is, in the Bayesian posterior $P(X = x \mid Y = y)$, the expression $Y = y$ denotes an observation of $Y$, but viewed more generally is a predicate: a function which takes 0 or 1 depending on uncertainty in the model.
-Conditioning on a predicate forces it to be true.
-Moreover, one can express predicates of a different form, such as $X = Y$, $X^2 > 0$, or $|X + Y| = 0$.
+% A classical problem in Bayesian inference is conditioning to incorporate observed data into a model. 
+The problem of conditioning on the observed value of a variable has been well studied.
+This is the problem of calculating the Bayesian posterior $P(X = x \mid Y = y)$ after having observed a value $y$ for variable $Y$.
+Conditioning on more general predicates beyond simple equality of variables to values has received significantly less attention, partly because it makes the inference problem significantly more challenging, and partly because conditioning on equality has proven to be sufficiently useful for many applications. In this paper, we provide a new method for conditioning on general predicates and demonstrate the value of this through a series of case studies.
+
+
+
+% That is, in the Bayesian posterior $P(X = x \mid Y = y)$, the expression $Y = y$ denotes an observation of $Y$, but viewed more generally is a predicate: a function which takes 0 or 1 depending on uncertainty in the model.
+% Conditioning on a predicate forces it to be true.
+% Moreover, one can express predicates of a different form, such as $X = Y$, $X^2 > 0$, or $|X + Y| = 0$.
  % Conditioning on an observation, for instance, resolves the question of whether a variable is equal to a particular value, from a predicate of uncertain truth, to a fact.
 
-Predicates can be used to declare facts about a domain. For example, inverse rendering  \cite{marschner1998inverse,kulkarni2015deep} aims to infer three dimensional geometry from observed images.
+Conditioning on a broader class of predicates can be used to refine a weak prior into one which more closely resembles reality.
+For example, inverse rendering  \cite{marschner1998inverse,kulkarni2015deep} aims to infer three dimensional geometry from observed images.
 A prior over geometric configurations conditioned on the fact that rigid bodies do not intersect,  will yield better posterior inferences than otherwise, since implausible configurations are eliminated.
 % Instead, we would ideally simply condition on it being true, concentrating probability mass on physically plausible geometric configurations, ultimately to yield more accurate posterior inferences in the inverse graphics problem.
-Predicates can also express facts that are observations and are more abstract than variables in a model.
+Predicates can also express observations and are more abstract than variables in a model.
 In diabetes research, probabilistic models have been used to relate physiological factors to glucose levels over time \citep{levine2017offline,murata2004probabilistic}.
+<<<<<<< HEAD
 Rather than concrete, numerical glucose measurements, a medical practitioner may observe (or be told) that a patient suffers from recurrent hypoglycemia, i.e., that their glucose levels periodically fall below a critical value.
 Even if the occurrence of hypoglycemia does not appear as an explicit variable in the model, it could be constructed as a predicate that maps a time series of glucose values to true if  it repeatedly rises below and above the threshold.
 In principle, these facts can be incorporated into the model directly through conditioning.	
 In practice, sampling from models conditioned on most predicates presents severe challenges to existing inference procedures.
+=======
+Instead of numerical glucose measurements, a medical practitioner may observe (or be told) that a patient suffers from hypoglycemia, i.e., that their glucose levels fall below a critical value.
+Even if the occurrence of hypoglycemia does not appear as an explicit variable in the model, we can construct it as a predicate that maps a time series of glucose values to true if and only if it falls below the threshold.
+Unfortunately, sampling from models conditioned on predicates such as these presents severe challenges to existing inference procedures.
+>>>>>>> master
 
 
 Several effective sampling  \citep{andrieu2003introduction} and variational  \citep{jordan1999introduction, ranganath2014black} approaches to inference require only a black-box likelihood function, i.e., one evaluable on arbitrary input.
 The likelihood function quantifies the extent to which values of latent variables are consistent with observations. 
 However, most models conditioned on most predicates have likelihood functions that are either intractable to compute or unknown.
-For example, conditioning random variables that are deterministic transformations of other random variables (e.g., the presence of hypoglycemia in the example above, or the mean of a collection of variables) often results in likelihoods that are normalized by intractable integrals or summations.	
+For example, conditioning random variables that are deterministic transformations of other random variables (e.g., the occurrence of hypoglycemia in the example above, or the mean of a collection of variables) often results in likelihoods that are normalized by intractable integrals or summations.	
 Alternatively, if the model is generative, i.e. specified as a stochastic simulation, the likelihood is not explicitly available even when the condition is a conventional observation.
 Inference methods for unnormalized likelihood functions are largely inapplicable to problems when the likelihood is unknown, and vice versa.
 In a similar vein, conditioning on predicates introduces challenges unaddressed by either.

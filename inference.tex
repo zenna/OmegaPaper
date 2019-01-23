@@ -37,7 +37,7 @@ A function $\softv{Y} : \Omega \to [0, 1]$ parameterized by $\alpha \in [0, \inf
 	\item For all $\omega \in \Omega$, $\lim_{\alpha \to 0}\softv{Y}(\omega; \alpha) = Y(\omega)$.
 	\item For all $\omega \in \Omega$, $\lim_{\alpha \to \infty}\softv{Y}(\omega; \alpha) = 1$.
 
-    \item For all $\alpha$, $\softv{Y}(\omega; \alpha) = 1$ iff $Y(\omega) = 1$.
+    \item For all $\alpha < \infty$, $\softv{Y}(\omega; \alpha) = 1$ iff $Y(\omega) = 1$.
     \item The entropy $H(\softv{Y}(\omega; \alpha))$ (which characterizes the fidelity of the approximation ) is an increasing function of $\alpha$.\footnote
     {By compactness, it is integrable for all $\alpha$, when $\Omega$ has finite dimension}
 \end{enumerate}
@@ -46,17 +46,17 @@ A function $\softv{Y} : \Omega \to [0, 1]$ parameterized by $\alpha \in [0, \inf
 \paragraph{Distance Based Satisfiability}
 There exist several functions that adhere to the relaxation desiderata.
 Provided a distance metric, we can construct one.
-For convenience of notation, in the context of of a random variable $\softv{Y}(\omega) = \ell((X_1(\omega), \dots, X_n(\omega)))$, we focus on $\ell$ which maps realizations of the model.
+For convenience of notation, in the context of of a random variable $\softv{Y}(\omega) = \ell((X_1(\omega), \dots, X_n(\omega)))$, we focus on $\ell$ which maps realizations $\textbf{m} = (x_1, \dots, x_n)$ of the model to $[0, 1]$.
 
 % The soft satisfiability of a point is a measure of the distance from that point to the satisfying set:
 % $\soft{\lk}_{\inf}(m)$ represents the degree to which a model realization $m$ satisfies a predicate.
 \begin{definition}
-Let $\rho$ a distance metric, $k_\alpha$ a kernel (described below) which bounds distances to $[0, 1]$, and $A = \{(x_1, \dots, x_n) \mid \lk(x_1, \dots, x_n) = 1\}$ the satisfying set.
-The predicate $\soft{\lk}_{\inf}(m)$ is a relaxation of $\ell$, defined as:
+Let $\rho$ be a distance metric, $k_\alpha$ a kernel (described below) which bounds distances to $[0, 1]$, and $A = \{\textbf{m} \mid \lk(\textbf{m}) = 1\}$ the satisfying set.
+The predicate $\soft{\lk}_{\inf}(\textbf{m})$ is a relaxation of $\ell$, defined as:
 \begin{equation}
-\soft{\lk}_{\inf}(m) = k_\alpha(\rho(m, A))
+\soft{\lk}_{\inf}(\textbf{m}) = k_\alpha(\rho(\textbf{m}, A))
 \end{equation}
-The distance $\rho(x, A) = \inf \left\{\rho(x, a) \mid a \in A\right\}$ is the smallest distance between $x$ and any element of $A$.
+The distance $\rho(\textbf{m}, A) = \inf \left\{\rho(\textbf{m}, a) \mid a \in A\right\}$ is the smallest distance between $\textbf{m}$ and any element of $A$.
 % As shown in the Section \ref{implement}, $\soft{\lk}_{\inf}$ can be difficult to compute.
 \end{definition}
 
@@ -123,7 +123,7 @@ Figure \ref{negationimg} illustrates this issue.
 
 \begin{figure}
 \includegraphics[width=\linewidth]{negation.eps}
-\caption{Negation: soft (blue) and hard (red, dashed) predicates as a function of $x$.  }\label{negationimg}
+\caption{Negation: soft (blue) and hard (red, dashed) predicates as a function of $x$.  Left: $x \soft{>} y$ approximates $x > y$. Middle:  Standard approach to continuous negation $(1-a)$ violates relaxation criteraa. Right: Desired outcome of soft negation of $x \soft{>} y$.}\label{negationimg}
 \end{figure}
 
 
@@ -194,7 +194,7 @@ Let $\cM = (X_1, \dots, X_n)$ be a model, $Y$ be a predicate that conditions $\c
 % for convenience we define a soft predicate $\softv{\lk}$ as a function of its parameters (other random variables in the model) rather than the sample space.
 % That is, let $\softv{Y}(\omega) = \softv{\lk}(X_1(\omega), ..., X_n(\omega))$, where $X_i \in \cM$.
 Assuming a prior density $p$, the approximate posterior $f$ is the product:
-\begin{equation}
+\begin{equation}\label{fpm}
 f(m) = p(m) \cdot \softv{\lk}(m)
 \end{equation}
 $\softv{\lk}$ down weights parameter values which violate $Y$ by the degree to which they violate it. 
