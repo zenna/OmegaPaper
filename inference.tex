@@ -3,7 +3,7 @@
 
 To condition a model $\cM$ on a predicate $Y$ we develop \emph{predicate exchange}, a likelihood-free inference procedure.  It is composed of two parts:
 \begin{enumerate}
-\item \textbf{Predicate Relaxation} constructs a soft predicate $\softv{Y}$ from $Y$. $\softv{Y}$ takes values   in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$. $\soft{\lor}$ and $\neg$.
+\item \textbf{Predicate Relaxation} constructs a soft predicate $\softv{Y}$ from $Y$. $\softv{Y}$ takes values   in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$, $\soft{\lor}$ and $\neg$.
 $\softv{Y}$ is 1 iff $Y$ is 1, but otherwise takes nonzero values denoting the degree to which $Y$ is satisfied.
 % The relaxation is parameterized by a temperature.
 % Predicate relaxation allows us to apply likelihood based MCMC inference procedures.
@@ -60,7 +60,7 @@ The distance $\rho(x, A) = \inf \left\{\rho(x, a) \mid a \in A\right\}$ is the s
 % As shown in the Section \ref{implement}, $\soft{\lk}_{\inf}$ can be difficult to compute.
 \end{definition}
 
-\paragraph{Relxation Kernels} A relaxation kernel $k_\alpha$ bounds distances from $\rho$ to the unit interval, and is paramterized by temperature $\alpha$.
+\paragraph{Relaxation Kernels} A relaxation kernel $k_\alpha$ bounds distances from $\rho$ to the unit interval, and is paramterized by temperature $\alpha$.
 % For example if $x$ and $y$ are real values, then $x \soft{=} y$ is defined as $k_\alpha(\rho(x, y))$ where $\rho$ is a distance function and $k_\alpha$ is a relaxation kernel paramterized by temperature $\alpha$.
 % A relaxation kernel maps distances to values in $[0, 1]$, and ensures that $\softv{Y}$ adheres to the outlined criteria.
 Relaxation kernels are responsible for ensuring consistency with the relaxation criteria.
@@ -227,8 +227,9 @@ The expectation of a soft predicate quantifies the degree to which it is true (s
 The prior expectation of $p_x$ can be significantly larger than that of $p_y$.
 because values far from the 0 are more likely under $y$ than $x$.
 
-This disparity persists if the conditioned model.
-If $\cM$ is conditioned on $p1 \soft{\land} p2$.
+%This disparity persists if the conditioned model.
+%If $\cM$ is conditioned on $p1 \soft{\land} p2$.
+This disparity persists if the  model $\cM$ is conditioned on $p1 \soft{\land} p2$.
 This disparity  decreases with decreasing temperature, and disappears at zero.
 This disparity is undesirable because it means that the approximation error is distributed unevenly over constraints we wish to be true in a manner which arbitrarily depends on the scale of variables.
 % For example consider two pairs of variables, where

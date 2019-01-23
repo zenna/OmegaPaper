@@ -78,7 +78,7 @@
 
 In this section we describe a generic, lightweight implementation of predicate exchange.
 Our approach closely mirrors \citep{wingate2011lightweight, milch20071} in the sense that it provides a language independent layer that can be implemented on top of existing programming languages and modeling formalisms.
-Our objective is to twofold: (i) to compute the prior term $p$, approximate likelihood term $\softv{\lk}$, and approximate posterior term $f$ (Equation \ref{approxposterior}) from an arbitrary simulator $\pi$, and (ii) to perform replica exchange MCMC to sample from this posterior.
+Our objective is twofold: (i) to compute the prior term $p$, approximate likelihood term $\softv{\lk}$, and approximate posterior term $f$ (Equation \ref{approxposterior}) from an arbitrary simulator $\pi$, and (ii) to perform replica exchange MCMC to sample from this posterior.
 
 A simulator $\pi$ can be an arbitrary composition of deterministic and stochastic procedures, but all randomness must come from a set of known random primitives.
 Primitives correspond to primitive parametric distribution families, such as the uniform or normal distribution.
