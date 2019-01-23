@@ -115,7 +115,7 @@ function scatterxy(samples;
   # scatter(xs, ys, label = label, legend = legend, xlims = xlims, ylims = ylims)
   # marginalhist(xs, ys, label = label, legend = legend, xlims = xlims, ylims = ylims, nbins = 50)
   @show typeof(Flux.data(xs))
-  histogram2d(Flux.data.(xs), Flux.data.(ys), nbins=50, bottom_margin=0mm,  widen=false, framestyle=:box,
+  histogram2d(val.(xs), val.(ys), nbins=50, bottom_margin=0mm,  widen=false, framestyle=:box,
               margin=0mm, legend=false, xlims = xlims, ylims = ylims,
               color=:amp)
 end
@@ -157,17 +157,17 @@ function vizall(probs, algs, n)
   plots
 end
 
-function vizdata(rows)
+function vizdata(data)
   plots = []
-  for row in rows
-    c = row[1].prob.c
-    push!(plots, ωcontourhack(err(c); label = nothing,
-                              legend = nothing,
-                              colorbar = nothing,
-                              color = :amp))
-    for datum in row
-      push!(plots, scatterxy(val.(datum.samples)))
+  for (i, d) in enumerate(data)
+    c = d.prob.c
+    if (i - 1) % 4 == 0
+      push!(plots, ωcontourhack(err(c); label = nothing,
+                                legend = nothing,
+                                colorbar = nothing,
+                                color = :amp))
     end
+    push!(plots, scatterxy(val.(d.samples)))
   end
   plots
 end
@@ -221,27 +221,27 @@ plots = vizdata(data)
 # ltxstrings = [L"x = y", L"x > y", L"|x| > |y|", L"x^2 = y^2", L"\sin(kx)\cos(kx) < \epsilon_1", L"\sin(kx)\cos(kx) < \epsilon_2"] 
 # algstrings = ["", "SSMH", "NUTS", "RE-SSMH", "RE-NUTS"]
 
-# function makeplots(plots)
-#   # foreach((plt, st) -> ylabel!(plt[1], st), plots, ltxstrings)
-#   foreach((plt, st) -> title!(plt, st), plots[1], algstrings)
-#   flatplots = flatten(plots)
-#   @show nrows, ncols = length(plots), length(plots[1])
-#   multiplier = 400
-#   plt = plot(flatplots..., layout = (nrows, ncols),
-#                            markersize=0.01,
-#                            tickfontsize = 24,
-#                            aspectratio = 1,
-#                            xticks = [-1, 1],
-#                            yticks = [-1, 1],
-#                            margin = 0mm,
-#                            top_margin = 10mm,
-#                            size = (ncols, nrows) .* multiplier,
-#                           #  fontfamily = font(50),
-#                            guidefontsize = 30,
-#                            legendfontsize = 24,
-#                            titlefontsize = 30
-#                           )
-# end
+function makeplots(plots)
+  # # foreach((plt, st) -> ylabel!(plt[1], st), plots, ltxstrings)
+  # foreach((plt, st) -> title!(plt, st), plots[1], algstrings)
+  # flatplots = flatten(plots)
+  # @show nrows, ncols = length(plots), length(plots[1])
+  # multiplier = 400
+  plt = plot(plots..., layout = (6, 5),
+                             markersize=0.01,
+                           tickfontsize = 24,
+                           aspectratio = 1,
+                           xticks = false,
+                           yticks = false,
+                           margin =10mm,
+                           widen = false,
+                           size = (5, 6) .* colwidth .* up,
+                          #  fontfamily = font(50),
+                           guidefontsize = 30,
+                           legendfontsize = 24,
+                           titlefontsize = 30
+                          )
+end
 
 # plt = makeplots(plots)
 # savefig(plt, "grid4.png")

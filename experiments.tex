@@ -19,17 +19,21 @@ For a fair comparison, we used likelihood based methods
 	\hline\hline
 	SSMH & 0.0054 & 0.4735  & -0.000377 & 0.008547\\ 
 	\hline
-	RE & 7 & 78 & 5415 & 100\\
+	% HMC & 2.1 & 2.026  & 1.5 & 1.41\\ 
+	% \hline\hline
+	SMC & 0.06 & -0.226  & -0.018 & 0.09\\ 
 	\hline
-	RS & 0.3, & timeout & timeout & timeout \\
+	PG & -0.029 & 0.239 & -0.03 & 0.03\\
 	\hline
-	PE & 0.239 & -0.505 & -0.0726  & -0.0252 \\
+	RS & 0.003 & timeout & timeout & timeout \\
 	\hline
  \end{tabular}
  \label{results}
  \caption{SMC}
  \end{center}
 \end{figure}
+
+
   
 Table \ref{results} compares the expectations of inference strategies for varying $d$ and $\epsilon$.
 
@@ -38,8 +42,14 @@ In Figure \ref{fig:density} we demonstrate two examples of conditioning on predi
 First we show that the conditioning can be used to truncate a Gaussian distribution, and the approximation behavior at varying temperatures.  Second we show that two independent random variables can be made equal.  While simple, both are a challenge for probabilistic programming systems because they prevent automatic calculation of the likelihood.
 
 \begin{figure}[!htb]
+	\centering
+	\includegraphics[width=0.9\linewidth]{gridn5}
+	\caption{Predicate Exchange}
+\end{figure}	
+
+\begin{figure}[!htb]
 \centering
-\includegraphics[width=0.8\linewidth]{truncated}
+\includegraphics[width=0.5\linewidth]{truncated}
 
 % \begin{minipage}{0.45\linewidth}
 % \includegraphics[width=\linewidth]{truncated}
