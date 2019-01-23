@@ -105,8 +105,8 @@ The parameters $\theta_1,..,\theta_n$ may be fixed values or depend on values of
 \caption{}
 \label{prog:ex1}
 \begin{algorithmic}
-\STATE $x = \textrm{rand}(\mathcal{N}, x, 0, 1)$
-\STATE $y = \textrm{rand}(\mathcal{N}, y, 0, 1)$
+\STATE $x = \textrm{rand}(x, \mathcal{N}, 0, 1)$
+\STATE $y = \textrm{rand}(y, \mathcal{N}, 0, 1)$
 \STATE $\cond(x > y)$
 \STATE {\bfseries Return:} $(x, y)$
 \end{algorithmic}
@@ -144,7 +144,7 @@ These may cause $\textrm{softexecute}$ to return a value that is significantly l
 \caption{}
 \label{prog:ex2}
 \begin{algorithmic}
-\STATE $x = \textrm{rand}(\mathcal{N}, x, 0, 1)$
+\STATE $x = \textrm{rand}(x, \mathcal{N}, 0, 1)$
 \IF {$x > 0$}
 \STATE $\cond(x = 1)$
 \ELSE
@@ -163,7 +163,7 @@ These may cause $\textrm{softexecute}$ to return a value that is significantly l
 \STATE {\bfseries Input:} program $\pi$, temperature $\alpha$, dictionary $\mathbb{D}$
 \STATE Initialize $\softv{\lk}_\mathbb{D} = 1, p_\mathbb{D} = 1$
 \STATE Simulate $\pi$ with following subroutines redefined as:   
-\ALOOP {$\textrm{rand}(\tau, n, \theta_1, ..., \theta_n)$}
+\ALOOP {$\textrm{rand}(n, \tau, \theta_1, ..., \theta_n)$}
    \IF{$n \in \mathbb{D}$}
    \STATE $x \deqq \mathbb{D}(n)$
  \ELSE
