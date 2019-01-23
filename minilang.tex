@@ -225,7 +225,7 @@ In particular we use the single site Metropolis Hastings (SSMH) \cite{wingate201
 \STATE Initialize $\mathbb{D}^{\textrm{init}}_1,...,\mathbb{D}^{\textrm{init}}_m$ empty dictionarys
 \STATE Define $f_{\alpha_i}(\mathbb{D}) = \textrm{softexecute}(\pi, \alpha_i, \mathbb{D})$
 \REPEAT
-  \FOR{$i=1$ {\bfseries to} $m$}
+  \FOR{$i=1$ {\bfseries to} $M$}
     \STATE { $\mathbb{D}_1,...,\mathbb{D}_q \deqq $ $q$ mcmc samples at temp $\alpha_i$}, from $\mathbb{D}^{\textrm{init}}_i$
     \STATE $\mathbb{D}^{\textrm{init}}_i \deqq \mathbb{D}_q$
     \FOR{$j=1$ {\bfseries to} $q$}
