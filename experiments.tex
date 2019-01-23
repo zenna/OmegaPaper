@@ -2,13 +2,13 @@
 \section{Experiments}\label{experiments}
 
 \paragraph{Small Models}
-In Figures \ref{fig:density} and \ref{gridn} we demonstrate examples of conditioning on predicates which are non trivial.
-First we show that the conditioning can be used to truncate a Gaussian distribution, and the approximation behavior at varying temperatures.  Second we show samples from uniform models on $[-1, 1]^2$ conditioned on various predicates.  While simple, both are a challenge for probabilistic programming systems because they prevent automatic calculation of the likelihood.
+Figures \ref{fig:density} demonstrate how to truncate a normal distribution through conditioning, while Figure  \ref{gridn} shows samples from a uniform prior  $[-1, 1]^2$ conditioned on a variety of predicates.  While simple, these examples can challenge.
+
 
 \begin{figure}[!htb]
 	\centering
 	\includegraphics[width=0.9\linewidth]{gridn5}
-	\caption{Samples from models (left column) from different procedures: (SSMH) Single Site Metropolis Hastings, (HMC) Hamiltonion Monte Carlo, (PE) Predicate-Exchange.}
+	\caption{Samples from models (left column) from different procedures: (SSMH) Single Site Metropolis Hastings, (HMC) Hamiltonian Monte Carlo, (PE) Predicate-Exchange.}
 	\label{gridn}
 \end{figure}	
 
@@ -40,8 +40,10 @@ First we show that the conditioning can be used to truncate a Gaussian distribut
 
 
 \paragraph{Inverse Ray Tracing}
-The inverse graphics task aims to inverse a prior distribution over scenes composed of colored spheres, conditioned on observing a raytracing of the scene.
-A sphere is parameterized by color, reflectance, emission, transparency, radius and position, all with a uniform prior.  A scene is simply a collection of spheres, where a poisson distribution determined the number.
+The inverse graphics task aims to sample from a prior distribution over scenes.  A scene is a set of $n \sim \textrm{poisson}(\lambda = 3)$ spheres.
+A sphere is parameterized by color, reflectance, emission color, transparency, radius and position, all with a uniform prior.
+If $r$ is a render function that maps scenes to image, $i_{obs}$ is an observed image, and $\textrm{nointersect}$ determines if any spheres intersect, the prior is conditioned on the predicate:
+$r(scene) = i_{obs} \land \textrm{nointersect}(scene)$
 
 % \begin{figure}
 % 	\centering
