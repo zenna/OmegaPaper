@@ -3,7 +3,7 @@
 
 To condition a model $\cM$ on a predicate $Y$ we develop \emph{predicate exchange}, a likelihood-free inference procedure.  It is composed of two parts:
 \begin{enumerate}
-\item \textbf{Predicate Relaxation} constructs a soft predicate $\softv{Y}$ from $Y$. $\softv{Y}$ takes values   in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$. $\soft{\lor}$ and $\neg$.
+\item \textbf{Predicate Relaxation} constructs a soft predicate $\softv{Y}$ from $Y$. $\softv{Y}$ takes values   in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$, $\soft{\lor}$ and $\neg$.
 $\softv{Y}$ is 1 iff $Y$ is 1, but otherwise takes nonzero values denoting the degree to which $Y$ is satisfied.
 % The relaxation is parameterized by a temperature.
 % Predicate relaxation allows us to apply likelihood based MCMC inference procedures.
@@ -65,7 +65,7 @@ For canonical spaces such as $\mathbb{R}$ and $\mathbb{N}$ we default to the Euc
 We can construct $\rho$ automatically for composite elements $x, y \in \mathbb{T}_1 \times \cdots \times \mathbb{T}_n$ of product types, by taking the mean of distances of components: $\rho(x, y) = (1/n)\sum^n_{i=1}\rho(x_i, y_i)$.
 
 
-\paragraph{Relxation Kernels} A relaxation kernel $k_\alpha$ bounds distances from $\rho$ to the unit interval, and is paramterized by temperature $\alpha$.
+\paragraph{Relaxation Kernels} A relaxation kernel $k_\alpha$ bounds distances from $\rho$ to the unit interval, and is paramterized by temperature $\alpha$.
 % For example if $x$ and $y$ are real values, then $x \soft{=} y$ is defined as $k_\alpha(\rho(x, y))$ where $\rho$ is a distance function and $k_\alpha$ is a relaxation kernel paramterized by temperature $\alpha$.
 % A relaxation kernel maps distances to values in $[0, 1]$, and ensures that $\softv{Y}$ adheres to the outlined criteria.
 Relaxation kernels are responsible for ensuring consistency with the relaxation criteria.
