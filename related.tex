@@ -7,8 +7,8 @@ filtered samples from a stochastic simulator to only those which matched (accord
 %  to perform one of the earliest forms of likelihood-free inference.
 Weiss et al. \yrcite{weiss1998inference} extended this with a tolerance term, so that simulations sufficiently close to the data were accepted.
 % Such posterior samples are therefore approximate.
-Approximate Bayesian Computation (ABC) now refers to methods \cite{beaumont2002approximate,sisson2007sequential} in this general regime.
-Marjoram et al. \yrcite{marjoram2003markov} simulated Markov Chains according to the prior, but applied the same summary static based filtering to yield approximate posterior samples.
+A variety of approaches in this general regime  \cite{beaumont2002approximate,sisson2007sequential} fall under the heading of Approximate Bayesian Computation (ABC).
+Marjoram et al. \yrcite{marjoram2003markov} simulated Markov Chains according to the prior, but applied the same summary statistic based filtering to yield approximate posterior samples.
 A small tolerance leads to a high rate of rejected simulations, whereas a large tolerance results in an unacceptable approximation error.
 Among several solutions are dynamically decreasing the tolerance \cite{toni2008approximate}, importance reweighting samples based on distance \cite{wegmann2009efficient}, adapting the tolerance based on distance \cite{del2012adaptive,lenormand2013adaptive}, as well as annealing the tolerance as a temperature parameter \cite{albert2015simulated}.
 

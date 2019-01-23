@@ -16,7 +16,7 @@ There are many predicates are easily expressed, such $X$
 Predicates can be used to declare any fact about a domain. For example, inverse rendering  \cite{marschner1998inverse,kulkarni2015deep} aims to infer three dimensional geometry from observed images.
 A prior over geometric configurations conditioned on the fact that rigid bodies do not intersect,  will yield better posterior inferences than otherwise, since implausible configurations are eliminated.
 % Instead, we would ideally simply condition on it being true, concentrating probability mass on physically plausible geometric configurations, ultimately to yield more accurate posterior inferences in the inverse graphics problem.
-Predicates can also express facts that are observations, but that are more abstract than variables	 in a model.
+Predicates can also express facts that are observations and are more abstract than variables in a model.
 In diabetes research, probabilistic models have been used to relate physiological factors to glucose levels over time \citep{levine2017offline,murata2004probabilistic}.
 Rather than concrete, numerical glucose measurements, a medical practitioner may observe (or be told) that a patient suffers from recurrent hypoglycemia, i.e., that their glucose levels periodically fall below a critical value.
 Even if the occurrence of hypoglycemia does not appear as an explicit variable in the model, it could be constructed as a predicate that maps a time series of glucose values to true if and if it repeatedly rises below and above the threshold.
@@ -29,7 +29,7 @@ The likelihood function quantifies the extent to which values of latent variable
 However, most models conditioned on most predicates have likelihood functions that are either intractable to compute or unknown.
 For example, conditioning random variables that are deterministic transformations of other random variables (e.g., the presence of hypoglycemia in the example above, or the mean of a collection of variables) often results in likelihoods that are normalized by intractable integrals or summations.	
 Alternatively, if the model is generative, i.e. specified as a stochastic simulation, the likelihood is not explicitly available even when the condition is a conventional observation.
-Inference methods for an unnormalized likelihood functions are largely inapplicable to problems  when the likelihood is unknown, and vice versa.
+Inference methods for unnormalized likelihood functions are largely inapplicable to problems when the likelihood is unknown, and vice versa.
 In a similar vein, conditioning on predicates introduces challenges unaddressed by either.
 
 In this paper we present \emph{predicate exchange}:
