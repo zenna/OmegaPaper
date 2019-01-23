@@ -43,7 +43,7 @@ Figures \ref{fig:density} demonstrate how to truncate a normal distribution thro
 The inverse graphics task aims to sample from a prior distribution over scenes.  A scene is a set of $n \sim \textrm{poisson}(\lambda = 3)$ spheres.
 A sphere is parameterized by color, reflectance, emission color, transparency, radius and position, all with a uniform prior.
 If $r$ is a render function that maps scenes to image, $i_{obs}$ is an observed image, and $\textrm{nointersect}$ determines if any spheres intersect, the prior is conditioned on the predicate:
-$r(scene) = i_{obs} \land \textrm{nointersect}(scene)$
+$r(scene) = i_{obs} \land \textrm{nointersect}(scene)$.
 
 % \begin{figure}
 % 	\centering
@@ -58,7 +58,7 @@ $r(scene) = i_{obs} \land \textrm{nointersect}(scene)$
 \begin{figure}
 	\centering
 	\includegraphics[width=0.9\linewidth]{mylolly.pdf}
-	\caption{ Samples from inverse graphics.}
+	\caption{ Top row: scene renders, bottom row: heatmap of intersections.  The observed scene (left) has no intersections, but without this constraint (middle row) intersections occur.  Conditioning on $\textrm{nointersect}$ eliminates them.}
 	\label{fig:invrtmcmc}
 \end{figure}
 
@@ -170,7 +170,7 @@ Let $\textbf{x}$ be a $d$ dimensional random vector of standard normal distribut
 l(\textbf{x}) = 1 < |\textbf{x}| < 1 + \epsilon
 \end{equation}
 
-For a fair comparison, we used likelihood based methods
+Table \ref{results} compares the sample expectation of particle Gibbs, sequential Monte Carlo (SMC)	, rejection Sampling (RS), and predicate exchange (PE) methods
 
 
 \begin{figure}
@@ -179,7 +179,7 @@ For a fair comparison, we used likelihood based methods
 	\hline
 	 & $d_1, \epsilon_{10^{-1}}$ & $d_1, \epsilon_{10^{-5}}$ & $d_{100}, \epsilon_{10^{-1}}$ & $d_{100}, \epsilon_{10^{-5}}$ \\ [0.5ex] 
 	\hline\hline
-	SSMH & 0.0054 & 0.4735  & -0.000377 & 0.008547\\ 
+	PE & 0.0054 & 0.4735  & -0.000377 & 0.008547\\ 
 	\hline
 	% HMC & 2.1 & 2.026  & 1.5 & 1.41\\ 
 	% \hline\hline
