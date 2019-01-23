@@ -194,7 +194,7 @@ Let $\cM = (X_1, \dots, X_n)$ be a model, $Y$ be a predicate that conditions $\c
 % for convenience we define a soft predicate $\softv{\lk}$ as a function of its parameters (other random variables in the model) rather than the sample space.
 % That is, let $\softv{Y}(\omega) = \softv{\lk}(X_1(\omega), ..., X_n(\omega))$, where $X_i \in \cM$.
 Assuming a prior density $p$, the approximate posterior $f$ is the product:
-\begin{equation}
+\begin{equation}\label{fpm}
 f(m) = p(m) \cdot \softv{\lk}(m)
 \end{equation}
 $\softv{\lk}$ down weights parameter values which violate $Y$ by the degree to which they violate it. 
