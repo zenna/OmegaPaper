@@ -7,7 +7,7 @@ To condition a model $\cM$ on a predicate $Y$ we develop \emph{predicate exchang
 $\softv{Y}$ is 1 iff $Y$ is 1, but otherwise takes nonzero values denoting the degree to which $Y$ is satisfied.
 % The relaxation is parameterized by a temperature.
 % Predicate relaxation allows us to apply likelihood based MCMC inference procedures.
-\item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo procedure that by simulating several replicas of $\softv{Y}$ in parallel. Replica exchange is able to draw exact samples. 
+\item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo procedure that simulates several replicas of $\softv{Y}$ in parallel. Replica exchange is able to draw exact samples. 
 \end{enumerate}
 
 In this section we formalize the relationship between $\softv{Y}$ and $Y$, the construction of $\softv{Y}$ from $Y$, and sampling from models conditioned on $\soft{Y}$.
@@ -46,7 +46,7 @@ A function $\softv{Y} : \Omega \to [0, 1]$ parameterized by $\alpha \in [0, \inf
 \paragraph{Distance Based Satisfiability}
 There exist several functions that adhere to the relaxation desiderata.
 Provided a distance metric, we can construct one.
-For convenience of notation, given a random variable $\softv{Y}(\omega) = \ell((X_1(\omega), \dots, X_n(\omega)))$, relax $\ell$, the predicate on realizations of the model.
+For convenience of notation, in the context of of a random variable $\softv{Y}(\omega) = \ell((X_1(\omega), \dots, X_n(\omega)))$, we focus on $\ell$ which maps realizations of the model.
 
 % The soft satisfiability of a point is a measure of the distance from that point to the satisfying set:
 % $\soft{\lk}_{\inf}(m)$ represents the degree to which a model realization $m$ satisfies a predicate.
@@ -60,6 +60,11 @@ The distance $\rho(x, A) = \inf \left\{\rho(x, a) \mid a \in A\right\}$ is the s
 % As shown in the Section \ref{implement}, $\soft{\lk}_{\inf}$ can be difficult to compute.
 \end{definition}
 
+The metric $\rho$ is parameterized by the type of input.
+For canonical spaces such as $\mathbb{R}$ and $\mathbb{N}$ we default to the Euclidean distance. 
+We can construct $\rho$ automatically for composite elements $x, y \in \mathbb{T}_1 \times \cdots \times \mathbb{T}_n$ of product types, by taking the mean of distances of components: $\rho(x, y) = (1/n)\sum^n_{i=1}\rho(x_i, y_i)$.
+
+
 \paragraph{Relxation Kernels} A relaxation kernel $k_\alpha$ bounds distances from $\rho$ to the unit interval, and is paramterized by temperature $\alpha$.
 % For example if $x$ and $y$ are real values, then $x \soft{=} y$ is defined as $k_\alpha(\rho(x, y))$ where $\rho$ is a distance function and $k_\alpha$ is a relaxation kernel paramterized by temperature $\alpha$.
 % A relaxation kernel maps distances to values in $[0, 1]$, and ensures that $\softv{Y}$ adheres to the outlined criteria.
@@ -69,9 +74,6 @@ We restrict our attention to the squared exponential kernel:
 k_{\alpha}(r) = \exp\left(-\frac{r^2}{\alpha}\right)
 \end{equation}
 
-The metric $\rho$ is parameterized by the type of input.
-For canonical spaces such as $\mathbb{R}$ and $\mathbb{N}$ we default to the Euclidean distance. 
-We can construct $\rho$ automatically for composite elements $x, y \in \mathbb{T}_1 \times \cdots \times \mathbb{T}_n$ of product types, by taking the mean of distances of components: $\rho(x, y) = (1/n)\sum^n_{i=1}\rho(x_i, y_i)$.
 
 
 
@@ -209,7 +211,7 @@ f_\alpha(\mu, x) = \beta_{0,1}(\mu) \cdot \mathcal{N}_{\mu,1}(x) \cdot k_\alpha(
 \begin{figure}
 \centering
 \includegraphics[width=\linewidth]{approxpost2.png}
-\caption{Approximate Posterior at varying temperatures.  Temperature decreases from left to right.}
+\caption{Posteriors at decreasing temperatures (left to right).}
 \label{temppost}
 \end{figure}
 
@@ -280,7 +282,7 @@ unlike conventional replica exchange which draws samples only from the zero-temp
 Replica exchange has a number of hyper-parameters: the number of parallel chains, the corresponding temperatures, the swapping schedule.
 Several good practices are outlined in \cite{earl2005parallel}.  In practice, we logarithmically space $\alpha$ between a lower and upper bound (e.g., $\log(\alpha_1) = 10^{-5}$ to $\log(\alpha_M) = 10^5$), and swap states of chains that are adjacent in temperature ($\alpha_1$ with $\alpha_2$, $\alpha_2$ with $\alpha_3$, etc) periodically.
 
-\paragraph{Unsatisfiability}Predicate exchange is unable to determine if a predicate is unsatisfiable (e.g.  $(x > 1) \land (x < -1)$), and defers to the user to ensure this is not the case.
+% \paragraph{Unsatisfiability}Predicate exchange is unable to determine if a predicate is unsatisfiable (e.g.  $(x > 1) \land (x < -1)$), and defers to the user to ensure this is not the case.
 
 
 
