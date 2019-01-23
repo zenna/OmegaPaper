@@ -2,7 +2,7 @@
 \section{Experiments}\label{experiments}
 
 \paragraph{Small Models}
-Figures \ref{fig:density} demonstrate how to truncate a normal distribution through conditioning, while Figure  \ref{gridn} shows samples from a uniform prior  $[-1, 1]^2$ conditioned on a variety of predicates.  While simple, these examples can challenge.
+In Figures \ref{fig:density} we use conditioning to truncate a normal distribution. Figure  \ref{gridn} shows histograms of samples from a uniform prior  $[-1, 1]^2$ conditioned on a variety of predicates.  While simple, these examples can be challenging due to discontinuities in the approximate posterior.
 
 
 \begin{figure}[!htb]
@@ -33,16 +33,16 @@ Figures \ref{fig:density} demonstrate how to truncate a normal distribution thro
 % %	\fbox{\includegraphics[width=.16\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{100-0}}
 % %	\fbox{\includegraphics[width=.16\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{1000-0}}				
 % 	\end{minipage}
-	\caption{Left: Density from samples of Gaussian truncated to $[0, 1]$ through conditioning. Right: Conditioning on $X = Y$ where $X$ and $Y$ are independent normal distributions; shown at different temperatures.}
+	\caption{Kernel density estimation from samples of Gaussian truncated to $[0, 1]$ through conditioning. Shown at different temperatures.}
 	\label{fig:density}
 \end{figure}
 
 
 
 \paragraph{Inverse Ray Tracing}
-The inverse graphics task aims to sample from a prior distribution over scenes.  A scene is a set of $n \sim \textrm{poisson}(\lambda = 3)$ spheres.
+In this example we sample from a posterior distribution over scenes conditioned an observed rendering.  A scene is a set of $n \sim \textrm{poisson}(\lambda = 3)$ spheres.
 A sphere is parameterized by color, reflectance, emission color, transparency, radius and position, all with a uniform prior.
-If $r$ is a render function that maps scenes to image, $i_{obs}$ is an observed image, and $\textrm{nointersect}$ determines if any spheres intersect, the prior is conditioned on the predicate:
+If $r$ is a render function that maps scenes to image, $i_{obs}$ is an observed image, and $\textrm{nointersect}$ determines if any spheres intersect, the prior is conditioned on the conjunction:
 $r(scene) = i_{obs} \land \textrm{nointersect}(scene)$.
 
 % \begin{figure}
@@ -164,15 +164,15 @@ with only a short observed time-series.
 
 
 \paragraph{Benchmarks}
-To quantitatively compare predicate exchange against approaches existing approaches we constructed an artificial problem that scales to high dimension.
+To quantitatively compare predicate exchange with existing approaches we constructed an artificial problem that scales in difficulty.
 Let $\cM = (X_1, \dots, X_d)$ where $X_i \sim \mathcal{N}(0,1)$ conditioned on an $\epsilon$ thick ring:
 \begin{equation}
 l(\textbf{x}) = 1 < |\textbf{x}| < 1 + \epsilon
 \end{equation}
 
 Table \ref{results} compares the sample average of particle Gibbs, sequential Monte Carlo (SMC), rejection Sampling (RS), and predicate exchange (PE).
-Since these methosds are generally not exact, given model parameters $m$, we (i) compute $d = \rho(m< A)$ where $A$ is the conditioning set using the methods developed for predicate exchange, then condition a normal distribution centered on $d$ on 0.
-Predicate exchcange  compares favourably in most scenarios
+Since these methosds are generally not exact, given model parameters $m$, we (i) compute $d = \rho(m< A)$ where $A$ is the conditioning set using the methods developed for predicate exchange, then condition a normal distribution centered on $d$ on 0 and $\sigma^2 = 1/(2\alpha)$.
+Predicate exchcange  compares favourably in most scenarios.
 
 
 \begin{figure}

@@ -227,10 +227,11 @@ The expectation of a soft predicate quantifies the degree to which it is true (s
 The prior expectation of $p_x$ can be significantly larger than that of $p_y$.
 because values far from the 0 are more likely under $y$ than $x$.
 
-This disparity persists if the conditioned model.
-If $\cM$ is conditioned on $p1 \soft{\land} p2$.
-This disparity  decreases with decreasing temperature, and disappears at zero.
-This disparity is undesirable because it means that the approximation error is distributed unevenly over constraints we wish to be true in a manner which arbitrarily depends on the scale of variables.
+This disparity persists if model is conditioned.
+Figure \ref{scaling} shows samples from $\cM$  conditioned on $p1 \soft{\lor} p2$, and a disparity in the histograms of $p1$ and $p2$.
+The disparity decreases with decreasing temperature, and disappears at zero.
+Still, it is undesirable in practice because it means that the approximation error is distributed unevenly.
+
 % For example consider two pairs of variables, where
 % the first pair is ten times larger than the second.
 % Conditioning on a greater than constraint on both
@@ -238,14 +239,10 @@ This disparity is undesirable because it means that the approximation error is d
 % a softening of both constraints would have 
 % a much larger change in the energy function over
 % a standard deviation change in pairs of variables.
-To mitigate this issue, we attempt to enforce equality
-in magnitude between all basic predicates at each temperature.
-% rr: zenna can you add the basic predicates
-To accomplish this, consider the case of two 
-softened predicates $k_1$ and $k_2$. For the
-energy function, we introduce a weight
-for all but the first constraint.
-In this case $k_2$ in the energy function gets replaces
+To mitigate this issue, we minimize discrepancies between sample averages of constraints
+Consider the case of two 
+soft predicates $k_1$ and $k_2$. We introduce a weight for all but the first constraint.
+In this case $k_2$ in the soft predicate is replaced
 by $\gamma_2 k_2$. The weight $\gamma_2$ should
 ensure that $\gamma_2 k_2$ has the same
 magnitude effect as $k_1$ on the energy
@@ -268,10 +265,10 @@ Figure \ref{scaling} visualizes the problem of unbalanced constraints, as well a
 
   
 \subsection{Replica Exchange}\label{replicaexchange}
-Replica exchange \citep{swendsen1986replica} simulates $M$ replicas at different temperatures, and uses a Metropolis-Hastings update to  periodically swap the temperatures of chains.
-If $f_{\alpha_i}$ is an approximate posterior function at temperature $\alpha_i$, two independent parallel chains simulating targets $f_{\alpha_1}(x)$, $f_{\alpha_2}(y)$ they follow a joint target $f_{\alpha_1, \alpha_2}(x,y) = f_{\alpha_1}(x)f_{\alpha_2}(y)$.
+Replica exchange \citep{swendsen1986replica} simulates $M$ replicas of a model at different temperatures, and uses a Metropolis-Hastings update to  periodically swap the temperatures of chains.
+Let $f_{\alpha_i}$ denote the approximate posterior function at temperature $\alpha_i$, then two independent parallel chains simulating targets $f_{\alpha_1}(x)$, $f_{\alpha_2}(y)$  follow a joint target $f_{\alpha_1, \alpha_2}(x,y) = f_{\alpha_1}(x)f_{\alpha_2}(y)$.
 Replica exchange swaps states between the chains while preserving the joint target.
-Swapping states is equivalent to swapping predicates, which motivates the name predicate exchange.
+Swapping states is equivalent to swapping predicates, which motivates the name ``predicate exchange''.
 Concretely, replica exchange proposes a swap from $(x, y)$ to $(y, x)$, and accepts it with probability $\min(1, A)$, where:
 \begin{equation}
 A =  \frac{f_{\alpha_1, \alpha_2}(y,x)}{f_{\alpha_1, \alpha_2}(x,y)} = \frac{f_{\alpha_1}(y)f_{\alpha_2}(x)}{f_{\alpha_1}(x)f_{\alpha_2}(y)}
