@@ -164,13 +164,15 @@ with only a short observed time-series.
 
 
 \paragraph{Benchmarks}
-To compare predicate exchange against approaches we constructed a problem that scales to high dimension.
-Let $\textbf{x}$ be a $d$ dimensional random vector of standard normal distributions constrained to a $\epsilon$ thick ring:
+To quantitatively compare predicate exchange against approaches existing approaches we constructed an artificial problem that scales to high dimension.
+Let $\cM = (X_1, \dots, X_d)$ where $X_i \sim \mathcal{N}(0,1)$ conditioned on an $\epsilon$ thick ring:
 \begin{equation}
 l(\textbf{x}) = 1 < |\textbf{x}| < 1 + \epsilon
 \end{equation}
 
-Table \ref{results} compares the sample expectation of particle Gibbs, sequential Monte Carlo (SMC)	, rejection Sampling (RS), and predicate exchange (PE) methods
+Table \ref{results} compares the sample average of particle Gibbs, sequential Monte Carlo (SMC), rejection Sampling (RS), and predicate exchange (PE).
+Since these methosds are generally not exact, given model parameters $m$, we (i) compute $d = \rho(m< A)$ where $A$ is the conditioning set using the methods developed for predicate exchange, then condition a normal distribution centered on $d$ on 0.
+Predicate exchcange  compares favourably in most scenarios
 
 
 \begin{figure}
@@ -197,4 +199,3 @@ Table \ref{results} compares the sample expectation of particle Gibbs, sequentia
 
 
   
-Table \ref{results} compares the expectations of inference strategies for varying $d$ and $\epsilon$.

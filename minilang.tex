@@ -129,15 +129,15 @@ $\textrm{softexecute}$ simulates $\pi$ but within a context where (i) variables 
 
 $\textrm{softexecute}$ returns a real value for the approximate posterior of $f$ as a function of the dictionary $\mathbb{D}$.
 
-\paragraph{Control Flow}
-Programs may have control flow constructs, such as if-then-else statements.
-If a branch condition is a function of an uncertain value, then there may explore unexplored alternative paths which would, if explored, produce values that are closer to the constraint set.
-$\textrm{softexecute}$ is ignorant of these other possibilities
-For illustration, consider Example Program \ref{prog:ex2}.
-If $x = -1$ the condition fails, and the predicate relaxation will yield $x \soft{=} -100$, which is significantly larger than if the true branch were taken.
-These may cause $\textrm{softexecute}$ to return a value that is significantly less than $\soft{\lk}_{\inf}$.
+% \paragraph{Control Flow}
+% Programs may have control flow constructs, such as if-then-else statements.
+% If a branch condition is a function of an uncertain value, then there may explore unexplored alternative paths which would, if explored, produce values that are closer to the constraint set.
+% $\textrm{softexecute}$ is ignorant of these other possibilities
+% For illustration, consider Example Program \ref{prog:ex2}.
+% If $x = -1$ the condition fails, and the predicate relaxation will yield $x \soft{=} -100$, which is significantly larger than if the true branch were taken.
+% These may cause $\textrm{softexecute}$ to return a value that is significantly less than $\soft{\lk}_{\inf}$.
 
-These may cause $\textrm{softexecute}$ to return a value that is significantly less than $\soft{\lk}_{\inf}$.
+% These may cause $\textrm{softexecute}$ to return a value that is significantly less than $\soft{\lk}_{\inf}$.
 
 
 \begin{exprogram}[tb]
