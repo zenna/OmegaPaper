@@ -19,8 +19,9 @@ function circ(n, offset = 0.5, delta = 0.1)
   function oncirc(om)
     x_ = normal(om, zeros(n), ones(n))
     # x_ = x(om)
-    y = x_.^2
-    s = sum(y)
+    # y = x_.^2
+    # s = sum(y)
+    s = prod(x_)
     p1 = (s >ₛ offset) & (s <ₛ offset + delta)
     # p2 = (s <ₛ -offset) & (s >ₛ -offset - delta)
     cond(om, p1)

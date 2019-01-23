@@ -4,16 +4,12 @@
 
 Conditioning in Bayesian inference incorporates observed data into a model.
 In a broader sense, conditioning revises a model such that a predicate is resolved to a true proposition (a fact).
-To illustrate, consider estimating a parameter $\Theta$ given an observation $x$.  Bayes rule dictates:
-$$
-p(\theta \mid X = x) \propto p(x \mid \theta) \cdot p(\theta)
-$$
-$X = x$ is a predicate, a Boolean valued function, which takes value 0 or 1 depending on uncertaitny on the model.
+That is, in the Bayesian posterior $P(X = x \mid Y = y)$, the expression $Y = y$ denotes an observation of $Y$, but viewed more generally is a predicate: a function which takes 0 or 1 depending on uncertainty in the model.
 Conditioning on a predicate forces it to be true.
-There are many predicates are easily expressed, such $X$
+Moreover, one can express predicates of a different form, such as $X = Y$, $X^2 > 0$, or $|X + Y| = 0$.
  % Conditioning on an observation, for instance, resolves the question of whether a variable is equal to a particular value, from a predicate of uncertain truth, to a fact.
 
-Predicates can be used to declare any fact about a domain. For example, inverse rendering  \cite{marschner1998inverse,kulkarni2015deep} aims to infer three dimensional geometry from observed images.
+Predicates can be used to declare facts about a domain. For example, inverse rendering  \cite{marschner1998inverse,kulkarni2015deep} aims to infer three dimensional geometry from observed images.
 A prior over geometric configurations conditioned on the fact that rigid bodies do not intersect,  will yield better posterior inferences than otherwise, since implausible configurations are eliminated.
 % Instead, we would ideally simply condition on it being true, concentrating probability mass on physically plausible geometric configurations, ultimately to yield more accurate posterior inferences in the inverse graphics problem.
 Predicates can also express facts that are observations and are more abstract than variables in a model.
