@@ -2,7 +2,7 @@ We address the problem of conditioning probabilistic models on predicates, as a 
 Models conditioned on predicates rarely have a tractable likelihood; sampling from them requires likelihood-free inference.
 Existing likelihood-free inference methods
 focus on predicates which express observations.
-To address a broader class of predicates, we develop an inference procedure called predicate exchange, which constructs \emph{soft} predicates that return values in a continuous Boolean algebra: the unit interval with continuous logical connectives.
+To address a broader class of predicates, we develop an inference procedure called predicate exchange, turns predicates into \emph{soft} predicates that return values in a continuous Boolean algebra: the unit interval with continuous logical connectives.
 A soft predicate can serve as a proxy likelihood function in inference,
 but introduces an approximation error which depends on a temperature setting.
 Zero-temperature predicates yield no error, but are often intractable to condition on.

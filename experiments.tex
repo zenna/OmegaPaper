@@ -2,30 +2,33 @@
 \section{Experiments}\label{experiments}
 
 \paragraph{Benchmarks}
-To compare predicate exchange against similar likleihood free approaches we constructed a simple problem:
-Let $x$ be a vector of standard normal distributions
-
-
+To compare predicate exchange against similar likelihood-free approaches we constructed a problem that scales to high dimension.
+Let $\textbf{x}$ be a $d$ dimensional random vector of standard normal distributions constrained to a $\epsilon$ thick ring:
+\begin{equation}
+l(\textbf{x}) = 1 < |\textbf{x}| < 1 + \epsilon
+\end{equation}
 
 
 
 \begin{center}
 	\begin{tabular}{||c| c c c c||} 
 	\hline
-	 & d = 1 & d = 10 & d = 100 & d = 1000 \\ [0.5ex] 
+	 & $d_1, \epsilon_{10^{-1}}$ & $d_1, \epsilon_{10^{-5}}$ & $d_{100}, \epsilon_{10^{-1}}$ & $d_{100}, \epsilon_{10^{-5}}$ \\ [0.5ex] 
 	\hline\hline
-	SSMH & 6 & 87837 & 787 & 100\\ 
+	SSMH & 0.0054 & 0.4735  & -0.000377 & 0.008547\\ 
 	\hline
 	RE & 7 & 78 & 5415 & 100\\
 	\hline
 	RS & 0.3, & timeout & timeout & timeout \\
 	\hline
-	SMC & 545 & 18744 & 7560 & 100 \\
+	PE & 0.239 & -0.505 & -0.0726  & -0.0252 \\
 	\hline
  \end{tabular}
+ \label{results}
+ \caption{SMC}
  \end{center}
- 
- 
+  
+Table \ref{results} compares the expectations of inference strategies for varying $d$ and $\epsilon$.
 
 \paragraph{Small Models}
 In Figure \ref{fig:density} we demonstrate two examples of conditioning on predicates which are non trivial.
