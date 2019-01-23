@@ -15,7 +15,7 @@ A prior over geometric configurations conditioned on the fact that rigid bodies 
 Predicates can also express facts that are observations and are more abstract than variables in a model.
 In diabetes research, probabilistic models have been used to relate physiological factors to glucose levels over time \citep{levine2017offline,murata2004probabilistic}.
 Rather than concrete, numerical glucose measurements, a medical practitioner may observe (or be told) that a patient suffers from recurrent hypoglycemia, i.e., that their glucose levels periodically fall below a critical value.
-Even if the occurrence of hypoglycemia does not appear as an explicit variable in the model, it could be constructed as a predicate that maps a time series of glucose values to true if it repeatedly rises below and above the threshold.
+Even if the occurrence of hypoglycemia does not appear as an explicit variable in the model, it could be constructed as a predicate that maps a time series of glucose values to true if  it repeatedly rises below and above the threshold.
 In principle, these facts can be incorporated into the model directly through conditioning.	
 In practice, sampling from models conditioned on most predicates presents severe challenges to existing inference procedures.
 
