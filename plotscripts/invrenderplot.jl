@@ -1,5 +1,5 @@
 include("common.jl")
-
+# import ImageView
 using InvRayTrace: img, img_obs, nointersect, scene, orthographic!
 import InvRayTrace
 include(joinpath(dirname(pathof(InvRayTrace)), "viz.jl")) # Include Viz
@@ -36,8 +36,27 @@ const noipred = logerr(lift(nointersect)(scene))
 const ωspath = "/home/zenna/sketch3/repos/XH3lgZKo/omegas.jld2"
 const iωs = load(ωspath)["data"].vals
 
-const noiωspath = "/home/zenna/sketch3/repos/data/7vwt0cn1/omegas.jld2"
+const noiωspath = "/home/zenna/sketch3/repos/data/new/jVaMjwC7/omegas.jld2"
 const noiωs = load(noiωspath)["data"].vals
+
+lastscene_obs = scene(iωs[end])
+lastscene_noi = scene(noiωs[end])
+
+lastimg_obs = img(iωs[end])
+lastimg_noi = img(noiωs[end])
+
+shapeup(img) = RayTrace.rgbimg(permutedims(min.(1.0, img), (2,1,3)))
+
+ImageView.view(shapeup(lastimg_noi.img))
+
+using ColorScheemes
+function renderi(x, cmap = ColorSchemes.amp)
+  i = RayTrace.render(x, width = 224, height = 224,
+                      trc = RayTrace.intersectiontrc,
+                      image = zeros(224, 224, 1))
+  plot(get(cmap, i[:,:]./maximum(i)))
+end
+
 
 # Data
 noi_obs = noipred.(ωs)

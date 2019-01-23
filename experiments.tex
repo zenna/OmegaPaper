@@ -1,50 +1,15 @@
 
 \section{Experiments}\label{experiments}
 
-\paragraph{Benchmarks}
-To compare predicate exchange against approaches we constructed a problem that scales to high dimension.
-Let $\textbf{x}$ be a $d$ dimensional random vector of standard normal distributions constrained to a $\epsilon$ thick ring:
-\begin{equation}
-l(\textbf{x}) = 1 < |\textbf{x}| < 1 + \epsilon
-\end{equation}
-
-For a fair comparison, we used likelihood based methods
-
-
-\begin{figure}
-\begin{center}
-	\begin{tabular}{||c| c c c c||} 
-	\hline
-	 & $d_1, \epsilon_{10^{-1}}$ & $d_1, \epsilon_{10^{-5}}$ & $d_{100}, \epsilon_{10^{-1}}$ & $d_{100}, \epsilon_{10^{-5}}$ \\ [0.5ex] 
-	\hline\hline
-	SSMH & 0.0054 & 0.4735  & -0.000377 & 0.008547\\ 
-	\hline
-	% HMC & 2.1 & 2.026  & 1.5 & 1.41\\ 
-	% \hline\hline
-	SMC & 0.06 & -0.226  & -0.018 & 0.09\\ 
-	\hline
-	PG & -0.029 & 0.239 & -0.03 & 0.03\\
-	\hline
-	RS & 0.003 & timeout & timeout & timeout \\
-	\hline
- \end{tabular}
- \label{results}
- \caption{SMC}
- \end{center}
-\end{figure}
-
-
-  
-Table \ref{results} compares the expectations of inference strategies for varying $d$ and $\epsilon$.
-
 \paragraph{Small Models}
-In Figure \ref{fig:density} we demonstrate two examples of conditioning on predicates which are non trivial.
-First we show that the conditioning can be used to truncate a Gaussian distribution, and the approximation behavior at varying temperatures.  Second we show that two independent random variables can be made equal.  While simple, both are a challenge for probabilistic programming systems because they prevent automatic calculation of the likelihood.
+In Figures \ref{fig:density} and \ref{gridn} we demonstrate examples of conditioning on predicates which are non trivial.
+First we show that the conditioning can be used to truncate a Gaussian distribution, and the approximation behavior at varying temperatures.  Second we show samples from uniform models on $[-1, 1]^2$ conditioned on various predicates.  While simple, both are a challenge for probabilistic programming systems because they prevent automatic calculation of the likelihood.
 
 \begin{figure}[!htb]
 	\centering
 	\includegraphics[width=0.9\linewidth]{gridn5}
-	\caption{Predicate Exchange}
+	\caption{Samples from models (left column) from different procedures: (SSMH) Single Site Metropolis Hastings, (HMC) Hamiltonion Monte Carlo, (PE) Predicate-Exchange.}
+	\label{gridn}
 \end{figure}	
 
 \begin{figure}[!htb]
@@ -75,25 +40,22 @@ First we show that the conditioning can be used to truncate a Gaussian distribut
 
 
 \paragraph{Inverse Ray Tracing}
-The objective is to infer the posterior distribution over geometry conditioned on a rendering of that geometry being equal to an observed image.
-Let $S$ be a space of scenes.
-A rendering function is a map $r: S \to I$, where $I$ the space of images.
-A scene is a collection of spheres, where each sphere.
+The inverse graphics task aims to inverse a prior distribution over scenes composed of colored spheres, conditioned on observing a raytracing of the scene.
+A sphere is parameterized by color, reflectance, emission, transparency, radius and position, all with a uniform prior.  A scene is simply a collection of spheres, where a poisson distribution determined the number.
 
-
-Describe Prior
-
-$$
-\ell(s) = r(s) = i_o \land \textrm{nointersect}(s)
-$$
-
+% \begin{figure}
+% 	\centering
+% 	\includegraphics[width=0.9\linewidth]{invg2.pdf}
+% 	\includegraphics[width=0.9\linewidth]{invgb.pdf}
+% 	% \includegraphics[width=0.9\linewidth]{lvstime.pdf}
+% 	% \includegraphics[width=0.9\linewidth]{Hausdorf.pdf}
+% 	\caption{ Samples from inverse graphics.}
+% 	\label{fig:invrtmcmc}
+% \end{figure}
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.9\linewidth]{invg2.pdf}
-	\includegraphics[width=0.9\linewidth]{invgb.pdf}
-	% \includegraphics[width=0.9\linewidth]{lvstime.pdf}
-	% \includegraphics[width=0.9\linewidth]{Hausdorf.pdf}
+	\includegraphics[width=0.9\linewidth]{mylolly.pdf}
 	\caption{ Samples from inverse graphics.}
 	\label{fig:invrtmcmc}
 \end{figure}
@@ -197,3 +159,40 @@ with only a short observed time-series.
 % % $$
 % \item Make explicit how the measure theortic formulation connects to the sampling process
 % \end{itemize}
+
+
+\paragraph{Benchmarks}
+To compare predicate exchange against approaches we constructed a problem that scales to high dimension.
+Let $\textbf{x}$ be a $d$ dimensional random vector of standard normal distributions constrained to a $\epsilon$ thick ring:
+\begin{equation}
+l(\textbf{x}) = 1 < |\textbf{x}| < 1 + \epsilon
+\end{equation}
+
+For a fair comparison, we used likelihood based methods
+
+
+\begin{figure}
+\begin{center}
+	\begin{tabular}{||c| c c c c||} 
+	\hline
+	 & $d_1, \epsilon_{10^{-1}}$ & $d_1, \epsilon_{10^{-5}}$ & $d_{100}, \epsilon_{10^{-1}}$ & $d_{100}, \epsilon_{10^{-5}}$ \\ [0.5ex] 
+	\hline\hline
+	SSMH & 0.0054 & 0.4735  & -0.000377 & 0.008547\\ 
+	\hline
+	% HMC & 2.1 & 2.026  & 1.5 & 1.41\\ 
+	% \hline\hline
+	SMC & 0.06 & -0.226  & -0.018 & 0.09\\ 
+	\hline
+	PG & -0.029 & 0.239 & -0.03 & 0.03\\
+	\hline
+	RS & 0.003 & timeout & timeout & timeout \\
+	\hline
+ \end{tabular}
+ \label{results}
+ \caption{SMC}
+ \end{center}
+\end{figure}
+
+
+  
+Table \ref{results} compares the expectations of inference strategies for varying $d$ and $\epsilon$.
