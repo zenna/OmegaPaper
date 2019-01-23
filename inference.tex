@@ -221,11 +221,11 @@ Too high and $\softv{Y}$ will diverge too greatly from $Y$. Too low and converge
 \paragraph{Balancing Different Constraints}
 At a fixed, nonzero temperature, the scales of variables affects their influence on
 the conditional distribution.
-For instance, consider two uniformly distributed random variables $X \sim \unif(-1, 1)$ and $y \sim \unif(-10, 10)$,
+For instance, consider two uniformly distributed random variables $x \sim \unif(-1, 1)$ and $y \sim \unif(-10, 10)$,
 and predicates $p_x = x \soft{=} 0$ and $p_y = y \soft{=} 0$.
 The expectation of a soft predicate quantifies the degree to which it is true (see Section \ref{simmodels}).
-The prior expectation of $p_x$ can be significantly larger than that of $p_y$.
-because values far from the 0 are more likely under $y$ than $x$.
+The prior expectation of $p_x$ is significantly larger than that of $p_y$.
+because values far from the 0 are more likely under $y$.
 
 This disparity persists if model is conditioned.
 Figure \ref{scaling} shows samples from $\cM$  conditioned on $p1 \soft{\lor} p2$, and a disparity in the histograms of $p1$ and $p2$.
