@@ -3,19 +3,13 @@
 \section{Introduction}
 
 Conditioning in Bayesian inference incorporates observed data into a model.
-In a broader sense, conditioning revises a model such that a predicate is resolved to a true proposition (a fact).
-% A classical problem in Bayesian inference is conditioning to incorporate observed data into a model. 
-The problem of conditioning on the observed value of a variable has been well studied.
-This is the problem of calculating the Bayesian posterior $P(X = x \mid Y = y)$ after having observed a value $y$ for variable $Y$.
-Conditioning on more general predicates beyond simple equality of variables to values has received significantly less attention, partly because it makes the inference problem significantly more challenging, and partly because conditioning on equality has proven to be sufficiently useful for many applications. In this paper, we provide a new method for conditioning on general predicates and demonstrate the value of this through a series of case studies.
+In a broader sense, conditioning revises a model such that a predicate is resolved to a true proposition---a fact.
+Conventionally, this predicate is the equality of observable variables to data.
+Predicates other than equality to data has received significantly less attention, partly because it makes the inference problem significantly more challenging, and partly because conditioning on equality has proven to be sufficiently useful for many applications.
+Nevertheless, there are several kinds of knowledge that are inexpressible otherwise.
 
-
-
-% That is, in the Bayesian posterior $P(X = x \mid Y = y)$, the expression $Y = y$ denotes an observation of $Y$, but viewed more generally is a predicate: a function which takes 0 or 1 depending on uncertainty in the model.
-% Conditioning on a predicate forces it to be true.
-% Moreover, one can express predicates of a different form, such as $X = Y$, $X^2 > 0$, or $|X + Y| = 0$.
- % Conditioning on an observation, for instance, resolves the question of whether a variable is equal to a particular value, from a predicate of uncertain truth, to a fact.
-
+Predicates can express declarative facts.
+% There are  first kind of predicate that are currently inexpressible are declarative constraints on a generative model.
 Conditioning on a broader class of predicates can be used to refine a weak prior into one which more closely resembles reality.
 For example, inverse rendering  \cite{marschner1998inverse,kulkarni2015deep} aims to infer three dimensional geometry from observed images.
 A prior over geometric configurations conditioned on the fact that rigid bodies do not intersect,  will yield better posterior inferences than otherwise, since implausible configurations are eliminated.
@@ -80,7 +74,7 @@ In summary, we:
 % In detail, we:
 
 \begin{enumerate}
-	\item Formalize soft conditioning of simulation based  models in measure theoretic probability as a transformation of a probability measure (Section \ref{simmodels}).
+	% \item Formalize soft conditioning of simulation based  models in measure theoretic probability as a transformation of a probability measure (Section \ref{simmodels}).
 	\item Motivate predicate relaxation (Section \ref{predexchange}), and provide a complete continuous Boolean algebra.
 	\item Implement predicate exchange as nonstandard execution of a simulation based model (Section \ref{implement}).
 	\item Evaluate our approach on examples, including a case study in glycemic forecasting (Section \ref{experiments}).
