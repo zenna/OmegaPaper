@@ -277,7 +277,7 @@ We modify standard replica exchange in two ways: (i) for exact inference, states
 unlike conventional replica exchange which draws samples only from the zero-temperature chain, we accept states from any chain so long as $f_{\alpha_i}(x) = 1$.
 
 Replica exchange has a number of hyper-parameters: the number of parallel chains, the corresponding temperatures, the swapping schedule.
-Several good practices are outlined in \cite{earl2005parallel}.  In practice, we logarithmically space $\alpha$ between a lower and upper bound (e.g., $\log(\alpha_1) = 10^{-5}$ to $\log(\alpha_M) = 10^5$), and swap states of chains that are adjacent in temperature ($\alpha_1$ with $\alpha_2$, $\alpha_2$ with $\alpha_3$, etc) periodically.
+Several good practices are outlined in \cite{earl2005parallel}.  In practice, we logarithmically space $\alpha$ between a lower and upper bound (e.g., $\log_{10}(\alpha_1) = 5$ to $\log_{10}(\alpha_M) = -5$), and swap states of chains that are adjacent in temperature ($\alpha_1$ with $\alpha_2$, $\alpha_2$ with $\alpha_3$, etc) periodically.
 
 % \paragraph{Unsatisfiability}Predicate exchange is unable to determine if a predicate is unsatisfiable (e.g.  $(x > 1) \land (x < -1)$), and defers to the user to ensure this is not the case.
 
