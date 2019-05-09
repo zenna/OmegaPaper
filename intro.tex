@@ -21,11 +21,11 @@ In diabetes research for example, probabilistic models have been used to relate 
 Instead of numerical glucose measurements, a medical practitioner may observe (or be told) that a patient suffers from hypoglycemia, i.e., that their glucose levels fall below a critical value.
 Even if the occurrence of hypoglycemia does not appear as an explicit variable in the model, we can construct it as a predicate that maps a time series of glucose values to true if and only if it falls below the threshold.
 
-Sampling from models conditioned on predicates presents severe challenges to existing inference procedures, primarly due to the lack of a tractable likelihood function.
-The likelihood function quantifies the extent to which values of latent variables are consistent with observations. 
-For example, conditioning random variables that are deterministic transformations of other random variables (e.g., the occurrence of hypoglycemia in the example above, or the mean of a collection of variables) often results in likelihoods that are normalized by intractable integrals or summations.	
+Sampling from models conditioned on most predicates is challenging due to the lack of a tractable likelihood function.
+The likelihood function quantifies the extent to which values of latent variables are consistent with observations, and is deemed intractable if it is normalized by intractable integrals or summations.
+This can occur, for example, if we condition random variables that are deterministic transformations of other random variables (e.g., the occurrence of hypoglycemia in the example above, or the mean of a collection of variables).	
 Alternatively, if the model is generative, i.e. specified as a stochastic simulation, the likelihood is not explicitly available even when the condition is a conventional observation.
-Consequently, the numerous effective likelihood based sampling \citep{andrieu2003introduction} and variational  \citep{jordan1999introduction, ranganath2014black} approaches to inference are often inapplicable.
+The numerous effective likelihood-based sampling \citep{andrieu2003introduction} and variational  \citep{jordan1999introduction, ranganath2014black} methods are often inapplicable as a result.
 
 Even likelihood free inference procedures \cite{} are by themselves unable to accomodate most predicates.
 \todo{WHY?}

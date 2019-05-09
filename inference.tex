@@ -156,8 +156,8 @@ When we condition on a model, however, \rework{stil lconcerned is not informativ
 x \dsoft{=} y &= (\text{if } x = y  \text{ then } \exp(-1/\alpha) \text{ else } 1, k_\alpha(\rho(x, y)))\\
 x \dsoft{>} y &= (k_\alpha(\rho(x, [-\infty, y])), k_\alpha(\rho(x, [y, \infty])))\\
 x \dsoft{<} y &= (k_\alpha(\rho(y, [x, \infty])), k_\alpha(\rho(y, [-\infty, x])))\\
-(a_0, a_1) \dsoft{\land} (b_0, b_1) &= (\min(a_0, b_0), \min(a_1, b_1))\\
-(a_0, a_1) \dsoft{\lor} (b_0, b_1) &= (\max(a_0, b_0), \max(a_1, b_1))\\
+(a_0, a_1) \dsoft{\land} (b_0, b_1) &= (\max(a_0, b_0), \min(a_1, b_1))\\
+(a_0, a_1) \dsoft{\lor} (b_0, b_1) &= (\min(a_0, b_0), \max(a_1, b_1))\\
 \softv{\neg}(a_0, a_1) &= (a_1, a_0)
 \end{align*}
 \caption{Two-sided soft primitive predicates}
