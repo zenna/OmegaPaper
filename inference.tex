@@ -65,7 +65,7 @@ For canonical spaces such as $\mathbb{R}$ and $\mathbb{N}$ we default to the Euc
 We can construct $\rho$ automatically for composite elements $x, y \in \mathbb{T}_1 \times \cdots \times \mathbb{T}_n$ of product types, by taking the mean of distances of components: $\rho(x, y) = (1/n)\sum^n_{i=1}\rho(x_i, y_i)$.
 
 
-\paragraph{Relaxation Kernels} A relaxation kernel $k_\alpha$ bounds distances from $\rho$ to the unit interval, and is paramterized by temperature $\alpha$.
+\paragraph{Relaxation Kernels} A relaxation kernel $k_\alpha$ bounds distances from $\rho$ to the unit interval, and is parameterized by temperature $\alpha$.
 % For example if $x$ and $y$ are real values, then $x \soft{=} y$ is defined as $k_\alpha(\rho(x, y))$ where $\rho$ is a distance function and $k_\alpha$ is a relaxation kernel paramterized by temperature $\alpha$.
 % A relaxation kernel maps distances to values in $[0, 1]$, and ensures that $\softv{Y}$ adheres to the outlined criteria.
 Relaxation kernels are responsible for ensuring consistency with the relaxation criteria.
@@ -123,7 +123,7 @@ Figure \ref{negationimg} illustrates this issue.
 
 \begin{figure}
 \includegraphics[width=\linewidth]{negation.eps}
-\caption{Negation: soft (blue) and hard (red, dashed) predicates as a function of $x$.  Left: $x \soft{>} y$ approximates $x > y$. Middle:  Standard approach to continuous negation $(1-a)$ violates relaxation criteraa. Right: Desired outcome of soft negation of $x \soft{>} y$.}\label{negationimg}
+\caption{Negation: soft (blue) and hard (red, dashed) predicates as a function of $x$.  Left: $x \soft{>} y$ approximates $x > y$. Middle:  Standard approach to continuous negation $(1-a)$ violates relaxation criteria. Right: Desired outcome of soft negation of $x \soft{>} y$.}\label{negationimg}
 \end{figure}
 
 
@@ -172,7 +172,7 @@ x \dsoft{<} y &= (k_\alpha(\rho(y, [x, \infty])), k_\alpha(\rho(y, [-\infty, x])
 %   % \hline  
 % \end{tabular}
 % \end{center}
-\begin{proposition}Relxation criteria are preserved under composition.
+\begin{proposition}Relaxation criteria are preserved under composition.
 Let $a$ and $b$ be predicates, and $\circ$ denote a binary logical operator.  If $\softv{a}, \softv{b}$ and $\soft{\circ}$ are respective valid relaxations.  Then $\softv{a} \soft{\circ} \softv{b}$ is a relaxation of $a \circ b$.
 \end{proposition}
 % \emph{proof} Prove it.

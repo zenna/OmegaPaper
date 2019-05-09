@@ -58,7 +58,7 @@ $r(scene) = i_{obs} \land \textrm{nointersect}(scene)$.
 \begin{figure}
 	\centering
 	\includegraphics[width=0.9\linewidth]{jampy.pdf}
-	\caption{ Top row: scene renders, bottom row: heatmap of intersections.  The observed scene (left) has no intersections, but without this constraint (middle row) intersections occur.  Conditioning on $\textrm{nointersect}$ eliminates them.}
+	\caption{ Top row: raytraces of scenes, Bottom row: heatmap of intersections.  The observed scene (left) has no intersections, without the $\textrm{nointersect}$ condition, intersections occur  (right row).  Conditioning on $\textrm{nointersect}$ eliminates intersections (middle).}
 	\label{fig:invrtmcmc}
 \end{figure}
 
@@ -171,7 +171,7 @@ l(\textbf{x}) = 1 < |\textbf{x}| < 1 + \epsilon
 \end{equation}
 
 Table \ref{results} compares the sample average of particle Gibbs, sequential Monte Carlo (SMC), rejection Sampling (RS), and predicate exchange (PE).
-Since these methosds are generally not exact, given model parameters $\textbf{m}$, we (i) compute $d = \rho(m< A)$ where $A$ is the conditioning set using the methods developed for predicate exchange, then condition a normal distribution centered on $d$ on 0 and $\sigma^2 = 1/(2\alpha)$.
+Since these methods are generally not exact, given model parameters $\textbf{m}$, we (i) compute $d = \rho(m< A)$ where $A$ is the conditioning set using the methods developed for predicate exchange, then condition a normal distribution centered on $d$ on 0 and $\sigma^2 = 1/(2\alpha)$.
 Predicate exchange  compares favourably in most scenarios.
 
 
