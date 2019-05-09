@@ -12,26 +12,29 @@ Marjoram et al. \yrcite{marjoram2003markov} simulated Markov Chains according to
 A small tolerance leads to a high rate of rejected simulations, whereas a large tolerance results in an unacceptable approximation error.
 Among several solutions are dynamically decreasing the tolerance \cite{toni2008approximate}, importance reweighting samples based on distance \cite{wegmann2009efficient}, adapting the tolerance based on distance \cite{del2012adaptive,lenormand2013adaptive}, as well as annealing the tolerance as a temperature parameter \cite{albert2015simulated}.
 
+% Despite widespread use in physics, replica exchange  has seen only limited application to Bayesian inference problems.
+% In a notable exception \cite{habeck2005replica} reparametrize both the prior and likelihood terms in the Bayesian posterior with two extra parameters, which independently control the influence of the likelihood function, and replace the prior
+% $\pi(\theta)$ by $\pi(\theta; q) \propto \exp(-\beta E(\theta; q))$, where $E$  Tsallis generalization  
+% Baragatti et al. \cite{baragatti2013likelihood} construct an parallel chains where the temperature of each chain is set at the tolerance parameter.
+
+
 Predicate exchange targets simulation models and uses distance metrics, but performs asymptotically exact inference without summary statistics.
 A recent approach \cite{graham2017asymptotically}  with similar objectives develops a Hamiltonian Monte Carlo variant, using a quasi-Newton method during leap-frog integration to exactly solve the observation constraint.
 This is limited to differentiable models conditioned with equality.
 Predicate exchange is not limited to differentiable models, but is approximate when the condition is of measure zero.
 
-% \cite{Pseudo-Marginal Hamiltonian Monte Carlo}HMC methods cannot be implemented in scenarios where the likelihood function is intractable. However, we have shown here that if we have access to a non-negative unbiased likelihood estimator.
-% parameterized by normal random variables then it is possible to derive an algorithm which mimicsthe HMC algorithm having access to the exact likelihood. The resulting pseudo-marginal HMCalgorithm replaces the original intractable gradient of the log-likelihood by the gradient of thelog-likelihood estimator while preserving the target distribution as invariant distributi
-
 % PPLS
-Probabilistic logics such as ProbLog \cite{richardson2006markov} and Markov logic networks \cite{de2007problog} extend first order logic to declare both models and conditions.
-More recent probabilistic programming systems~\citep{milch20071, wood2014new,mansinghka2014venture,goodman2008church,carpenter2017stan} have focused on stochastic simulation, and automatically derive the likelihood function for a rich class of models.
+Probabilistic logics such as ProbLog \cite{richardson2006markov} and Markov logic networks \cite{de2007problog} extend first order logic to express both models and conditions.
+Of particular note, probabilistic soft logic (PSL) \cite{brocheler2012probabilistic,kimmig2012short} uses continuous logic to encode graded beliefs.
+For example, $\text{isfriend(Alice, Bob)} \to 0.9$ denotes a strong friendship between Alice and Bob.
+The primary distinction between PSL and predicate exchange is in the semantics of the soft predicates.
+In predicate exchange, relaxation is used solely to make inference more tractable; soft Boolean values are used only within the sampling process and do not appear in the resulting samples themselves.
+In addition, predicate exchange is motivated by probabilistic programming languages for generative models, such as ~\citep{milch20071, wood2014new,mansinghka2014venture,goodman2008church}, rather than purely declarative logic based languages.
 
-
-% ?
-% Our approach is related to smooth interpretation of programs \citep{chaudhuri2010smooth}
 
 Several continuous \cite{levin2000continuous} and fuzzy \cite{klir1995fuzzy} logics apply model-theoretic tools to metric structures.
 Continuous logics replace the Boolean structure $\{T, F\}$, quantifiers $\forall x$ and $\exists x$, and logical connectives with continuous counter-parts.
 Predicate uses continuous logic to make inference more tractable. Semantically, our approach remains within measure theoretic foundations, which relies on hard predicates to condition.
-% Probabilistic Similarity Logic \cite{brocheler2012probabilistic,kimmig2012short} uses continuous logics 
 % Talk about Soft logic
 
 

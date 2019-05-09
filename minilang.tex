@@ -112,8 +112,8 @@ The parameters $\theta_1,..,\theta_n$ may be fixed values or depend on values of
 \caption{}
 \label{prog:ex1}
 \begin{algorithmic}
-\STATE $x = \textrm{rand}(x, \mathcal{N}, 0, 1)$
-\STATE $y = \textrm{rand}(y, \mathcal{N}, 0, 1)$
+\STATE $x = \textrm{rand}(n_x, \mathcal{N}, 0, 1)$
+\STATE $y = \textrm{rand}(n_y, \mathcal{N}, 0, 1)$
 \STATE $\cond(x > y)$
 \STATE {\bfseries Return:} $(x, y)$
 \end{algorithmic}
@@ -146,7 +146,7 @@ $\textrm{softexecute}$ returns a real value for the approximate posterior of $f$
 \caption{}
 \label{prog:ex2}
 \begin{algorithmic}
-\STATE $x = \textrm{rand}(x, \mathcal{N}, 0, 1)$
+\STATE $x = \textrm{rand}(n_x, \mathcal{N}, 0, 1)$
 \IF {$x > 0$}
 \STATE $\cond(x = 1)$
 \ELSE

@@ -1,16 +1,10 @@
-We address the problem of conditioning probabilistic models on predicates, as a means to express declarative knowledge.
-Models conditioned on predicates rarely have a tractable likelihood; sampling from them requires likelihood-free inference.
-Existing likelihood-free inference methods
-focus on predicates which express observations.
-To address a broader class of predicates, we develop an inference procedure called predicate exchange, which \emph{softens} predicates.
-Soft predicates return values in a continuous Boolean algebra and can serve as a proxy likelihood function in inference.
-However, softening introduces an approximation error which depends on a temperature parameter.
-At zero-temperature predicates are identical, but are often intractable to condition on.
-At higher temperatures, soft predicates are easier to sample from, but introduce more error. 
-To mitigate this trade-off, we simulate Markov chains at different temperatures and use 
-replica exchange to swap between chains.
+Programming languages allow us to express complex predicates, but existing inference procedures are unable to condition on most of them.
+To address a broader class of predicates, we develop an inference procedure called \emph{predicate exchange}, which softens predicates.
+A soft predicate quantifies the extent to which values of latent variables
+are consistent with the predicate.
+We substitute the likelihood term in the Bayesian posterior with a soft predicate, and develop a variant of replica exchange to draw posterior samples that are exact with respect to origional, unsoftened predicate.
 We implement predicate exchange through a nonstandard execution of a simulation based model, and provide a light-weight tool that can be supplanted on top of existing probabilistic programming formalisms. 
-We demonstrate the approach on sequence models of health and inverse rendering.
+We demonstrate the approach on sequence models of health and inverse rendering. 
 
 
 
