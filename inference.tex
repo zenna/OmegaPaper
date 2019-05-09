@@ -1,16 +1,14 @@
 \section{Predicate Exchange}
 
 % Predicate exchange is /a procedure to sample from a model conditioned on a predicate.
-To condition a model on a predicate we develop \emph{predicate exchange}, a likelihood-free inference procedure. 
-We will assume a probabilistic model $\vect{X} = (X_1, X_2, \dots, X_n)$ is a collection of random variables, and denote a realization (e.g. sample) of the model as $\vect{x} = (x_1, x_2, \dots, x_n)$, where $\vect{x} \in \xp$.
-A predicate $\lk(\vect{x})$ is a mapping from realizations of those variables to 0 or 1.
-Predicate exchange is composed of two parts:
+% To condition a model on a predicate we develop \emph{predicate exchange}, a likelihood-free inference procedure. 
+Given a model -- a collection of random variables -- $\vect{X} = (X_1, X_2, \dots, X_n)$ and a predicate $\lk$ which maps a model realization  $\vect{x} = (x_1, x_2, \dots, x_n)$ to 0 or 1, predicate exchange samples from the posterior distribution of $\vect{X}$ conditioned on $\ell$ through two steps:
 \begin{enumerate}
 \item \textbf{Predicate Relaxation} constructs a soft predicate $\soft{\lk}$ from $\lk$. $\soft{\lk}$ takes values in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$, $\soft{\lor}$ and $\neg$.
 $\soft{\lk}$ is 1 iff $\lk$ is 1, but otherwise takes nonzero values denoting the degree to which $\lk$ is satisfied.
 % The relaxation is parameterized by a temperature.
 % Predicate relaxation allows us to apply likelihood based MCMC inference procedures.
-\item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo procedure that simulates several replicas of $\soft{\lk}$ in parallel. Replica exchange is able to draw exact samples. 
+\item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo procedure that simulates several replicas of $\soft{\lk}$ in parallel. 
 \end{enumerate}
 
 In this section we formalize the construction of $\soft{\lk}$ from $\lk$, and sampling from models conditioned on $\soft{\lk}$.
@@ -23,7 +21,7 @@ Informally, these approximations mean that while conditioning on $\lk$ eliminate
 % the sense that \todo{IN WHICH WAY?}when viewed as a likelihood function on model parameters, $\soft{\lk}$ has a broader support, assigning nonzero weights to parameter values which have zero weight under $\lk$.
 
 There are three desiderata which govern this approximation.
-$\soft{\lk}$ should have a temperature parameter $\alpha$ that controls the fidelity of the approximation. In particular, $\soft{\lk}$ should (i) converge to $\lk$ as $\alpha \to 0$, (ii) converge to 1 as $\alpha \to \infty$, and (iii be consistent with $\lk$ on 1, i.e., $\lk(\vect{x}) = 1$ iff $\soft{\lk}(\vect{x}) = 1$ at all temperatures.  
+$\soft{\lk}$ should have a temperature parameter $\alpha$ that controls the fidelity of the approximation. In particular, $\soft{\lk}$ should (i) converge to $\lk$ as $\alpha \to 0$, (ii) converge to 1 as $\alpha \to \infty$, and (iii) be consistent with $\lk$ on 1, i.e., $\lk(\vect{x}) = 1$ iff $\soft{\lk}(\vect{x}) = 1$ at all temperatures.  
 Formally:
 
 % The family of approximations of the predicate $Y$ is parameterized through a temperature $\alpha$ that controls the smoothness of the approximation. In particular, $\soft{\lk}$ with $\alpha \to 0$ converges to $Y$ itself while increasing values of $\alpha$ yield smoother approximations eventually giving a flat surface when $\alpha \to \infty$. Moreover, the set of conditional samples $C(Y) = \{ \omega \in \Omega \text{ } | \text{ } Y(\omega) = 1 \}$ are assigned a value of $1$ in $\soft{\lk}$ for all temperatures. 
@@ -34,24 +32,24 @@ Formally:
 % smoother with large $\alpha$, we use a function $k : [0, \infty] \to [0, 1]$ parameterized by $\alpha$ to wrap the distance $\rho(a, b)$. A simple choice for such a function is $k(d; \alpha) = e^{-d / \alpha}$ that provides the desired properties to $\soft{\lk}$ (see Appendix). The formal definition of $\soft{\lk}$ is as follows.
 
 \begin{definition}
-A function $\soft{\lk} : \xp \to [0, 1]$ parameterized by $\alpha \in [0, \infty)$ is a relaxation of $\lk: \xp \to \{0, 1\}$ if:
+$\softv{\lk} : \xp \to [0, 1]$ parameterized by $\alpha \in [0, \infty)$ is a relaxation of $\lk: \xp \to \{0, 1\}$ if for all $\vect{x} \in \xp$:
 \begin{enumerate}[label=(\roman*)]
 	\label{def:temp}
-	\item For all $\vect{x} \in \xp$, $\lim_{\alpha \to 0}\soft{\lk}(\vect{x}; \alpha) = \lk(\vect{x})$.
-	\item For all $\vect{x} \in \xp$, $\lim_{\alpha \to \infty}\soft{\lk}(\vect{x}; \alpha) = 1$.
-  \item For all $\alpha < \infty$, $\soft{\lk}(\vect{x}; \alpha) = 1$ iff $\lk(\vect{x}) = 1$.
+	\item $\lim_{\alpha \to 0}\softv{\lk}(\vect{x}; \alpha) = \lk(\vect{x})$.
+	\item $\lim_{\alpha \to \infty}\softv{\lk}(\vect{x}; \alpha) = 1$.
+  \item for all $\alpha < \infty$, $\softv{\lk}(\vect{x}; \alpha) = 1$ iff $\lk(\vect{x}) = 1$.
 \end{enumerate}
 \end{definition}
 
 \todo{Explain motivate each of these desiderata}
 
 \paragraph{Distance Based Satisfiability}
-To construct a soft predicate we define the degree to which a realization $\vect{x}$ satisfies a predicate $\lk$ as the \emph{distance} from $\vect{x}$ to an element in the $\xp$ that satisfies $\ell$.
-Concretely, the \emph{weakest} relaxation of $\ell$ is:
+To construct $\soft{\lk}$ we assume $\xp$ has a metric, and define $\softv{\lk}(\vect{x})$ -- the degree to which $\vect{x}$ satisfies $\lk$ -- as the \emph{distance} from $\vect{x}$ to an element in $\xp$ that satisfies $\ell$.
+Concretely, the \emph{tightest} relaxation of $\ell$ is:
 
 \begin{definition}
 Let $\rho$ be a metric on $\xp$, $k_\alpha$ be a relaxation kernel (described below) which bounds distances to $[0, 1]$, and $A = \{\vect{x} \mid \lk(\vect{x}) = 1\}$ be the \emph{satisfying set}.
-The predicate $\soft{\lk}_{\inf}(\vect{x})$ is a weakest relaxation of $\ell$ and defined as:
+The predicate $\soft{\lk}_{\inf}(\vect{x})$ is a tightest relaxation of $\ell$ and defined as:
 \begin{equation}
 \soft{\lk}_{\inf}(\vect{x}) = k_\alpha(\rho(\vect{x}, A))
 \end{equation}
@@ -90,7 +88,7 @@ k_{\alpha}(r) = \exp\left(-\frac{r^2}{\alpha}\right)
 
 
 
-\paragraph{Composition} We construct $\soft{\lk}$ from $\lk$ compositionally, by substituting primitive predicates (equality, inequalities and logical operators) with soft counterparts.
+\paragraph{Composition of Soft Primitives} We construct $\soft{\lk}$ from $\lk$ compositionally, by substituting primitive predicates (equality, inequalities and logical operators) with soft counterparts.
 For instance the predicate $(x > y) \lor \neg(x^2 = 2)$ is transformed into $(x \soft{>} y) \soft{\lor} \softv{\neg}(x^2 \soft{=} 2)$.
 In general, we use $\soft{p}$ to denote a relaxation of a predicate $p$.
 % \begin{figure}[H]\label{softpreds}
@@ -129,15 +127,15 @@ Figure \ref{negationimg} illustrates this issue.
 \end{figure}
 
 
-The problem of negation arises because $\soft{\lk}$ is consistent with $Y$ at 1 but not at 0.
+The problem of negation arises because $\soft{\lk}$ is consistent with $\lk$ at 1 but not at 0.
 In other words, $\soft{\lk}$ is a one-sided approximation.
-To resolve this, soft primitives yield a pair $(a_0, a_1)$ where $a_0, a_0 \in [0, 1]$.
-$a_1$ preserves consistency with $Y$ on $1$, just as before, while $a_0$ preserves consistency with $\neg Y$ on $1$.
+To resolve this, \emph{two-sided} soft primitives yield a pair $(a_0, a_1)$ where $a_0, a_0 \in [0, 1]$.
+$a_1$ preserves consistency with $\lk$ on $1$, just as before, while $a_0$ preserves consistency with $\neg \lk$ on $1$.
 For example if $x \dsoft{>} 0$ returns $(a_0, a_1)$, then as a function of $x$, $a_0$ and $a_1$ correspond to Figure \ref{negationimg} (a) and (c) respectively.
 Soft negation then simply swaps the elements of $(a_0, a_1)$ to yield $(a_1, a_0)$.
 
 A complete two-sided soft logic is shown in Figure \ref{softw}.
-When we condition on a model, however, we are still concerned on with the true side, i.e. $a_1$ in the pair $(a_0, a_1)$.
+When we condition on a model, however, \rework{stil lconcerned is not informative} we are still concerned on with the true side, i.e. $a_1$ in the pair $(a_0, a_1)$.
 
 % \begin{definition}
 % The function $\softv{Y} : \Omega \to [0, 1]^2$ parameterized by $\alpha \in [0, \infty)$ is a two-sided relaxation of a $Y: \Omega \to \{0, 1\}$ if:
@@ -187,34 +185,27 @@ MCMC algorithms require a function $f$ that is proportional to the the target de
 In Bayesian inference this is the posterior, dictated by Bayes' theorem as the product of the likelihood and the prior.
 Approximate inference using soft predicates takes a similar form.
 
-Let $\cM = (X_1, \dots, X_n)$ be a model, $Y$ be a predicate that conditions $\cM$, and  $\softv{Y}(\omega) = \soft{\lk}(X_1(\omega), ..., X_n(\omega))$ be a relaxation of $Y$.
-% % Random variables in $\cM$ may be exogenous or endogenous in the sense that
-% % given values for exogenous variables, the values of endogenous are determined.
-% % For example $X = \mathcal{N}(0,1)$ is exogenous while $Y = X^2$ is endogenous.
-% % Inference need only take place on exogenous random variables.
-% Both $Y$ and $\soft{\lk}$ are random variables, and hence map from the sample space $\Omega$;
-% for convenience we define a soft predicate $\soft{\lk}$ as a function of its parameters (other random variables in the model) rather than the sample space.
-% That is, let $\softv{Y}(\omega) = \soft{\lk}(X_1(\omega), ..., X_n(\omega))$, where $X_i \in \cM$.
+\begin{definition}
+Let $\vect{X} = (X_1, \dots, X_n)$ be a model, $\lk$ be a predicate that conditions $\vect{X}$, and  $\vect{x}$ be a relaxation of $\vect{X}$.
 Assuming a prior density $p$, the approximate posterior $f$ is the product:
 \begin{equation}\label{fpm}
-f(m) = p(m) \cdot \soft{\lk}(m)
-\end{equation}
-$\soft{\lk}$ down weights parameter values which violate $Y$ by the degree to which they violate it. 
+f(\vect{x}) = p(\vect{x}) \; \cdot \soft{\lk}(\vect{x})
+  \end{equation}
+\end{definition}
+$\soft{\lk}$ down weights parameter values which violate $\lk$ by the degree to which they violate it. 
 This is modulated by the temperature $\alpha$ used in the  relaxation kernels which constitute $\soft{\lk}$.
 At maximum temperature $\soft{\lk}$ has no effect, and the approximate posterior $f$ is equal to the prior $p$.
 At zero temperature, $f$ recovers the true posterior since parameter values which violate the condition are given zero weight.
 
-For illustration, let $\cM = (\mu, X)$ be a model where $\mu = \beta(3, 4), X = \mathcal{N}(\mu, 1)$  conditioned on $X = 0.5$.
-The approximate posterior is shown at different temperatures in Figure \ref{temppost} and defined as:
+For illustration, let $\vect{X} = (\mu, X)$ be a model where $\mu = \beta(3, 4)$ and $X = \mathcal{N}(\mu, 1)$.
+If conditioned on $X = 0.5$, the approximate posterior is shown at different temperatures in Figure \ref{temppost} and defined as:
 \begin{equation}\label{approxposterior}
 f_\alpha(\mu, x) = \beta_{0,1}(\mu) \cdot \mathcal{N}_{\mu,1}(x) \cdot k_\alpha(\rho(x, 0.5)) 
 \end{equation}
 
 %  q
 The temperature parameter trades off between tractability of inference and the fidelity of the approximation.
-Too high and $\soft{\lk}$ will diverge too greatly from $Y$. Too low and convergence will be slow.
-% Several temperatre methods for controlling temperature exist such as simulated annealing \citep{kirkpatrick1983optimization} and Adiabatic Monte Carlo \citep{betancourt2014adiabatic}.
-% We augment replica exchange , which combines information from several chains to sample more effectively, which an accept/reject phase, to sample from the unrelaxed model.
+If the temperature is too high and $\soft{\lk}$ will diverge too greatly from $\lk$. If it is too low, convergence will be slow.
 
 \paragraph{Balancing Different Constraints}
 At a fixed, nonzero temperature, the scales of variables affects their influence on
@@ -226,7 +217,7 @@ The prior expectation of $p_x$ is significantly larger than that of $p_y$.
 because values far from the 0 are more likely under $y$.
 
 This disparity persists if model is conditioned.
-Figure \ref{scaling} shows samples from $\cM$  conditioned on $p1 \soft{\lor} p2$, and a disparity in the histograms of $p1$ and $p2$.
+Figure \ref{scaling} shows samples from the model conditioned on $p_x \soft{\lor} p_y$, and a disparity in the histograms of $p_x$ and $p_y$.
 The disparity decreases with decreasing temperature, and disappears at zero.
 Still, it is undesirable in practice because it means that the approximation error is distributed unevenly.
 
