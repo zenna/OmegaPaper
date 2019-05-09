@@ -2,7 +2,7 @@
 
 % Predicate exchange is /a procedure to sample from a model conditioned on a predicate.
 % To condition a model on a predicate we develop \emph{predicate exchange}, a likelihood-free inference procedure. 
-Given a model -- a collection of random variables -- $\vect{X} = (X_1, X_2, \dots, X_n)$ and a predicate $\lk$ which maps a model realization  $\vect{x} = (x_1, x_2, \dots, x_n)$ to 0 or 1, predicate exchange samples from the posterior distribution of $\vect{X}$ conditioned on $\ell$ through two steps:
+Given a model (a collection of random variables)  $\vect{X} = (X_1, X_2, \dots, X_n)$ and a predicate $\lk$ which maps a model realization  $\vect{x} = (x_1, x_2, \dots, x_n)$ to 0 or 1, predicate exchange samples from the posterior distribution of $\vect{X}$ conditioned on $\ell$ through two steps:
 \begin{enumerate}
 \item \textbf{Predicate Relaxation} constructs a soft predicate $\soft{\lk}$ from $\lk$. $\soft{\lk}$ takes values in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$, $\soft{\lor}$ and $\neg$.
 $\soft{\lk}$ is 1 iff $\lk$ is 1, but otherwise takes nonzero values denoting the degree to which $\lk$ is satisfied.
@@ -21,7 +21,7 @@ Informally, these approximations mean that while conditioning on $\lk$ eliminate
 % the sense that \todo{IN WHICH WAY?}when viewed as a likelihood function on model parameters, $\soft{\lk}$ has a broader support, assigning nonzero weights to parameter values which have zero weight under $\lk$.
 
 There are three desiderata which govern this approximation.
-$\soft{\lk}$ should have a temperature parameter $\alpha$ that controls the fidelity of the approximation. In particular, $\soft{\lk}$ should (i) converge to $\lk$ as $\alpha \to 0$, (ii) converge to 1 as $\alpha \to \infty$, and (iii) be consistent with $\lk$ on 1, i.e., $\lk(\vect{x}) = 1$ iff $\soft{\lk}(\vect{x}) = 1$ at all temperatures.  
+$\soft{\lk}$ should have a temperature parameter $\alpha$ that controls the fidelity of the approximation. In particular, $\soft{\lk}$ should (i) converge to $\lk$ as $\alpha \to 0$, (ii) converge to 1 as $\alpha \to \infty$, and (iii) be consistent with $\lk$ on 1, i.e., $\lk(\vect{x}) = 1$ iff $\softv{\lk}(\vect{x}) = 1$ at all temperatures.  
 Formally:
 
 % The family of approximations of the predicate $Y$ is parameterized through a temperature $\alpha$ that controls the smoothness of the approximation. In particular, $\soft{\lk}$ with $\alpha \to 0$ converges to $Y$ itself while increasing values of $\alpha$ yield smoother approximations eventually giving a flat surface when $\alpha \to \infty$. Moreover, the set of conditional samples $C(Y) = \{ \omega \in \Omega \text{ } | \text{ } Y(\omega) = 1 \}$ are assigned a value of $1$ in $\soft{\lk}$ for all temperatures. 

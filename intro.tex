@@ -16,26 +16,28 @@ For example, inverse rendering  \cite{marschner1998inverse,kulkarni2015deep} aim
 A prior over geometric configurations conditioned on the fact that rigid bodies do not intersect,  will yield better posterior inferences than otherwise, since implausible configurations are eliminated.
 % Instead, we would ideally simply condition on it being true, concentrating probability mass on physically plausible geometric configurations, ultimately to yield more accurate posterior inferences in the inverse graphics problem.
 
-Predicates can also represent observations that are more abstract than variables in a model.
+Predicates can also represent observations that are abstract in the sense that they restrict variables to sets rather than single values.
 In diabetes research for example, probabilistic models have been used to relate physiological factors to glucose levels over time \citep{levine2017offline,murata2004probabilistic}.
 Instead of numerical glucose measurements, a medical practitioner may observe (or be told) that a patient suffers from hypoglycemia, i.e., that their glucose levels fall below a critical value.
 Even if the occurrence of hypoglycemia does not appear as an explicit variable in the model, we can construct it as a predicate that maps a time series of glucose values to true if and only if it falls below the threshold.
 
 Sampling from models conditioned on predicates presents severe challenges to existing inference procedures, primarly due to the lack of a tractable likelihood function.
 The likelihood function quantifies the extent to which values of latent variables are consistent with observations. 
-Several effective sampling  \citep{andrieu2003introduction} and variational  \citep{jordan1999introduction, ranganath2014black} approaches to inference require only a black-box likelihood function, i.e., one evaluable on arbitrary input.
-However, most models conditioned on most predicates have likelihood functions that are either intractable to compute or unknown.
 For example, conditioning random variables that are deterministic transformations of other random variables (e.g., the occurrence of hypoglycemia in the example above, or the mean of a collection of variables) often results in likelihoods that are normalized by intractable integrals or summations.	
 Alternatively, if the model is generative, i.e. specified as a stochastic simulation, the likelihood is not explicitly available even when the condition is a conventional observation.
-Inference methods for unnormalized likelihood functions are largely inapplicable to problems when the likelihood is unknown, and vice versa.
-In a similar vein, conditioning on predicates introduces challenges addressed by neither class of methods.
+Consequently, the numerous effective likelihood based sampling \citep{andrieu2003introduction} and variational  \citep{jordan1999introduction, ranganath2014black} approaches to inference are often inapplicable.
+
+Even likelihood free inference procedures \cite{} are by themselves unable to accomodate most predicates.
+\todo{WHY?}
+% Inference methods for unnormalized likelihood functions are largely inapplicable to problems when the likelihood is unknown, and vice versa.
+% In a similar vein, conditioning on predicates introduces challenges addressed by neither class of methods.
 
 In this paper we present \emph{predicate exchange}:
 a likelihood-free method to sample from distributions conditioned on predicates from a broad class.
 It is composed of two parts:
 \begin{enumerate}
 \item \textbf{Predicate Relaxation} constructs soft predicates which return values in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$. $\soft{\lor}$ and $\neg$.
-\item  \textbf{Replica Exchange} is a Markov Chain Monte method originating in statistical physics, that simulates Markov chains at different temperatures.  Predicate relaxation is parameterized by a temperature which controls the amount of approximation introduced.  We use replica exchange to draw samples that are asymptotically exact from the unrelaxed model. 
+\item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo method originating in statistical physics, that simulates Markov chains at different temperatures.  Predicate relaxation is parameterized by a temperature which controls the amount of approximation introduced.  We use replica exchange to draw samples that are asymptotically exact from the unrelaxed model. 
 \end{enumerate}
 
 % WTP? Show that soft Boolean is useful for (i) tractability of inference show that rather th	an 
@@ -46,9 +48,9 @@ This allows it to serve a role similar to a likelihood function, and opens up th
 % To formalize soft conditioning, we generalize this to transformation of probability measure.
 
 Predicates exist in a Boolean algebra; they can be conjoined, disjoined and negated.
-This allows predicates to express knowledge that has complex Boolean structure.
+This allows predicates to represent knowledge that has complex Boolean structure.
 Continuing the previous example, we may know that a person does \emph{not} have hypoglycemia, or that they have hypoglycemia \emph{or} hyperglycemia, or \emph{neither}.
-To accommodate this, we construct a soft Boolean algebra, with continuous counterparts to equality, inequalities and logical connectives.
+To accommodate this, we construct a soft Boolean algebra with continuous counterparts to equality, inequalities and logical connectives.
 % Few likelihood-based likelihood-free approaches to inference offer effective means to condition non-trivial models on compound predicates.
 
 
@@ -68,7 +70,7 @@ Equality conditions on continuous variables indicate sets of zero measure.
 This is problematic because the probability of proposing a satisfying state in a Markov chain becomes zero.
 In these cases predicate exchange must sample at a minimum temperature strictly greater than zero, which is approximate.
 Another limitation occurs if a predicate has branches (e.g., if-then-else statements) which depend on uncertainty in the model.
-In these cases, a soft predicate may underestimate the degree to which values of latent variables are consistent with the predicate, which can negatively effect inference in practice.
+In these cases, a soft predicate may underestimate the degree to which values of latent variables are consistent with the predicate, which can negatively affect inference in practice.
 % Since all possible paths through a program are visited, our measure of is necessarily an estimate.
 
 In summary, we:
