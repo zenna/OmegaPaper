@@ -1,14 +1,17 @@
-% Predicates are the means to express declarative knowledge.
-% We address the problem of conditioning probabilistic models on predicates, as a means to express declarative knowledge.
-Probabilistic programming languages allow us to express complex predicates but restrict us from conditioning models on most of them.
-
-Models conditioned on predicates rarely have a tractable likelihood and likelihood-free inference methods
-only handle predicates which express observations of data.
+Probabilistic languages allow us to express predicates but due to a lack of tractable likelihoods,  inference procedures are only able to condition on a highly restricted subset of them.
+% Models conditioned on predicates rarely have a tractable likelihood and likelihood-free inference methods
+% only handle predicates which express observations of data.
 To address a broader class of predicates, we develop an inference procedure called \emph{predicate exchange}, which softens predicates.
-Soft predicates return values in a continuous Boolean algebra and replace the likelihood function in the posterior.
-Softening introduces error; soft predicates approximate their hard counterparts.
-The degree of error can be increased or decreased, which trades off between  a parameterized approximation error which when increased
-To mitigate this trade-off, develop a derivative of replica exchange, a Markov Chain Monte Carlo method originating in statistical physics.
+Soft predicates return values in a continuous Boolean algebra.
+
+Predicate exchange substitutes likeloods with soft predicates using replica exchange -- something in statistical physics -- to mitigate approximations introduced by the softening.
+
+% and are substitutes for the likelihood function in the posterior.
+
+% Softening introduces error; soft predicates approximate their hard counterparts.
+% The degree of error can be increased or decreased, which trades off between  a parameterized approximation error which when increased
+% To mitigate this trade-off, develop a derivative of replica exchange, a Markov Chain Monte Carlo method originating in statistical physics.
+
 We implement predicate exchange through a nonstandard execution of a simulation based model, and provide a light-weight tool that can be supplanted on top of existing probabilistic programming formalisms. 
 We demonstrate the approach on sequence models of health and inverse rendering. 
 
