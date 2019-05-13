@@ -93,7 +93,7 @@ Concretely, $\pi$ is any nullary program that contains the statements:
 
 Example Program \ref{prog:ex1} illustrates a simple conditioned model.
 
-\paragraph{Names} Names (e.g., $n_x$) passed to $\textrm{rand}$ are not the same as variable names (e.g. $x$) in the host programming language.
+\paragraph{Names} Names (e.g. $n_x$) passed to $\textrm{rand}$ are not the same as variable names (e.g. $x$) in the host programming language.
 If two distinct names are used, the samples output from $\textrm{rand}$ will be independent or conditionally independent.
 Care must be taken when a program has loops to avoid inadvertently reusing the same name.
 A simple solution is to append the the loop counter to the name.
@@ -213,10 +213,10 @@ These may cause $\textrm{softexecute}$ to return a value that is significantly l
 $\textrm{predexchange}$ (Algorithm \ref{alg:predexchange}) performs replica exchange using $\textrm{softexectute}$ to compute approximate posterior values.
 It takes as input an MCMC algorithm, which simulates a Markov Chain by manipulating elements of the $\mathbb{D}$.
 
-To illustrate, consider drawing two samples. 
-For example, consider $\textrm{softexecute}(\pi, \alpha, \mathbb{D})$ where $\pi$ is Example Program 1, $\alpha$ is 1 and $\mathbb{D}$ is empty.
-Lines 1 and 2 will draw two independent values $(v_x, v_y)$ from the standard normal distributions, and update (i) the prior term $p_\mathbb{D}$ with update $\mathbb{D}$ with these values such that $\mathbb{D}(n_x) \mapsto v_x$ and $\mathbb{D}(n_y) \mapsto v_y$.  $\textrm{cond}$ on line 3 will update the approximate likelihood term to $x \soft{>} y$.
-The returns approximate posterior will thus be
+% To illustrate, consider drawing two samples. 
+% For example, consider $\textrm{softexecute}(\pi, \alpha, \mathbb{D})$ where $\pi$ is Example Program 1, $\alpha$ is 1 and $\mathbb{D}$ is empty.
+% Lines 1 and 2 will draw two independent values $(v_x, v_y)$ from the standard normal distributions, and update (i) the prior term $p_\mathbb{D}$ with update $\mathbb{D}$ with these values such that $\mathbb{D}(n_x) \mapsto v_x$ and $\mathbb{D}(n_y) \mapsto v_y$.  $\textrm{cond}$ on line 3 will update the approximate likelihood term to $x \soft{>} y$.
+% The returns approximate posterior will thus be
 
 
 % Rep
