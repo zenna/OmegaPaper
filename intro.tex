@@ -5,25 +5,28 @@
 Conditioning in Bayesian inference incorporates observed data into a model.
 In a broader sense, conditioning revises a model such that a predicate of uncertain truth becomes a fact.
 Conventionally, this predicate is the equality of observable variables to data.
-Predicates outside of this class have received significantly less attention, partly because it makes the inference problem significantly more challenging, and partly because conditioning on data has proven sufficient to accommodate many applications.
+Predicates outside of this class have received significantly less attention, partly because it makes the inference problem significantly more challenging, and partly because conditioning on data accommodates many applications.
 Nevertheless, there are many more predicates outside this class than inside; our inability to condition on them is a major limitation.
 
 % Expanding the class of predicates we can condition on, expands the kinds of declarative domain knowledge we can incorporate into generative models.
-The ability to condition on more predicates enables us to incorporate more kinds of domain knowledge into generative models declaratively.
+The ability to condition on a broader class of predicates would enable us to incorporate more kinds of declarative domain knowledge into generative models.
 % The kinds of predicates that can be conditioned on determines the kinds of declarative knowledge that can be expressed.
 % Knowledge of a domain is often generative in the form of step-by-step causal mechanisms, or declarative in the form of facts. 
 % For example, predicates can be used to refine an uninformative prior into one which more closely resembles reality.
 For example, probabilistic variants of inverse rendering  \cite{marschner1998inverse,kulkarni2015deep} require a prior distribution over three dimensional scenes.
-Although some geometric knowledge is easily expressed generatively, such as the fact that light sources are typically above \cite{lightfromabove},
- others are much easier to express declaratively, such as the fact that rigid bodies do not intersect.
-Declarative facts can be presented as predicates.
+Some forms of knowledge, such as the fact that rigid bodies do not intersect, are easier to express declaratively as predicates, than constructively in a generative model.
+Conditioning on predicates such as these allows us to express what should be true without the burden of specifying how.
+% Probability theory fully specifies how , but 
+
+% Declarative facts can be presented as predicates.
 % A prior over geometric configurations conditioned on the fact that rigid bodies do not intersect,  will yield better posterior inferences than otherwise, since implausible configurations are eliminated.
 % Instead, we would ideally simply condition on it being true, concentrating probability mass on physically plausible geometric configurations, ultimately to yield more accurate posterior inferences in the inverse graphics problem.
 
 Predicates can also represent observations that restrict variables to sets rather than single values.
 For example, a medical practitioner may observe that a patient is hypoglycemic, i.e., that their glucose levels have fallen below a critical value.
-Given a model relating physiological factors to glucose levels \citep{levine2017offline,murata2004probabilistic}, this observation can be realized as a predicate that maps a time series of glucose values to true if and only if it falls below the threshold.
-Crucially, the occurrence of hypoglycemia does not need to appear as an explicit variable in the model.
+Given a model over time series of glucose levels \citep{levine2017offline,murata2004probabilistic}, this observation can be realized as a predicate that maps the series to 1 if and only if it falls below the threshold.
+Neither the occurrence of hypoglycemia nor any of the infinite number of expressible predicates need to exist as model variables apriori.
+Probability theory supports conditioning on predicates over glucose values identically to that of concrete values, but sampling from such models remains elusive in practice. 
 
 Sampling from models conditioned on most predicates is challenging due to the lack of a tractable likelihood function.
 The likelihood function quantifies the extent to which values of latent variables are consistent with observations, and is deemed intractable if it is normalized by intractable integrals or summations.
@@ -43,20 +46,19 @@ In this paper we present \emph{predicate exchange}:
 a likelihood-free method to sample from distributions conditioned on predicates from a broad class.
 It is composed of two parts:
 \begin{enumerate}
-\item \textbf{Predicate Relaxation} constructs soft predicates which return values in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$. $\soft{\lor}$ and $\neg$.
-\item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo method originating in statistical physics, that simulates Markov chains at different temperatures.  Predicate relaxation is parameterized by a temperature which controls the amount of approximation introduced.  We use replica exchange to draw samples from the unrelaxed model. 
+\item \textbf{Predicate Relaxation} constructs soft predicates which return values in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$. $\soft{\lor}$ and $\neg$.  Softened predicates approximate their hard counterparts.
+\item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo method that simulates Markov chains at different temperatures.  Predicate relaxation is parameterized by a temperature which controls the amount of approximation introduced.  We use replica exchange to draw samples from the unrelaxed model. 
 \end{enumerate}
 
 % WTP? Show that soft Boolean is useful for (i) tractability of inference show that rather th	an 
 By returning a value in $[0, 1]$ instead of $\{0, 1\}$, a soft predicate quantifies the degree to which values of variables are consistent with the hard predicate.
-We reify this notion of graded predicate satisfaction in terms of distance; a realization of the model is almost consistent with a predicate if there is another realization that is both consistent with the predicate and close-by with respect to a metric.
+We concretize this concept in terms of distance: a realization of the model is almost consistent with a predicate if there is another realization that is both consistent with the predicate and close-by with respect to a metric.
 % To construct a soft predicate we assume the model has a metric, and informally, a variable values satisfy a predicate more if they are closer to the satisfying set.  define the degree to which a value satisfies a predicate in terms of a distance from an element in $\xp$ that satisfies.
 
-
-Predicates exist in a Boolean algebra; they can be conjoined, disjoined and negated.
-This allows predicates to represent knowledge that has complex Boolean structure.
-Continuing the previous example, we may know that a person does \emph{not} have hypoglycemia, or that they have hypoglycemia \emph{or} hyperglycemia, or \emph{neither}.
-To accommodate this, we construct a soft Boolean algebra with continuous counterparts to equality, inequalities and logical connectives.
+Conventional predicates exist in a Boolean algebra; they can be conjoined, disjoined and negated.
+This allows us to use predicates to represent knowledge that has complex Boolean structure.
+Continuing the previous example, we may know that a person is \emph{not} hypoglycemic, or that they are hypoglycemic \emph{or} hyperglycemic, or \emph{neither}.
+In order to relax complex predicates, we construct a soft Boolean algebra with continuous counterparts to equality, inequalities and logical connectives.
 
 Soft predicates resemble likelihood functions; they both return real values that measure the consistency of values of variables.
 To perform inference we take this analogy literally by replacing the likelihood term in a posterior with a soft predicate.
