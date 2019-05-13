@@ -129,13 +129,13 @@ Figure \ref{negationimg} illustrates this issue.
 
 The problem of negation arises because $\soft{\lk}$ is consistent with $\lk$ at 1 but not at 0.
 In other words, $\soft{\lk}$ is a one-sided approximation.
-To resolve this, \emph{two-sided} soft primitives yield a pair $(a_0, a_1)$ where $a_0, a_0 \in [0, 1]$.
+To resolve this, \emph{two-sided} soft primitives yield a pair $(a_0, a_1)$ where $a_0, a_1 \in [0, 1]$.
 $a_1$ preserves consistency with $\lk$ on $1$, just as before, while $a_0$ preserves consistency with $\neg \lk$ on $1$.
 For example if $x \dsoft{>} 0$ returns $(a_0, a_1)$, then as a function of $x$, $a_0$ and $a_1$ correspond to Figure \ref{negationimg} (a) and (c) respectively.
 Soft negation then simply swaps the elements of $(a_0, a_1)$ to yield $(a_1, a_0)$.
 
 A complete two-sided soft logic is shown in Figure \ref{softw}.
-When we condition on a model, however, \rework{stil lconcerned is not informative} we are still concerned on with the true side, i.e. $a_1$ in the pair $(a_0, a_1)$.
+When we condition on a model, however, \rework{still concerned is not informative} we are still concerned on with the true side, i.e. $a_1$ in the pair $(a_0, a_1)$.
 
 % \begin{definition}
 % The function $\softv{Y} : \Omega \to [0, 1]^2$ parameterized by $\alpha \in [0, \infty)$ is a two-sided relaxation of a $Y: \Omega \to \{0, 1\}$ if:
@@ -186,10 +186,9 @@ In Bayesian inference this is the posterior, dictated by Bayes' theorem as the p
 Approximate inference using soft predicates takes a similar form.
 
 \begin{definition}
-Let $\vect{X} = (X_1, \dots, X_n)$ be a model, $\lk$ be a predicate that conditions $\vect{X}$, and  $\vect{x}$ be a relaxation of $\vect{X}$.
-Assuming a prior density $p$, the approximate posterior $f$ is the product:
+Let $\vect{x}$ be a realization of a model $\vect{X}$, and $p$ denote a prior density. The \emph{approximate posterior} $f$ is the product:
 \begin{equation}\label{fpm}
-f(\vect{x}) = p(\vect{x}) \; \cdot \soft{\lk}(\vect{x})
+f(\vect{x}) = p(\vect{x}) \cdot \softv{\lk}(\vect{x})
   \end{equation}
 \end{definition}
 $\soft{\lk}$ down weights parameter values which violate $\lk$ by the degree to which they violate it. 
@@ -197,7 +196,7 @@ This is modulated by the temperature $\alpha$ used in the  relaxation kernels wh
 At maximum temperature $\soft{\lk}$ has no effect, and the approximate posterior $f$ is equal to the prior $p$.
 At zero temperature, $f$ recovers the true posterior since parameter values which violate the condition are given zero weight.
 
-For illustration, let $\vect{X} = (\mu, X)$ be a model where $\mu = \beta(3, 4)$ and $X = \mathcal{N}(\mu, 1)$.
+For illustration, let $\vect{X} = (\mu, X)$ be a model where $\mu = \beta(3, 4)$ and $X = \mathcal{N}(\mu, 1)$.\todo{Figure was removed}
 If conditioned on $X = 0.5$, the approximate posterior is shown at different temperatures in Figure \ref{temppost} and defined as:
 \begin{equation}\label{approxposterior}
 f_\alpha(\mu, x) = \beta_{0,1}(\mu) \cdot \mathcal{N}_{\mu,1}(x) \cdot k_\alpha(\rho(x, 0.5)) 
@@ -205,7 +204,7 @@ f_\alpha(\mu, x) = \beta_{0,1}(\mu) \cdot \mathcal{N}_{\mu,1}(x) \cdot k_\alpha(
 
 %  q
 The temperature parameter trades off between tractability of inference and the fidelity of the approximation.
-If the temperature is too high and $\soft{\lk}$ will diverge too greatly from $\lk$. If it is too low, convergence will be slow.
+If the temperature is too high $\soft{\lk}$ will diverge too greatly from $\lk$. If it is too low, convergence will be slow.
 
 \paragraph{Balancing Different Constraints}
 At a fixed, nonzero temperature, the scales of variables affects their influence on
