@@ -93,9 +93,10 @@ Concretely, $\pi$ is any nullary program that contains the statements:
 
 Example Program \ref{prog:ex1} illustrates a simple conditioned model.
 
-\paragraph{Names}Names passed to random primitives identify independent random draws, and are not the same as variable names in the host programming language.
-In Example Program 1, $x$ and $y$ are independent because they use different names $n_x$ and $n_y$.
-Care must be taken when a program has loops or is recursive, for example by appending the loop counter to the name.
+\paragraph{Names} Names (e.g., $n_x$) passed to $\textrm{rand}$ are not the same as variable names (e.g. $x$) in the host programming language.
+If two distinct names are used, the samples output from $\textrm{rand}$ will be independent or conditionally independent.
+Care must be taken when a program has loops to avoid inadvertently reusing the same name.
+A simple solution is to append the the loop counter to the name.
 
 
 

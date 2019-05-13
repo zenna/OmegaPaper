@@ -25,7 +25,7 @@ In Figure \ref{fig:density} we use conditioning to truncate a normal distributio
 \begin{figure}[!htb]
 	\centering
 	\includegraphics[width=0.9\linewidth]{gridn5clean}
-	\caption{Samples from models using different procedures.  Each model is $x,y \sim \unif{-1,1}$ conditioned from top to bottom on (i) $x \soft{=} y$, (ii) $|x| \soft{>} |y|$, (iii) $x^2 \soft{=} y^2$, and (iv) $\sin(kx)\cos(kx) \soft{>} 0.9999$.
+	\caption{Samples from models using different procedures.  Each model is $x,y \sim \unif(-1,1)$ conditioned on (i) $x \soft{=} y$, (ii) $|x| \soft{>} |y|$, (iii) $x^2 \soft{=} y^2$ and (iv) $\sin(kx)\cos(kx) \soft{>} 0.9999$.
 	Inference procedures are: Single Site Metropolis Hastings (SSMH), Hamiltonian Monte Carlo (HMC), and Predicate-Exchange (PE) using HMC and SSMH within chain.}
 	\label{gridn}
 \end{figure}	
@@ -79,7 +79,7 @@ $r(scene) = i_{obs} \land \textrm{nointersect}(scene)$.
 \begin{figure}
 	\centering
 	\includegraphics[width=0.9\linewidth]{jampy2.pdf}
-	\caption{Inverse rendering with and without no-intersection constraints.  Top row: raytraced scenes.  Bottom row: heatmap of intersections. (middle) and (right) scenes are samples from posterior over scenes having observed image on left.  The observed scene has no intersections.  Without the no-intersection condition (right), intersections occur.  Conditioning on intersection eliminates intersections (middle).}
+	\caption{Inverse rendering with and without no-intersection constraints.  Top row: raytraced scenes.  Bottom row: an intersection image.  A red pixel indicates the existence of at least one intersection along.  (middle) and (right) scenes are samples from posterior over scenes having observed image on left.  The observed scene has no intersections.  Without the no-intersection condition (right), intersections occur.  Conditioning on intersection eliminates intersections (middle).}
 	\label{fig:invrtmcmc}
 \end{figure}
 
