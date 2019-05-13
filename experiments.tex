@@ -24,7 +24,7 @@ In Figure \ref{fig:density} we use conditioning to truncate a normal distributio
 
 \begin{figure}[!htb]
 	\centering
-	\includegraphics[width=0.9\linewidth]{gridn5clean}
+	\includegraphics[width=0.9\linewidth]{gx2}
 	\caption{Samples from models using different procedures.  Each model is $x,y \sim \unif(-1,1)$ conditioned on (i) $x \soft{=} y$, (ii) $|x| \soft{>} |y|$, (iii) $x^2 \soft{=} y^2$ and (iv) $\sin(kx)\cos(kx) \soft{>} 0.9999$.
 	Inference procedures are: Single Site Metropolis Hastings (SSMH), Hamiltonian Monte Carlo (HMC), and Predicate-Exchange (PE) using HMC and SSMH within chain.}
 	\label{gridn}
@@ -186,13 +186,15 @@ with only a short observed time-series.
 
 \paragraph{Benchmarks}
 To quantitatively compare predicate exchange with existing approaches we constructed an artificial problem that scales in difficulty.
-Let $\vect{X} = (X_1, \dots, X_d)$ where $X_i \sim \mathcal{N}(0,1)$ conditioned on an $\epsilon$ thick ring:
+Let $X_i \sim \mathcal{N}(0,1)$ in a $d$-dimensional model $\vect{X} = (X_1, \dots, X_d)$ conditioned on an $\epsilon$-thick ring:
 \begin{equation}
-l(\textbf{x}) = 1 < |\textbf{x}| < 1 + \epsilon
+\lk_\epsilon(\vect{x}) = 1 < |\vect{x}| < 1 + \epsilon
 \end{equation}
 
-Table \ref{results} compares the sample average of particle Gibbs (PG), sequential Monte Carlo (SMC), rejection Sampling (RS), and predicate exchange (PE) to the theoretical average of 0.
-Since these methods are generally not exact, given model parameters $\vect{x}$, using the methods developed for predicate exchange we (i) compute $d = \rho(\vect{x}, A)$ where $A$ is the conditioning set, then condition a normal distribution: $\mathcal{N}(d, 1/(2\alpha))$.
+Table \ref{results} compares the sample average of particle Gibbs (PG), sequential Monte Carlo (SMC), rejection sampling (RS) and predicate exchange (PE), varying both $\epsilon$ and $d$.
+The theoretical expectation of all models is 0.
+Among these methods, predicate exchange is unique in its support for inference with predicates, which makes direct comparison difficult.
+For all inference procedures we use predicate relaxation to compute $d = \softv{\lk}_\epsilon(\vect{x})$, and sample from $\vect{X}$ conditioned on $\mathcal{N}(d, 1/(2\alpha)) = 1$, where $\alpha$ is the lowest temperature used in predicate exchange.
 Predicate exchange  compares favourably in most scenarios.
 
 
