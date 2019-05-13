@@ -1,9 +1,9 @@
-Programming languages allow us to express complex predicates, but existing inference procedures are unable to condition on most of them.
-To address a broader class of predicates, we develop an inference procedure called \emph{predicate exchange}, which softens predicates.
-A soft predicate quantifies the extent to which values of latent variables
-are consistent with the predicate.
-We substitute the likelihood term in the Bayesian posterior with a soft predicate, and develop a variant of replica exchange to draw posterior samples.
-We implement predicate exchange through a nonstandard execution of a simulation based model, and provide a light-weight tool that can be supplanted on top of existing probabilistic programming formalisms. 
+Programming languages allow us to express complex predicates, but existing inference procedures are unable to condition probabilistic models on most of them.
+To support a broader class of predicates, we develop an inference procedure called \emph{predicate exchange}, which softens predicates.
+A soft predicate quantifies the extent to which values of model variables
+are consistent with its hard counterpart.
+We substitute the likelihood term in the Bayesian posterior with a soft predicate, and develop a variant of replica exchange MCMC to draw posterior samples.
+We implement predicate exchange as a language agnostic tool which performs a nonstandard execution of a probabilistic program. 
 We demonstrate the approach on sequence models of health and inverse rendering. 
 
 

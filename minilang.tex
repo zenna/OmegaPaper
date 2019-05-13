@@ -78,9 +78,9 @@
 
 In this section we describe a generic, lightweight implementation of predicate exchange.
 Our approach resembles \citep{wingate2011lightweight, milch20071} as a language independent layer that can sit on top of existing programming languages and modeling formalisms.
-Our objective is twofold: (i) to compute the prior term $p$, approximate likelihood term $\softv{\lk}$, and approximate posterior term $f$ (Equation \ref{approxposterior}) from an arbitrary simulator $\pi$, and (ii) to perform replica exchange MCMC to sample from this posterior.
+Our objective is twofold: (i) to compute the prior term $p$, approximate likelihood term $\softv{\lk}$, and approximate posterior term $f$ (Equation \ref{approxposterior}) from an arbitrary simulator $\pi$, and (ii) to perform replica exchange MCMC to sample from the true posterior.
 
-We define a simulator $\pi$ as a program composed arbitrarily of deterministic and stochastic procedures, but where all randomness comes from a set of known random primitives.
+We define a simulator $\pi$ as a program composed of deterministic and stochastic procedures, but where all randomness comes from a set of known random primitives.
 Primitives correspond to primitive parametric distribution families, such as the uniform or normal distribution.
 Let $\mathcal{T}$ be a set of primitive types.
 Each type $\tau \in \mathcal{T}$ must support (i) evaluation of the conditional density $p_\tau(x \mid \theta_1, ..., \theta_n)$, and (ii) sampling from the distribution.
@@ -95,7 +95,7 @@ Example Program \ref{prog:ex1} illustrates a simple conditioned model.
 
 \subsection{Tracked Soft Execution}
 Predicate exchange relies on $\textrm{softexecute}$
-(Algorithm \ref{alg:softexecute}), which formalizes the soft execution of a program $\pi$ at temperature $\alpha$, in the context of dictionary $\mathbb{D}$.
+(Algorithm \ref{alg:softexecute}), which formalizes the soft execution of a program $\pi$ in the context of dictionary $\mathbb{D}$, at temperature $\alpha$.
 $\mathbb{D}$ is a mutable mapping from a set of names to values.
 In the context of a particular dictionary, the simulation of a program is deterministic.
 This allows the simulation of $\pi$ to be modulated by controlling the elements of $\mathbb{D}$.

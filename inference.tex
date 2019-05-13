@@ -17,12 +17,13 @@ In this section we formalize the construction of $\soft{\lk}$ from $\lk$, and sa
 
 Our objective is to construct a soft predicate $\soft{\lk}$ that introduces approximations into $\lk$ to make inference more tractable.
 We refer to $\soft{\lk}$ as a \emph{relaxation} of $\lk$.
-Informally, these approximations mean that while conditioning on $\lk$ eliminates a set of possible values, soft conditioning on $\soft{\lk}$ only makes them less likely.
+Informally, these approximations mean that while conditioning on $\lk$ eliminates a set of possible values, conditioning on $\soft{\lk}$ only makes them less likely.
 % Formally, $\soft{Y}$ approximates
 % the sense that \todo{IN WHICH WAY?}when viewed as a likelihood function on model parameters, $\soft{\lk}$ has a broader support, assigning nonzero weights to parameter values which have zero weight under $\lk$.
 
+A relaxation $\soft{\lk}$ has a temperature parameter $\alpha$ that controls the fidelity of the approximation.
 There are three desiderata which govern this approximation.
-$\soft{\lk}$ should have a temperature parameter $\alpha$ that controls the fidelity of the approximation. In particular, $\soft{\lk}$ should (i) converge to $\lk$ as $\alpha \to 0$, (ii) converge to 1 as $\alpha \to \infty$, and (iii) be consistent with $\lk$ on 1, i.e., $\lk(\vect{x}) = 1$ iff $\softv{\lk}(\vect{x}) = 1$ at all temperatures.  
+In particular, $\soft{\lk}$ should (i) converge to $\lk$ as $\alpha \to 0$, (ii) converge to 1 as $\alpha \to \infty$, and (iii) be consistent with $\lk$ on 1, i.e., $\lk(\vect{x}) = 1$ iff $\softv{\lk}(\vect{x}) = 1$ at all temperatures.  
 Formally:
 
 % The family of approximations of the predicate $Y$ is parameterized through a temperature $\alpha$ that controls the smoothness of the approximation. In particular, $\soft{\lk}$ with $\alpha \to 0$ converges to $Y$ itself while increasing values of $\alpha$ yield smoother approximations eventually giving a flat surface when $\alpha \to \infty$. Moreover, the set of conditional samples $C(Y) = \{ \omega \in \Omega \text{ } | \text{ } Y(\omega) = 1 \}$ are assigned a value of $1$ in $\soft{\lk}$ for all temperatures. 
@@ -47,14 +48,14 @@ $\softv{\lk} : \xp \to [0, 1]$ parameterized by $\alpha \in [0, \infty)$ is a re
 \paragraph{Distance Based Satisfiability}
 To construct $\soft{\lk}$ we assume $\xp$ has a metric, and define $\softv{\lk}(\vect{x})$ -- the degree to which $\vect{x}$ satisfies $\lk$ -- as the \emph{distance} from $\vect{x}$ to an element in $\xp$ that satisfies $\ell$.
 In general there are several values which satisfy $\ell$ and several corresponding distances.
-Naturally, we are interested in the smallest distance, since it indicates the smallest change we could make to $\vect{x}$.
-With respect to a metric $\rho$, we refer to the soft predicate that maps $\vect{x}$ to the distance to the closest satisfying element in $\xp$ as the \emph{tightest} relaxation of $\ell$:
+Naturally, we are interested in the smallest distance, since it indicates the smallest change we could make to $\vect{x}$ to satisfy $\lk$.
+With respect to a metric $\rho$, we refer to the soft predicate that maps $\vect{x}$ to its distance to the closest satisfying element in $\xp$ as the \emph{tightest} relaxation of $\ell$:
 
 \begin{definition}
 Let $\rho$ be a metric on $\xp$, $k_\alpha$ be a relaxation kernel (described below) which bounds distances to $[0, 1]$, and $A = \{\vect{x} \mid \lk(\vect{x}) = 1\}$ be the satisfying set.
-The predicate $\soft{\lk}_{\inf}(\vect{x})$ is a tightest relaxation of $\ell$ and defined as:
+The predicate $\softv{\lk}_{\inf}(\vect{x})$ is the tightest relaxation of $\ell$ and defined as:
 \begin{equation}\label{eq;linf}
-\soft{\lk}_{\inf}(\vect{x}) = k_\alpha(\rho(\vect{x}, A))
+\softv{\lk}_{\inf}(\vect{x}) = k_\alpha(\rho(\vect{x}, A))
 \end{equation}
 The distance $\rho(\vect{x}, A) = \inf \left\{\rho(\vect{x}, a) \mid a \in A\right\}$ is the smallest distance between $\vect{x}$ and any element of $A$.
 % As shown in the Section \ref{implement}, $\soft{\lk}_{\inf}$ can be difficult to compute.
@@ -69,7 +70,7 @@ We can construct $\rho$ automatically for composite elements $x, y \in \mathbb{T
 % $$
 
 \paragraph{Relaxation Kernels} A relaxation kernel $k_\alpha$ bounds distances from $\mathbb{R}$ to the unit interval, and is paramterized by temperature $\alpha$.
-A relaxation kernel is valid if its use in the construction of a soft predicate (Equation \ref{eq;linf}) satisfies the aforementioned relaxation axioms.
+A relaxation kernel is valid if soft-predicates constructed with it satisfy the aforementioned relaxation axioms.
 One such kernel, which we restrict our attention to, is the squared exponential kernel:
 \begin{equation}
 k_{\alpha}(r) = \exp\left(-\frac{r^2}{\alpha}\right)
@@ -90,6 +91,7 @@ k_{\alpha}(r) = \exp\left(-\frac{r^2}{\alpha}\right)
 
 
 \paragraph{Soft Primitives}
+To soften complex programs we first define relaxations for numerical and logical primitives.
 Soft equality is straightforward: $x \soft{=} y$ is defined as $k_\alpha(\rho(x, y))$.
 A soft inequality such as $x \soft{>} y$ is a function of the amount by which $x$ must be increased (or $y$ decreased) until $x > y$ is true.
 This is the distance between $x$ and the interval $[y, \infty]$, where the distance between a point and any interval $[a, b]$ is the smallest distance between $x$ and any element in $[a, b]$, and therefore 0 if $x \in [a, b]$:
@@ -110,7 +112,7 @@ Figure \ref{negationimg} illustrates this issue.
 
 \begin{figure}
 \includegraphics[width=\linewidth]{negation.eps}
-\caption{Negation: soft (blue) and hard (red, dashed) predicates as a function of $x$.  Left: $x \soft{>} y$ approximates $x > y$. Middle:  Standard approach to continuous negation $(1-a)$ violates relaxation criteria. Right: Desired outcome of soft negation of $x \soft{>} y$.}\label{negationimg}
+\caption{The problem of negation.  In all figures, soft (blue) and hard (red, dashed) predicates as a function of $x$.  Left: $x \soft{>} y$ approximates $x > y$. Middle:  the standard approach to continuous negation $(1- (x \soft{>} y))$ violates relaxation criteria (iii). Right: the desired outcome of soft negation of $x \soft{>} y$.}\label{negationimg}
 \end{figure}
 
 
@@ -118,12 +120,14 @@ The problem of negation arises because $\soft{\lk}$ is consistent with $\lk$ at 
 In other words, $\soft{\lk}$ is a one-sided approximation.
 To resolve this, \emph{two-sided} soft primitives yield a pair $(a_0, a_1)$ where $a_0, a_0 \in [0, 1]$.
 $a_1$ is consistent with $\lk$ on $1$, just as before, while $a_0$ is consistent with $\neg \lk$ on $1$.
-For example if $x \dsoft{>} 0$ returns $(a_0, a_1)$, then as a function of $x$, $a_1$ is 1 iff $x > 0$ (Figure \ref{negationimg} (a)) and $a_0$ is 1 iff $x < 0$ (Figure \ref{negationimg} (c)).
+For example if $x \dsoft{>} 0$ returns $(a_0, a_1)$, then as a function of $x$, $a_1$ is 1 iff $x > 0$ (Figure \ref{negationimg} (a)) and $a_0$ is 1 iff $x \leq 0$ (Figure \ref{negationimg} (c)).
+Two-sided soft conjunction and soft disjunction follow De Morgan's laws.
 Soft negation then simply swaps the elements of $(a_0, a_1)$ to yield $(a_1, a_0)$.
-
 A complete two-sided soft logic is shown in Figure \ref{softw}.
-Conditioning on a predicate is however not symmetric on 0 and 1; it restricts the model to the 1 value.
-Consequently, we define conditioning on a pair $(a_0, a_1)$ as conditioning on only $a_1$.
+
+As an operation, conditioning does not treat 0 and 1 outputs of a predicate symmetrically.
+Rather, it restricts the model to values which produce 1.
+Consequently, we define conditioning on a $(a_0, a_1)$ as conditioning on only $a_1$.
 
 % \begin{definition}
 % The function $\softv{Y} : \Omega \to [0, 1]^2$ parameterized by $\alpha \in [0, \infty)$ is a two-sided relaxation of a $Y: \Omega \to \{0, 1\}$ if:
@@ -161,10 +165,10 @@ x \dsoft{<} y &= (k_\alpha(\rho(y, [x, \infty])), k_\alpha(\rho(y, [-\infty, x])
 % \end{tabular}
 % \end{center}
 
-\paragraph{Composition of Soft Primitives} We construct $\soft{\lk}$ from $\lk$ compositionally, by substituting primitive predicates (equality, inequalities and logical operators) with soft counterparts.
-Here we describe the relaxation of predicates defined as compositions of primitive functions, and in section \ref{} we provide an implementation amenable to programs.
-For instance the predicate $(x > y) \lor \neg(x^2 = 2)$ is transformed into $(x \soft{>} y) \soft{\lor} \softv{\neg}(x^2 \soft{=} 2)$.
-In general, we use $\soft{p}$ to denote a relaxation of a predicate $p$.
+\paragraph{Composition of Soft Primitives} We can construct $\soft{\lk}$ from $\lk$ compositionally, by substituting primitive predicates (equality, inequalities and logical operators) with soft counterparts.
+% Here we describe the relaxation of predicates defined as compositions of primitive functions, and in section \ref{} we provide an implementation amenable to programs.
+For instance the predicate $(x > y) \lor \neg(x^2 = 2)$ is relaxed by $(x \soft{>} y) \soft{\lor} \softv{\neg}(x^2 \soft{=} 2)$.
+% In general, we use $\soft{p}$ to denote a relaxation of a predicate $p$.
 
 \begin{proposition}Relaxation criteria are preserved under composition.
 Let $a$ and $b$ be predicates, and $\circ$ denote a binary logical operator.  If $\softv{a}, \softv{b}$ and $\soft{\circ}$ are respective valid relaxations.  Then $\softv{a} \soft{\circ} \softv{b}$ is a relaxation of $a \circ b$.
@@ -174,7 +178,7 @@ Let $a$ and $b$ be predicates, and $\circ$ denote a binary logical operator.  If
 
 
 \subsection{Approximate Markov Chain Monte Carlo}
-A soft predicate can serve as an approximate likelihood, and as a result is amenable to likelihood based inference methods such as Markov Chain Monte Carlo.
+We use soft predicates as approximate likelihoods, and as a result is amenable to likelihood based inference methods such as Markov Chain Monte Carlo.
 MCMC algorithms require a function $f$ that is proportional to the the target density.
 In Bayesian inference this is the posterior, dictated by Bayes' theorem as the product of the likelihood and the prior.
 Approximate inference using soft predicates takes a similar form.
@@ -191,10 +195,10 @@ This is modulated by the temperature $\alpha$ used in the  relaxation kernels wh
 At maximum temperature $\soft{\lk}$ has no effect, and the approximate posterior $f$ is equal to the prior $p$.
 At zero temperature, $f$ recovers the true posterior since parameter values which violate the condition are given zero weight.
 
-For illustration, let $\vect{X} = (\mu, X)$ be a model where $\mu = \beta(3, 4)$ and $X = \mathcal{N}(\mu, 1)$.
-If conditioned on $X = 0.5$, the approximate posterior is shown at different temperatures in Figure \ref{temppost} and defined as:
+For illustration, let $\vect{X} = (X_1, X_2)$ be a model where $X_{1,2} \sim \mathcal{N}(0, 1)$.
+If the model is conditioned on $X_1 + X_2 = 0$, the approximate posterior is:
 \begin{equation}\label{approxposterior}
-f_\alpha(\mu, x) = \beta_{0,1}(\mu) \cdot \mathcal{N}_{\mu,1}(x) \cdot k_\alpha(\rho(x, 0.5)) 
+f_\alpha(x_1, x_2) = \mathcal{N}_{0,1}(x_1) \cdot \mathcal{N}_{0,1}(x_2) \cdot k_\alpha(\rho(x_1 + x_2, 0)) 
 \end{equation}
 
 %  q
@@ -206,7 +210,7 @@ At a fixed, nonzero temperature, the scales of variables affects their influence
 the conditional distribution.
 For instance, consider two uniformly distributed random variables $x \sim \unif(-1, 1)$ and $y \sim \unif(-10, 10)$,
 and predicates $p_x$, $p_y$ defined as $x \soft{=} 0$ and $y \soft{=} 0$ respectively.
-The expectation of a soft predicate quantifies the degree to which it is true (see Section \ref{simmodels}).
+The expectation of a soft predicate quantifies the degree to which it is true, and is a non-decreasing function of temperature.
 The prior expectation of $p_x$ is significantly larger than that of $p_y$.
 because values far from the 0 are more likely under $y$.
 

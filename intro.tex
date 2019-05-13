@@ -11,9 +11,12 @@ Nevertheless, there are many more predicates outside this class than inside; our
 The ability to condition on predicates would enable us to incorporate declarative domain knowledge into generative models.
 % The kinds of predicates that can be conditioned on determines the kinds of declarative knowledge that can be expressed.
 % Knowledge of a domain is often generative in the form of step-by-step causal mechanisms, or declarative in the form of facts. 
-For example, predicates can be used to refine an uninformative prior into one which more closely resembles reality.
-For example, inverse rendering  \cite{marschner1998inverse,kulkarni2015deep} aims to infer three dimensional geometry from observed images.
-A prior over geometric configurations conditioned on the fact that rigid bodies do not intersect,  will yield better posterior inferences than otherwise, since implausible configurations are eliminated.
+% For example, predicates can be used to refine an uninformative prior into one which more closely resembles reality.
+For example, probabilistic variants of inverse rendering  \cite{marschner1998inverse,kulkarni2015deep} require a prior distribution over three dimensional scenes.
+Some forms of knowledge are are easily expressed generatively, such as the fact that light sources are generally above \cite{lightfromabove}.
+Others are much easier to express declaratively, such as the fact that rigid bodies do not intersect.
+De	clarative facts can be presented as predicates.
+% A prior over geometric configurations conditioned on the fact that rigid bodies do not intersect,  will yield better posterior inferences than otherwise, since implausible configurations are eliminated.
 % Instead, we would ideally simply condition on it being true, concentrating probability mass on physically plausible geometric configurations, ultimately to yield more accurate posterior inferences in the inverse graphics problem.
 
 Predicates can also represent observations that restrict variables to sets rather than single values.
@@ -40,28 +43,25 @@ a likelihood-free method to sample from distributions conditioned on predicates 
 It is composed of two parts:
 \begin{enumerate}
 \item \textbf{Predicate Relaxation} constructs soft predicates which return values in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$. $\soft{\lor}$ and $\neg$.
-\item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo method originating in statistical physics, that simulates Markov chains at different temperatures.  Predicate relaxation is parameterized by a temperature which controls the amount of approximation introduced.  We use replica exchange to draw samples that are asymptotically exact from the unrelaxed model. 
+\item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo method originating in statistical physics, that simulates Markov chains at different temperatures.  Predicate relaxation is parameterized by a temperature which controls the amount of approximation introduced.  We use replica exchange to draw samples from the unrelaxed model. 
 \end{enumerate}
 
 % WTP? Show that soft Boolean is useful for (i) tractability of inference show that rather th	an 
-By returning a value in $[0, 1]$ instead of $\{0, 1\}$, a soft predicate quantifies the extent to which values of variables are consistent with the predicate, and hence resembles the likelihood function.
-To construct a soft predicate we assume the model has a metric, and informally, a variable values satisfy a predicate more if they are closer to the satisfying set.  define the degree to which a value satisfies a predicate in terms of a distance from an element in $\xp$ that satisfies.
+By returning a value in $[0, 1]$ instead of $\{0, 1\}$, a soft predicate quantifies the degree to which values of variables are consistent with the hard predicate.
+We reify this notion of graded predicate satisfaction in terms of distance; a realization of the model is almost consistent with a predicate if there is another realization that is both consistent with the predicate and close-by with respect to a metric.
+% To construct a soft predicate we assume the model has a metric, and informally, a variable values satisfy a predicate more if they are closer to the satisfying set.  define the degree to which a value satisfies a predicate in terms of a distance from an element in $\xp$ that satisfies.
 
-A soft predicate resembles a likelihood function, \todo{describe softpredicate vs likelihood?  A soft predicate differs from a likelihood in that likelihoods are defiend in terms of latent variables, where the observables have been conditione on equality, while predicates operate on latens, observables or any combination, and are not limited to just equality, in this sense predicates generalize likelihoods}
-% This allows it to serve a role similar to a likelihood function, and opens up the use of 
-
-We substitute the likelihood term in the posterior with a soft predicate.
-This yields an \emph{approximate posterior} which can be sampled from using existing likelihood based inference procedures.
-To sample from the true posterior we use replica exchange. 
-% TALK ABOUT REPLICA EXCHANGE.
-% Conditioning is conventionally formalized as a restriction of a probability space to an event.
-% To formalize soft conditioning, we generalize this to transformation of probability measure.
 
 Predicates exist in a Boolean algebra; they can be conjoined, disjoined and negated.
 This allows predicates to represent knowledge that has complex Boolean structure.
 Continuing the previous example, we may know that a person does \emph{not} have hypoglycemia, or that they have hypoglycemia \emph{or} hyperglycemia, or \emph{neither}.
 To accommodate this, we construct a soft Boolean algebra with continuous counterparts to equality, inequalities and logical connectives.
-% Few likelihood-based likelihood-free approaches to inference offer effective means to condition non-trivial models on compound predicates.
+
+Soft predicates resemble likelihood functions; they both return real values that measure the consistency of values of variables.
+To perform inference we take this analogy literally by replacing the likelihood term in a posterior with a soft predicate.
+This yields an \emph{approximate posterior} which can be sampled from using existing likelihood based inference procedures.
+The approximate posterior diverges from the true posterior as an increasing function of the temperature parameter used in predicates relaxation.
+To sample from the true posterior we augment replica exchange -- which simulates several Markov chains at different temperatures in parallel -- with an accept-reject phase. 
 
 
 % This degree to which a is is determined by a notion of distance.
@@ -72,7 +72,7 @@ To accommodate this, we construct a soft Boolean algebra with continuous counter
 
 
 Predicate exchange addresses a shortcoming of probabilistic programming languages,
-\todo{In PPLS we can use full language ot describe boht models and predicates.  However, conditoning on most predicates is either not possible or restricted to rejection sampling, wich only works in low dimensions.} which have vastly expanded the class of probabilistic models that can be expressed, but still restrict the kinds of predicates that can be conditioned on to those which result in a tractable likelihood.
+which have vastly expanded the class of probabilistic models that can be expressed, but still restrict the kinds of predicates that can be conditioned on to those which result in a tractable likelihood.
 In a similar vein to  \cite{wingate2011lightweight} we provide a light-weight implementation that modulates the execution of a stochastic simulation based model to perform inference.
 This means predicate exchange is easily incorporated into existing probabilistic languages. 
 
@@ -90,7 +90,7 @@ In summary, we:
 \begin{enumerate}
 	% \item Formalize soft conditioning of simulation based  models in measure theoretic probability as a transformation of a probability measure (Section \ref{simmodels}).
 	\item Formalize the desiderata for predicate relaxation (Section \ref{predexchange}) and present relaxations of numerical and logical primitive functions.
-	\item Prove that predicate relaxation is preserved under function composition.
+	% \item Prove that predicate relaxation is preserved under function composition.
 	\item Implement predicate exchange as nonstandard execution of a simulation based model (Section \ref{implement}).
 	\item Evaluate our approach on examples, including case studies in inverse rendering and glycemic forecasting (Section \ref{experiments}).
 \end{enumerate}

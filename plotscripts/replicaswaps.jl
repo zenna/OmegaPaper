@@ -36,7 +36,7 @@ end
 # model = OmegaTestModels.allmodels[1]
 model = model_()
 @unpack precb, postcb, swapmats = swapscb()
-@leval (PreSwap => precb, PostSwap => postcb) rand((model.vars...,), model.cond, 1000; alg = Replica)
+samples = @leval (PreSwap => precb, PostSwap => postcb) rand((model.vars...,), model.cond, 1000; alg = Replica)
 
 # Do analysis on data
 reduce(+, swapmats)
@@ -53,8 +53,8 @@ function plotswapmat(swapmat)
 end
 
 tots = reduce(+, swapmats)
-nplots = 10
+nplots = 4
 n = length(swapmats) 
 swapmatsums = [reduce(+, mats) for mats in Iterators.partition(swapmats, div(n, nplots))]
 plots = [plotswapmat(swapmat) for swapmat in swapmatsums]
-plt = plot(plots..., layout = (1, 4))
+plt = plot(plots..., layout = (1, nplots))
