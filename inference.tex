@@ -4,11 +4,11 @@
 % To condition a model on a predicate we develop \emph{predicate exchange}, a likelihood-free inference procedure. 
 Given a model (a collection of random variables)  $\vect{X} = (X_1, X_2, \dots, X_n)$ and a predicate $\lk$ which maps a model realization  $\vect{x} = (x_1, x_2, \dots, x_n)$ to 0 or 1, predicate exchange samples from the posterior distribution of $\vect{X}$ conditioned on $\ell$ through two steps:
 \begin{enumerate}
-\item \textbf{Predicate Relaxation} constructs a soft predicate $\soft{\lk}$ from $\lk$. $\soft{\lk}$ takes values in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$, $\soft{\lor}$ and $\neg$.
+\item \textbf{Predicate Relaxation} constructs a soft predicate $\soft{\lk}$ from $\lk$. $\soft{\lk}$ maps a model realization $\vect{x} \in \xp$ to a value in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$, $\soft{\lor}$ and $\neg$.
 $\soft{\lk}$ is 1 iff $\lk$ is 1, but otherwise takes nonzero values denoting the degree to which $\lk$ is satisfied.
 % The relaxation is parameterized by a temperature.
 % Predicate relaxation allows us to apply likelihood based MCMC inference procedures.
-\item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo procedure that simulates several replicas of $\soft{\lk}$ in parallel. 
+\item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo procedure that simulates several replicas  of the model conditioned on $\soft{\lk}$ at different temperatures, ultimately to condition on $\lk$. 
 \end{enumerate}
 
 In this section we formalize the construction of $\soft{\lk}$ from $\lk$, and sampling from models conditioned on $\soft{\lk}$.
@@ -43,17 +43,17 @@ $\softv{\lk} : \xp \to [0, 1]$ parameterized by $\alpha \in [0, \infty)$ is a re
 \end{enumerate}
 \end{definition}
 
-\todo{Explain motivate each of these desiderata}
+% \todo{Explain motivate each of these desiderata}
 
 \paragraph{Distance Based Satisfiability}
 To construct $\soft{\lk}$ we assume $\xp$ has a metric, and define $\softv{\lk}(\vect{x})$ -- the degree to which $\vect{x}$ satisfies $\lk$ -- as the \emph{distance} from $\vect{x}$ to an element in $\xp$ that satisfies $\ell$.
 In general there are several values which satisfy $\ell$ and several corresponding distances.
 Naturally, we are interested in the smallest distance, since it indicates the smallest change we could make to $\vect{x}$ to satisfy $\lk$.
-With respect to a metric $\rho$, we refer to the soft predicate that maps $\vect{x}$ to its distance to the closest satisfying element in $\xp$ as the \emph{tightest} relaxation of $\ell$:
+With respect to a metric $\rho$, we refer to the soft predicate that maps $\vect{x}$ to the distance to the closest satisfying element in $\xp$ as the \emph{tightest} relaxation of $\ell$:
 
 \begin{definition}
 Let $\rho$ be a metric on $\xp$, $k_\alpha$ be a relaxation kernel (described below) which bounds distances to $[0, 1]$, and $A = \{\vect{x} \mid \lk(\vect{x}) = 1\}$ be the satisfying set.
-The predicate $\softv{\lk}_{\inf}(\vect{x})$ is the tightest relaxation of $\ell$ and defined as:
+The predicate $\softv{\lk}_{\inf}(\vect{x})$ is the tightest relaxation of $\ell$, defined as:
 \begin{equation}\label{eq;linf}
 \softv{\lk}_{\inf}(\vect{x}) = k_\alpha(\rho(\vect{x}, A))
 \end{equation}
@@ -61,9 +61,9 @@ The distance $\rho(\vect{x}, A) = \inf \left\{\rho(\vect{x}, a) \mid a \in A\rig
 % As shown in the Section \ref{implement}, $\soft{\lk}_{\inf}$ can be difficult to compute.
 \end{definition}
 
-\paragraph{Product Metrics}The metric $\rho$ is parameterized by the type of input.
-For canonical spaces such as $\mathbb{R}$ and $\mathbb{N}$ we default to the Euclidean distance. 
-We can construct $\rho$ automatically for composite elements $x, y \in \mathbb{T}_1 \times \cdots \times \mathbb{T}_n$ of product types, by taking the mean of distances of components: $\rho(x, y) = (1/n)\sum^n_{i=1}\rho(x_i, y_i)$.
+% \paragraph{Product Metrics}The metric $\rho$ is parameterized by the type of input.
+% For canonical spaces such as $\mathbb{R}$ and $\mathbb{N}$ we default to the Euclidean distance. 
+% We can construct $\rho$ automatically for composite elements $x, y \in \mathbb{T}_1 \times \cdots \times \mathbb{T}_n$ of product types, by taking the mean of distances of components: $\rho(x, y) = (1/n)\sum^n_{i=1}\rho(x_i, y_i)$.
 
 % $$
 % d_{p}((x_{1},\ldots ,x_{n}),(y_{1},\ldots ,y_{n}))=\|\left(d_{X_{1}}(x_{1},y_{1}),\ldots ,d_{X_{n}}(x_{n},y_{n})\right)\|_{p}}
@@ -106,7 +106,7 @@ This is the distance between $x$ and the interval $[y, \infty]$, where the dista
 Soft conjunction $\soft{\land}$ and disjunction $\soft{\lor}$ take the $\min$ and $\max$ respectively, which is standard.
 Soft negation, on the other hand, introduces complications.
 In continuous logics \cite{kimmig2012short}, the negation of $a \in [0, 1]$ is $1 - a$.
-However, as shown in Figure \ref{negationimg} (b), this violates criteria (iii) of predicate relaxation; there are values which satisfy the hard predicate $\neg(x > 0)$ which do take a value of 1 in $1 - (x \soft{>} 0)$.
+However, as shown in Figure \ref{negationimg} (b), this violates criteria (iii) of predicate relaxation since there are values which satisfy the hard predicate $\neg(x > 0)$ which do take a value of 1 in $1 - (x \soft{>} 0)$.
 Figure \ref{negationimg} illustrates this issue.
 
 
@@ -118,16 +118,16 @@ Figure \ref{negationimg} illustrates this issue.
 
 The problem of negation arises because $\soft{\lk}$ is consistent with $\lk$ at 1 but not at 0, i.e., $\softv{\lk}(\vect{x}; \alpha) = 1$ iff $\lk(\vect{x}) = 1$ at all temperatures $\alpha$.
 In other words, $\soft{\lk}$ is a one-sided approximation.
-To resolve this, \emph{two-sided} soft primitives yield a pair $(a_0, a_1)$ where $a_0, a_0 \in [0, 1]$.
+To resolve this, we use \emph{two-sided} soft primitives which yield a pair $(a_0, a_1)$ where $a_0, a_0 \in [0, 1]$.
 $a_1$ is consistent with $\lk$ on $1$, just as before, while $a_0$ is consistent with $\neg \lk$ on $1$.
 For example if $x \dsoft{>} 0$ returns $(a_0, a_1)$, then as a function of $x$, $a_1$ is 1 iff $x > 0$ (Figure \ref{negationimg} (a)) and $a_0$ is 1 iff $x \leq 0$ (Figure \ref{negationimg} (c)).
 Two-sided soft conjunction and soft disjunction follow De Morgan's laws.
 Soft negation then simply swaps the elements of $(a_0, a_1)$ to yield $(a_1, a_0)$.
 A complete two-sided soft logic is shown in Figure \ref{softw}.
 
-As an operation, conditioning does not treat 0 and 1 outputs of a predicate symmetrically.
+Conditioning does not treat the outputs of a predicate symmetrically.
 Rather, it restricts the model to values which produce 1.
-Consequently, we define conditioning on a $(a_0, a_1)$ as conditioning on only $a_1$.
+Consequently, when used to condition in replica exchange, $a_1$ and not $a_0$ are used in the target density.
 
 % \begin{definition}
 % The function $\softv{Y} : \Omega \to [0, 1]^2$ parameterized by $\alpha \in [0, \infty)$ is a two-sided relaxation of a $Y: \Omega \to \{0, 1\}$ if:
@@ -178,7 +178,7 @@ Let $a$ and $b$ be predicates, and $\circ$ denote a binary logical operator.  If
 
 
 \subsection{Approximate Markov Chain Monte Carlo}
-We use soft predicates as approximate likelihoods, and as a result is amenable to likelihood based inference methods such as Markov Chain Monte Carlo.
+We use soft predicates as approximate likelihoods for Markov Chain Monte Carlo sampling.
 MCMC algorithms require a function $f$ that is proportional to the the target density.
 In Bayesian inference this is the posterior, dictated by Bayes' theorem as the product of the likelihood and the prior.
 Approximate inference using soft predicates takes a similar form.
@@ -247,7 +247,7 @@ Figure \ref{scaling} visualizes the problem of unbalanced constraints, as well a
 \begin{figure}
   \centering
   \includegraphics[width=0.9\linewidth]{scaling.pdf}
-  \caption{Scaling Properties.}\label{scaling}
+  \caption{Magnitudes of variables can lead to uneven contributions to error if unadjusted.  Top row: (left) samples from model, (middle and right) histograms of marginals.  Bottom row is same model with weights adjusted to balance error.}\label{scaling}
   \end{figure}
 
   
