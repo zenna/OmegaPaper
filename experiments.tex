@@ -1,8 +1,21 @@
 
 \section{Experiments}\label{experiments}
 
+\paragraph{Experimental Setup} In our experiments, for finite dimensional continuous models we use the No U-Turn Sampler \cite{hoffman2014no}, a variant of Hamiltonion Monte Carlo (HMC).
+We use reverse-mode automatic differentiation \cite{griewank2008evaluating} to compute the negative log gradient of $f$, which is required for HMC.
+For other models we use standard Metropolis Hastings by defining proposals on elements in the dictionary.
+In particular we use the single site Metropolis Hastings (SSMH) \cite{wingate2011lightweight} which modifies a single random variable at a time.
+
+
 \paragraph{Small Models}
 In Figures \ref{fig:density} we use conditioning to truncate a normal distribution. Figure  \ref{gridn} shows histograms of samples from a uniform prior  $[-1, 1]^2$ conditioned on a variety of predicates.  While simple, these examples can be challenging due to discontinuities in the approximate posterior.
+
+\begin{figure}[!htb]
+	\centering
+	\includegraphics[width=0.9\linewidth]{swapmats}
+	\caption{Analysis of Replica Exchange}
+	\label{swapmats}
+\end{figure}	
 
 
 \begin{figure}[!htb]

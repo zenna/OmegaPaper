@@ -16,6 +16,7 @@ In this section we formalize the construction of $\soft{\lk}$ from $\lk$, and sa
 \subsection{Predicate Relaxation}\label{predexchange}
 
 Our objective is to construct a soft predicate $\soft{\lk}$ that introduces approximations into $\lk$ to make inference more tractable.
+We refer to $\soft{\lk}$ as a \emph{relaxation} of $\lk$.
 Informally, these approximations mean that while conditioning on $\lk$ eliminates a set of possible values, soft conditioning on $\soft{\lk}$ only makes them less likely.
 % Formally, $\soft{Y}$ approximates
 % the sense that \todo{IN WHICH WAY?}when viewed as a likelihood function on model parameters, $\soft{\lk}$ has a broader support, assigning nonzero weights to parameter values which have zero weight under $\lk$.
@@ -45,31 +46,31 @@ $\softv{\lk} : \xp \to [0, 1]$ parameterized by $\alpha \in [0, \infty)$ is a re
 
 \paragraph{Distance Based Satisfiability}
 To construct $\soft{\lk}$ we assume $\xp$ has a metric, and define $\softv{\lk}(\vect{x})$ -- the degree to which $\vect{x}$ satisfies $\lk$ -- as the \emph{distance} from $\vect{x}$ to an element in $\xp$ that satisfies $\ell$.
-Concretely, the \emph{tightest} relaxation of $\ell$ is:
+In general there are several values which satisfy $\ell$ and several corresponding distances.
+Naturally, we are interested in the smallest distance, since it indicates the smallest change we could make to $\vect{x}$.
+With respect to a metric $\rho$, we refer to the soft predicate that maps $\vect{x}$ to the distance to the closest satisfying element in $\xp$ as the \emph{tightest} relaxation of $\ell$:
 
 \begin{definition}
-Let $\rho$ be a metric on $\xp$, $k_\alpha$ be a relaxation kernel (described below) which bounds distances to $[0, 1]$, and $A = \{\vect{x} \mid \lk(\vect{x}) = 1\}$ be the \emph{satisfying set}.
+Let $\rho$ be a metric on $\xp$, $k_\alpha$ be a relaxation kernel (described below) which bounds distances to $[0, 1]$, and $A = \{\vect{x} \mid \lk(\vect{x}) = 1\}$ be the satisfying set.
 The predicate $\soft{\lk}_{\inf}(\vect{x})$ is a tightest relaxation of $\ell$ and defined as:
-\begin{equation}
+\begin{equation}\label{eq;linf}
 \soft{\lk}_{\inf}(\vect{x}) = k_\alpha(\rho(\vect{x}, A))
 \end{equation}
 The distance $\rho(\vect{x}, A) = \inf \left\{\rho(\vect{x}, a) \mid a \in A\right\}$ is the smallest distance between $\vect{x}$ and any element of $A$.
 % As shown in the Section \ref{implement}, $\soft{\lk}_{\inf}$ can be difficult to compute.
 \end{definition}
 
-% \paragraph{Product Metrics}The metric $\rho$ is parameterized by the type of input.
-% For canonical spaces such as $\mathbb{R}$ and $\mathbb{N}$ we default to the Euclidean distance. 
-% We can construct $\rho$ automatically for composite elements $x, y \in \mathbb{T}_1 \times \cdots \times \mathbb{T}_n$ of product types, by taking the mean of distances of components: $\rho(x, y) = (1/n)\sum^n_{i=1}\rho(x_i, y_i)$.
+\paragraph{Product Metrics}The metric $\rho$ is parameterized by the type of input.
+For canonical spaces such as $\mathbb{R}$ and $\mathbb{N}$ we default to the Euclidean distance. 
+We can construct $\rho$ automatically for composite elements $x, y \in \mathbb{T}_1 \times \cdots \times \mathbb{T}_n$ of product types, by taking the mean of distances of components: $\rho(x, y) = (1/n)\sum^n_{i=1}\rho(x_i, y_i)$.
 
 % $$
 % d_{p}((x_{1},\ldots ,x_{n}),(y_{1},\ldots ,y_{n}))=\|\left(d_{X_{1}}(x_{1},y_{1}),\ldots ,d_{X_{n}}(x_{n},y_{n})\right)\|_{p}}
 % $$
 
 \paragraph{Relaxation Kernels} A relaxation kernel $k_\alpha$ bounds distances from $\mathbb{R}$ to the unit interval, and is paramterized by temperature $\alpha$.
-% For example if $x$ and $y$ are real values, then $x \soft{=} y$ is defined as $k_\alpha(\rho(x, y))$ where $\rho$ is a distance function and $k_\alpha$ is a relaxation kernel paramterized by temperature $\alpha$.
-% A relaxation kernel maps distances to values in $[0, 1]$, and ensures that $\soft{\lk}$ adheres to the outlined criteria.
-Relaxation kernels are responsible for ensuring consistency with the relaxation criteria.
-We restrict our attention to the squared exponential kernel:
+A relaxation kernel is valid if its use in the construction of a soft predicate (Equation \ref{eq;linf}) satisfies the aforementioned relaxation axioms.
+One such kernel, which we restrict our attention to, is the squared exponential kernel:
 \begin{equation}
 k_{\alpha}(r) = \exp\left(-\frac{r^2}{\alpha}\right)
 \end{equation}
@@ -88,21 +89,7 @@ k_{\alpha}(r) = \exp\left(-\frac{r^2}{\alpha}\right)
 
 
 
-\paragraph{Composition of Soft Primitives} We construct $\soft{\lk}$ from $\lk$ compositionally, by substituting primitive predicates (equality, inequalities and logical operators) with soft counterparts.
-For instance the predicate $(x > y) \lor \neg(x^2 = 2)$ is transformed into $(x \soft{>} y) \soft{\lor} \softv{\neg}(x^2 \soft{=} 2)$.
-In general, we use $\soft{p}$ to denote a relaxation of a predicate $p$.
-% \begin{figure}[H]\label{softpreds}
-%   \begin{align*}
-% x \soft{=} y &= k_\alpha(\rho(x, y))\\
-% x \soft{>} y &= k_\alpha(\rho(x, [y, \infty]))\\
-% % x \soft{<} y &= k_\alpha(\rho(x, [-\infty, y]))\\
-% x \soft{<} y &= k_\alpha(\rho(y, [-\infty, x]))\\
-% a \soft{\land} b &= \max(a, b)\\
-% a \soft{\lor} b &= \min(a, b)
-% \end{align*}
-% \caption{Soft Primitive Predicates}
-% \end{figure}
-
+\paragraph{Soft Primitives}
 Soft equality is straightforward: $x \soft{=} y$ is defined as $k_\alpha(\rho(x, y))$.
 A soft inequality such as $x \soft{>} y$ is a function of the amount by which $x$ must be increased (or $y$ decreased) until $x > y$ is true.
 This is the distance between $x$ and the interval $[y, \infty]$, where the distance between a point and any interval $[a, b]$ is the smallest distance between $x$ and any element in $[a, b]$, and therefore 0 if $x \in [a, b]$:
@@ -127,15 +114,16 @@ Figure \ref{negationimg} illustrates this issue.
 \end{figure}
 
 
-The problem of negation arises because $\soft{\lk}$ is consistent with $\lk$ at 1 but not at 0.
+The problem of negation arises because $\soft{\lk}$ is consistent with $\lk$ at 1 but not at 0, i.e., $\softv{\lk}(\vect{x}; \alpha) = 1$ iff $\lk(\vect{x}) = 1$ at all temperatures $\alpha$.
 In other words, $\soft{\lk}$ is a one-sided approximation.
 To resolve this, \emph{two-sided} soft primitives yield a pair $(a_0, a_1)$ where $a_0, a_0 \in [0, 1]$.
-$a_1$ preserves consistency with $\lk$ on $1$, just as before, while $a_0$ preserves consistency with $\neg \lk$ on $1$.
-For example if $x \dsoft{>} 0$ returns $(a_0, a_1)$, then as a function of $x$, $a_0$ and $a_1$ correspond to Figure \ref{negationimg} (a) and (c) respectively.
+$a_1$ is consistent with $\lk$ on $1$, just as before, while $a_0$ is consistent with $\neg \lk$ on $1$.
+For example if $x \dsoft{>} 0$ returns $(a_0, a_1)$, then as a function of $x$, $a_1$ is 1 iff $x > 0$ (Figure \ref{negationimg} (a)) and $a_0$ is 1 iff $x < 0$ (Figure \ref{negationimg} (c)).
 Soft negation then simply swaps the elements of $(a_0, a_1)$ to yield $(a_1, a_0)$.
 
 A complete two-sided soft logic is shown in Figure \ref{softw}.
-When we condition on a model, however, \rework{stil lconcerned is not informative} we are still concerned on with the true side, i.e. $a_1$ in the pair $(a_0, a_1)$.
+Conditioning on a predicate is however not symmetric on 0 and 1; it restricts the model to the 1 value.
+Consequently, we define conditioning on a pair $(a_0, a_1)$ as conditioning on only $a_1$.
 
 % \begin{definition}
 % The function $\softv{Y} : \Omega \to [0, 1]^2$ parameterized by $\alpha \in [0, \infty)$ is a two-sided relaxation of a $Y: \Omega \to \{0, 1\}$ if:
@@ -172,6 +160,12 @@ x \dsoft{<} y &= (k_\alpha(\rho(y, [x, \infty])), k_\alpha(\rho(y, [-\infty, x])
 %   % \hline  
 % \end{tabular}
 % \end{center}
+
+\paragraph{Composition of Soft Primitives} We construct $\soft{\lk}$ from $\lk$ compositionally, by substituting primitive predicates (equality, inequalities and logical operators) with soft counterparts.
+Here we describe the relaxation of predicates defined as compositions of primitive functions, and in section \ref{} we provide an implementation amenable to programs.
+For instance the predicate $(x > y) \lor \neg(x^2 = 2)$ is transformed into $(x \soft{>} y) \soft{\lor} \softv{\neg}(x^2 \soft{=} 2)$.
+In general, we use $\soft{p}$ to denote a relaxation of a predicate $p$.
+
 \begin{proposition}Relaxation criteria are preserved under composition.
 Let $a$ and $b$ be predicates, and $\circ$ denote a binary logical operator.  If $\softv{a}, \softv{b}$ and $\soft{\circ}$ are respective valid relaxations.  Then $\softv{a} \soft{\circ} \softv{b}$ is a relaxation of $a \circ b$.
 \end{proposition}
@@ -186,10 +180,10 @@ In Bayesian inference this is the posterior, dictated by Bayes' theorem as the p
 Approximate inference using soft predicates takes a similar form.
 
 \begin{definition}
-Let $\vect{X} = (X_1, \dots, X_n)$ be a model, $\lk$ be a predicate that conditions $\vect{X}$, and  $\vect{x}$ be a relaxation of $\vect{X}$.
+Let $\vect{X} = (X_1, \dots, X_n)$ be a model, $\lk$ be a predicate that conditions $\vect{X}$, and  $\vect{x}$ be a realization of $\vect{X}$.
 Assuming a prior density $p$, the approximate posterior $f$ is the product:
 \begin{equation}\label{fpm}
-f(\vect{x}) = p(\vect{x}) \; \cdot \soft{\lk}(\vect{x})
+f(\vect{x}) = p(\vect{x}) \cdot \softv{\lk}(\vect{x})
   \end{equation}
 \end{definition}
 $\soft{\lk}$ down weights parameter values which violate $\lk$ by the degree to which they violate it. 
@@ -211,13 +205,13 @@ If the temperature is too high and $\soft{\lk}$ will diverge too greatly from $\
 At a fixed, nonzero temperature, the scales of variables affects their influence on
 the conditional distribution.
 For instance, consider two uniformly distributed random variables $x \sim \unif(-1, 1)$ and $y \sim \unif(-10, 10)$,
-and predicates $p_x = x \soft{=} 0$ and $p_y = y \soft{=} 0$.
+and predicates $p_x$, $p_y$ defined as $x \soft{=} 0$ and $y \soft{=} 0$ respectively.
 The expectation of a soft predicate quantifies the degree to which it is true (see Section \ref{simmodels}).
 The prior expectation of $p_x$ is significantly larger than that of $p_y$.
 because values far from the 0 are more likely under $y$.
 
 This disparity persists if model is conditioned.
-Figure \ref{scaling} shows samples from the model conditioned on $p_x \soft{\lor} p_y$, and a disparity in the histograms of $p_x$ and $p_y$.
+Figure \ref{scaling} shows samples from the model conditioned on $p_x \soft{\lor} p_y$, and a disparity in the histograms of the marginals of $p_x$ and $p_y$.
 The disparity decreases with decreasing temperature, and disappears at zero.
 Still, it is undesirable in practice because it means that the approximation error is distributed unevenly.
 
@@ -228,21 +222,21 @@ Still, it is undesirable in practice because it means that the approximation err
 % a softening of both constraints would have 
 % a much larger change in the energy function over
 % a standard deviation change in pairs of variables.
-To mitigate this issue, we minimize discrepancies between sample averages of constraints
+To mitigate this issue, we minimize discrepancies between sample averages of constraints.
 Consider the case of two 
-soft predicates $k_1$ and $k_2$. We introduce a weight for all but the first constraint.
-In this case $k_2$ in the soft predicate is replaced
-by $\gamma_2 k_2$. The weight $\gamma_2$ should
-ensure that $\gamma_2 k_2$ has the same
-magnitude effect as $k_1$ on the energy
+soft predicates $p_1$ and $p_2$. We introduce a weight for all but the first constraint.
+In this case $p_2$ in the soft predicate is replaced
+by $\gamma_2 p_2$. The weight $\gamma_2$ should
+ensure that $\gamma_2 p_2$ has the same
+magnitude effect as $p_1$ on the energy
 function:
 \begin{align*}
-E_{p_{\alpha, \gamma_2}}[k_1] = E_{p_{\alpha, \gamma_2}}[\gamma_2 k_2] 
+E_{p_{\alpha, \gamma_2}}[p_1] = E_{p_{\alpha, \gamma_2}}[\gamma_2 p_2] 
 \end{align*}
 % Does such a gamma_2 always exist? Maybe rewrite it as
 % an optimization problem over gamma to enforce a solution?
 In practice, we set $\gamma_2$ using an exponential moving
-average of the $k_1$ values over the $k_2$ values.
+average of the $p_1$ values over the $p_2$ values.
 Figure \ref{scaling} visualizes the problem of unbalanced constraints, as well as corrections to $\gamma$.
 
 

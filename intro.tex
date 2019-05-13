@@ -16,10 +16,10 @@ For example, inverse rendering  \cite{marschner1998inverse,kulkarni2015deep} aim
 A prior over geometric configurations conditioned on the fact that rigid bodies do not intersect,  will yield better posterior inferences than otherwise, since implausible configurations are eliminated.
 % Instead, we would ideally simply condition on it being true, concentrating probability mass on physically plausible geometric configurations, ultimately to yield more accurate posterior inferences in the inverse graphics problem.
 
-Predicates can also represent observations that are abstract in the sense that they restrict variables to sets rather than single values.
-In diabetes research for example, probabilistic models have been used to relate physiological factors to glucose levels over time \citep{levine2017offline,murata2004probabilistic}.
-Instead of numerical glucose measurements, a medical practitioner may observe (or be told) that a patient suffers from hypoglycemia, i.e., that their glucose levels fall below a critical value.
-Even if the occurrence of hypoglycemia does not appear as an explicit variable in the model, we can construct it as a predicate that maps a time series of glucose values to true if and only if it falls below the threshold.
+Predicates can also represent observations that restrict variables to sets rather than single values.
+For example, a medical practitioner may observe that a patient is hypoglycemic, i.e., that their glucose levels have fallen below a critical value.
+Given a model relating physiological factors to glucose levels \citep{levine2017offline,murata2004probabilistic}, this observation can be realized as a predicate that maps a time series of glucose values to true if and only if it falls below the threshold.
+Crucially, the occurrence of hypoglycemia does not need to appear as an explicit variable in the model.
 
 Sampling from models conditioned on most predicates is challenging due to the lack of a tractable likelihood function.
 The likelihood function quantifies the extent to which values of latent variables are consistent with observations, and is deemed intractable if it is normalized by intractable integrals or summations.
@@ -27,8 +27,11 @@ This can occur, for example, if we condition random variables that are determini
 Alternatively, if the model is generative, i.e. specified as a stochastic simulation, the likelihood is not explicitly available even when the condition is a conventional observation.
 The numerous effective likelihood-based sampling \citep{andrieu2003introduction} and variational  \citep{jordan1999introduction, ranganath2014black} methods are often inapplicable as a result.
 
-Even likelihood free inference procedures \cite{} are by themselves unable to accomodate most predicates.
-\todo{WHY?}
+% Even likelihood free inference procedures \cite{} are by themselves unable to accomodate most predicates.
+% \todo{WHY?}
+% - Focus only on equality
+% - Move ethis to discussion
+% - Summary statistic
 % Inference methods for unnormalized likelihood functions are largely inapplicable to problems when the likelihood is unknown, and vice versa.
 % In a similar vein, conditioning on predicates introduces challenges addressed by neither class of methods.
 
@@ -41,8 +44,15 @@ It is composed of two parts:
 \end{enumerate}
 
 % WTP? Show that soft Boolean is useful for (i) tractability of inference show that rather th	an 
-By returning a value in $[0, 1]$ instead of $\{0, 1\}$, a soft predicate quantifies the extent to which values of latent variables are consistent with the predicate.
-This allows it to serve a role similar to a likelihood function, and opens up the use of likelihood-based inference procedures.
+By returning a value in $[0, 1]$ instead of $\{0, 1\}$, a soft predicate quantifies the extent to which values of variables are consistent with the predicate, and hence resembles the likelihood function.
+To construct a soft predicate we assume the model has a metric, and informally, a variable values satisfy a predicate more if they are closer to the satisfying set.  define the degree to which a value satisfies a predicate in terms of a distance from an element in $\xp$ that satisfies.
+
+A soft predicate resembles a likelihood function, \todo{describe softpredicate vs likelihood?  A soft predicate differs from a likelihood in that likelihoods are defiend in terms of latent variables, where the observables have been conditione on equality, while predicates operate on latens, observables or any combination, and are not limited to just equality, in this sense predicates generalize likelihoods}
+% This allows it to serve a role similar to a likelihood function, and opens up the use of 
+
+We substitute the likelihood term in the posterior with a soft predicate.
+This yields an \emph{approximate posterior} which can be sampled from using existing likelihood based inference procedures.
+To sample from the true posterior we use replica exchange. 
 % TALK ABOUT REPLICA EXCHANGE.
 % Conditioning is conventionally formalized as a restriction of a probability space to an event.
 % To formalize soft conditioning, we generalize this to transformation of probability measure.
@@ -61,7 +71,8 @@ To accommodate this, we construct a soft Boolean algebra with continuous counter
 
 
 
-Predicate exchange addresses shortcomings in probabilistic programming languages, which have vastly expanded the class of probabilistic models that can be expressed, but still heavily restrict the kinds of predicates that can be conditioned on.
+Predicate exchange addresses a shortcoming of probabilistic programming languages,
+\todo{In PPLS we can use full language ot describe boht models and predicates.  However, conditoning on most predicates is either not possible or restricted to rejection sampling, wich only works in low dimensions.} which have vastly expanded the class of probabilistic models that can be expressed, but still restrict the kinds of predicates that can be conditioned on to those which result in a tractable likelihood.
 In a similar vein to  \cite{wingate2011lightweight} we provide a light-weight implementation that modulates the execution of a stochastic simulation based model to perform inference.
 This means predicate exchange is easily incorporated into existing probabilistic languages. 
 
@@ -69,9 +80,9 @@ Our approach comes with certain limitations.
 Equality conditions on continuous variables indicate sets of zero measure.
 This is problematic because the probability of proposing a satisfying state in a Markov chain becomes zero.
 In these cases predicate exchange must sample at a minimum temperature strictly greater than zero, which is approximate.
-Another limitation occurs if a predicate has branches (e.g., if-then-else statements) which depend on uncertainty in the model.
-In these cases, a soft predicate may underestimate the degree to which values of latent variables are consistent with the predicate, which can negatively affect inference in practice.
-% Since all possible paths through a program are visited, our measure of is necessarily an estimate.
+Another limitation occurs if a predicate has branches (e.g., if-then-else statements) such that the execution-path taken depends on uncertainty in the model.
+Such branches make it more difficult to estimate how close values of variables are to satisfying a predicate.
+% In these cases, a soft predicate may underestimate the degree to which values of latent variables are consistent with the predicate, which can negatively affect inference in practice.
 
 In summary, we:
 % In detail, we:

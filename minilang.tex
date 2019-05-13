@@ -80,14 +80,14 @@ In this section we describe a generic, lightweight implementation of predicate e
 Our approach resembles \citep{wingate2011lightweight, milch20071} as a language independent layer that can sit on top of existing programming languages and modeling formalisms.
 Our objective is twofold: (i) to compute the prior term $p$, approximate likelihood term $\softv{\lk}$, and approximate posterior term $f$ (Equation \ref{approxposterior}) from an arbitrary simulator $\pi$, and (ii) to perform replica exchange MCMC to sample from this posterior.
 
-A simulator $\pi$ can be an arbitrary composition of deterministic and stochastic procedures, but all randomness must come from a set of known random primitives.
+We define a simulator $\pi$ as a program composed arbitrarily of deterministic and stochastic procedures, but where all randomness comes from a set of known random primitives.
 Primitives correspond to primitive parametric distribution families, such as the uniform or normal distribution.
 Let $\mathcal{T}$ be a set of primitive types.
 Each type $\tau \in \mathcal{T}$ must support (i) evaluation of the conditional density $p_\tau(x \mid \theta_1, ..., \theta_n)$, and (ii) sampling from the distribution.
 Concretely, $\pi$ is any nullary program that contains the statements:
 
 \begin{enumerate}
-  \item $\textrm{rand}(n, \tau, \theta_1, ...,\theta_n)$ returns a random sample from $p_\tau(\cdot \mid \theta_1, ..., \theta_n)$.  $n$ is a unique name described below.
+  \item $\textrm{rand}(n, \tau, \theta_1, ...,\theta_n)$ returns a random sample from $p_\tau(\; \cdot \mid \theta_1, ..., \theta_n)$.  $n$ is a unique name described below.
   \item $\cond(y)$ conditions $\pi$.  It throws an error if $y \in \{0, 1\}$ is 0, and otherwise allows simulation to resume with no effect.
 \end{enumerate}
 
@@ -124,7 +124,7 @@ The parameters $\theta_1,..,\theta_n$ may be fixed values or depend on values of
 $\textrm{softexecute}$ simulates $\pi$ but within a context where (i) variables $\lk_\mathbb{D}$ and $p_\mathbb{D}$ accumulate prior and approximate posterior values, and (ii) the following operators are redefined:
 
 \begin{enumerate}
-  \item $\textrm{rand}(\tau, n, \theta_1, ...\theta_n)$ returns $\mathbb{D}(n)$, and in compliance with Equation \ref{productprob} updates $p_\mathbb{D}$ with the conditional density. If $n$ is not a key in $\mathbb{D}$, the distribution is sampled from and $\mathbb{D}(n)$ is updated with this value.  
+  \item $\textrm{rand}(\tau, n, \theta_1, ...\theta_n)$ returns $\mathbb{D}(n)$ if $n \in \mathbb{D}$, and in compliance with Equation \ref{productprob} updates $p_\mathbb{D}$ with the conditional density. If $n$ is not a key in $\mathbb{D}$, the distribution is sampled from and $\mathbb{D}(n)$ is updated with this value.  
   \item $a \text{ op } b$ and $\textrm{op } a$ for $\textrm{op} \in \{>, <, =, \land, \lor, \neg\}$ are replaced with the softened counter-parts $\soft{\textrm{ op }} \in \{\soft{>}, \soft{<}, \soft{=}, \soft{\land}, \soft{\lor}, \soft{\neg}\}$.
   \item $\cond(y)$ updates $\softv{\lk}_\mathbb{D}$ with $\softv{\lk}_\mathbb{D} \soft{\land} y$. $y \in [0,1]$ due to soft primitive operators.  
 \end{enumerate}
@@ -203,12 +203,8 @@ $\textrm{softexecute}$ returns a real value for the approximate posterior of $f$
 
 \subsection{Replica Exchange}
 
-Predicate exchange (Algorithm \ref{alg:predexchange}) performs replica exchange using $\textrm{softexectute}$ to derive approximate posterior values.
+$\textrm{predexchange}$ (Algorithm \ref{alg:predexchange}) performs replica exchange using $\textrm{softexectute}$ to derive approximate posterior values.
 It takes as input an MCMC algorithm, which simulates a Markov Chain by manipulating elements of the $\mathbb{D}$.
-In our experiments, for finite dimensional continuous models we use the No U-Turn Sampler \cite{hoffman2014no}, a variant of Hamiltonion Monte Carlo.
-We use reverse-mode automatic differentiation \cite{griewank2008evaluating} to compute the negative log gradient of $f$.
-For other models we use standard Metropolis Hastings by defining proposals on elements in the dictionary.
-In particular we use the single site Metropolis Hastings (SSMH) \cite{wingate2011lightweight} which modifies a single random variable at a time.
 
 % Rep
 % Each dictionary should contains all the information required to access values of variables of interest, either explicitly as values in the dictionary, or derivable with the simulator $\pi$. 
@@ -216,7 +212,7 @@ In particular we use the single site Metropolis Hastings (SSMH) \cite{wingate201
 
 
 \begin{algorithm}[tb]
-  \caption{Predicate Exchange}
+  \caption{Predicate Exchange: $\textrm{predexchange}$}
   \label{alg:predexchange}
 \begin{algorithmic}
 \STATE {\bfseries Input:} program $\pi$, temperatures $\alpha_1, ...,\alpha_m$, nsamples $n$
