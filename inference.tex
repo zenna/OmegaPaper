@@ -91,7 +91,7 @@ k_{\alpha}(r) = \exp\left(-\frac{r^2}{\alpha}\right)
 
 
 \paragraph{Soft Primitives}
-To soften complex programs we first define relaxations for numerical and logical primitives.
+To relax complex programs we first define relaxations for numerical and logical primitives.
 Soft equality is straightforward: $x \soft{=} y$ is defined as $k_\alpha(\rho(x, y))$.
 A soft inequality such as $x \soft{>} y$ is a function of the amount by which $x$ must be increased (or $y$ decreased) until $x > y$ is true.
 This is the distance between $x$ and the interval $[y, \infty]$, where the distance between a point and any interval $[a, b]$ is the smallest distance between $x$ and any element in $[a, b]$, and therefore 0 if $x \in [a, b]$:

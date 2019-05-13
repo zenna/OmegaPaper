@@ -63,11 +63,16 @@ In Figure \ref{fig:density} we use conditioning to truncate a normal distributio
 
 
 \paragraph{Inverse Ray Tracing}
-In this example we sample from a posterior distribution over scenes conditioned an observed rendering.  A scene is a set of $n \sim \textrm{poisson}(\lambda = 3)$ spheres.
+In this example we sample from a posterior distribution over scenes conditioned an observed rendering.  A scene $s$ is a set of $n \sim \textrm{poisson}(\lambda = 3)$ spheres.
 A sphere is parameterized by color, reflectance, emission color, transparency, radius and position, all with a uniform prior.
-If $r$ is a render function that maps scenes to image, $i_{obs}$ is an observed image, and $\textrm{nointersect}$ determines if any spheres intersect, the prior is conditioned on the conjunction:
-$r(scene) = i_{obs} \land \textrm{nointersect}(scene)$.
+Let $r$ be a ray tracing function that maps scenes to image, $i_{obs}$ be an observed image, and $\textrm{nointersect}$ be a predicate that maps a scene to 1 iff any spheres intersect.
+The prior $s$ is conditioned on the conjunction of the inverse rendering and the no-intersection constraints:
 
+\begin{equation}
+(r(s) = i_{obs}) \land \textrm{nointersect}(s)
+\end{equation}
+
+Figure \ref{fig:invrtmcmc} visualizes conditional samples.
 % \begin{figure}
 % 	\centering
 % 	\includegraphics[width=0.9\linewidth]{invg2.pdf}
@@ -81,7 +86,7 @@ $r(scene) = i_{obs} \land \textrm{nointersect}(scene)$.
 \begin{figure}
 	\centering
 	\includegraphics[width=0.9\linewidth]{jampy2.pdf}
-	\caption{Inverse rendering with and without no-intersection constraints.  Top row: raytraced scenes.  Bottom row: an intersection image.  A red pixel indicates the existence of at least one intersection along.  (middle) and (right) scenes are samples from posterior over scenes having observed image on left.  The observed scene has no intersections.  Without the no-intersection condition (right), intersections occur.  Conditioning on intersection eliminates intersections (middle).}
+	\caption{Inverse rendering with and without no-intersection constraints.  Top row: raytraced scenes.  Bottom row: red pixels denote the existence of an intersection between spheres at that point.  (middle) and (right) scenes are samples from posterior over scenes having observed image on left.  The observed scene has no intersections.  Without the no-intersection condition (right), intersections occur.  Conditioning on intersection eliminates intersections (middle).}
 	\label{fig:invrtmcmc}
 \end{figure}
 
