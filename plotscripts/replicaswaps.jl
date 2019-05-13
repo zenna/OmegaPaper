@@ -1,11 +1,11 @@
 using Omega
-using Omega.Inference: PreSwap, PostSwap
-using OmegaTestModels
+using Omega.Inference: PreSwap, PostSwap, swapsinglesite, normalkernel
 using Parameters
 using Lens
 using Base.Iterators
 using Plots
 
+Plots.PyPlotBackend()
 # Create a callback to capture which chain is swapping with which chain
 function swapscb()
   lastωs = []
@@ -34,10 +34,13 @@ function model_()
 end
 
 # model = OmegaTestModels.allmodels[1]
+proposal = (rng, ω) -> swapsinglesite(rng, ω) do x 
+  normalkernel(rng, x, .1)
+end
 model = model_()
 @unpack precb, postcb, swapmats = swapscb()
-samples = @leval (PreSwap => precb, PostSwap => postcb) rand((model.vars...,), model.cond, 1000; alg = Replica)
-
+samples = @leval (PreSwap => precb, PostSwap => postcb) rand((model.vars...,), model.cond, 5000; alg = Replica, temps=[5, 7.5, 15, 30], #temps=[.1, 2, 4, 10],
+          inneralg = SSMH, algargs = (proposal = proposal,));
 # Do analysis on data
 reduce(+, swapmats)
 
@@ -52,9 +55,15 @@ function plotswapmat(swapmat)
                 tickfontsize = 16)
 end
 
-tots = reduce(+, swapmats)
-nplots = 4
-n = length(swapmats) 
-swapmatsums = [reduce(+, mats) for mats in Iterators.partition(swapmats, div(n, nplots))]
-plots = [plotswapmat(swapmat) for swapmat in swapmatsums]
-plt = plot(plots..., layout = (1, nplots))
+function doplot(nplots=4)
+  tots = reduce(+, swapmats)
+  n = length(swapmats)
+  base = n - nplots*div(n, nplots) 
+  swapmatsums = [reduce(+, mats) for mats in Iterators.partition(swapmats[1+base:end], div(n, nplots))]
+  display(swapmatsums)
+  plots = [plotswapmat(swapmat) for swapmat in swapmatsums]
+  plt = plot(plots..., layout = (2, div(nplots,2)))
+end
+
+plt = doplot()
+savefig(plt, "figures/swapmats.pdf")
