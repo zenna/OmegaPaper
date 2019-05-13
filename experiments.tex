@@ -123,7 +123,7 @@ with only a short observed time-series.
 % This model treats all patients as independent. However,
 % we have extra knowledge in that the average-across-time glucose levels will be similar across patients. Expressing this kind of knowledge by tying the parameters $W_i, W_j$ is a challenge because the structure of the recurrence function alters how $W$ controls the average outputs. In this sense, we would like to condition on the distance between conditional expectations being close for some distance $d$,
 % \begin{align*}
-% 	d_E\left(\sum_{t=1}^{T_i} E[x_{t, i} \,|\, W_i], \sum_{t=1}^{T_j} E[x_{t, j} \,|\, W_j]\right) < \delta_E,
+% 	E\left(\sum_{t=1}^{T_i} E[x_{t, i} \,|\, W_i], \sum_{t=1}^{T_j} E[x_{t, j} \,|\, W_j]\right) < \delta_E,
 % \end{align*}
 % for all patient pairs $i, j$. Additionally, we would like to make the series smooth controlling for their variance:
 % \begin{align*}
@@ -209,9 +209,9 @@ Predicate exchange  compares favourably in most scenarios.
 \begin{center}
 	\begin{tabular}{||c| c c c c||} 
 	\hline
-	 & $d_1, \epsilon_{10^{-1}}$ & $d_1, \epsilon_{10^{-5}}$ & $d_{100}, \epsilon_{10^{-1}}$ & $d_{100}, \epsilon_{10^{-5}}$ \\ [0.5ex] 
+	 $d,\epsilon$& $1, {10^{-1}}$ & $1, {10^{-5}}$ & ${100}, {10^{-1}}$ & ${100}, {10^{-5}}$ \\ [0.5ex] 
 	\hline\hline
-	PE & 0.0054 & 0.4735  & -0.000377 & 0.008547\\ 
+	PE & 0.0054 & 0.4735  & -0.00037 & 0.00854\\ 
 	\hline
 	% HMC & 2.1 & 2.026  & 1.5 & 1.41\\ 
 	% \hline\hline
