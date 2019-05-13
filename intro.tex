@@ -15,6 +15,7 @@ The ability to condition on a broader class of predicates would enable us to inc
 % For example, predicates can be used to refine an uninformative prior into one which more closely resembles reality.
 For example, probabilistic variants of inverse rendering  \cite{marschner1998inverse,kulkarni2015deep} require a prior distribution over three dimensional scenes.
 Some forms of knowledge, such as the fact that rigid bodies do not intersect, are easier to express declaratively as predicates, than constructively in a generative model.
+Conditioning on predicates such as these allows us to express what should be true without the burden of specifying how.
 % Probability theory fully specifies how , but 
 
 % Declarative facts can be presented as predicates.
@@ -23,8 +24,9 @@ Some forms of knowledge, such as the fact that rigid bodies do not intersect, ar
 
 Predicates can also represent observations that restrict variables to sets rather than single values.
 For example, a medical practitioner may observe that a patient is hypoglycemic, i.e., that their glucose levels have fallen below a critical value.
-Given a model over glucose levels \citep{levine2017offline,murata2004probabilistic}, this observation can be realized as a predicate that maps a time series of glucose values to 1 if and only if it falls below the threshold; the occurrence of hypoglycemia need not to appear as an explicit variable in the model apriori.
-Probability theory uniformly supports conditioning on both concrete glucose values and predicates over glucose values to infer posterior beliefs over causal physiological factors,  but sampling from models conditioned on most predicates remains elusive. 
+Given a model over time series of glucose levels \citep{levine2017offline,murata2004probabilistic}, this observation can be realized as a predicate that maps the series to 1 if and only if it falls below the threshold.
+Neither the occurrence of hypoglycemia nor any of the infinite number of expressible predicates need to exist as model variables apriori.
+Probability theory supports conditioning on predicates over glucose values identically to that of concrete values, but sampling from such models remains elusive in practice. 
 
 Sampling from models conditioned on most predicates is challenging due to the lack of a tractable likelihood function.
 The likelihood function quantifies the extent to which values of latent variables are consistent with observations, and is deemed intractable if it is normalized by intractable integrals or summations.
