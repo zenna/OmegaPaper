@@ -5,7 +5,7 @@
 Conditioning in Bayesian inference incorporates observed data into a model.
 In a broader sense, conditioning revises a model such that a predicate of uncertain truth becomes a fact.
 Conventionally, this predicate is the equality of observable variables to data.
-Predicates outside of this class have received significantly less attention, partly because it makes the inference problem significantly more challenging, and partly because conditioning on data has proven sufficient to accommodate many applications.
+Predicates outside of this class have received significantly less attention, partly because it makes the inference problem significantly more challenging, and partly because conditioning on data accommodates many applications.
 Nevertheless, there are many more predicates outside this class than inside; our inability to condition on them is a major limitation.
 
 % Expanding the class of predicates we can condition on, expands the kinds of declarative domain knowledge we can incorporate into generative models.
@@ -14,16 +14,17 @@ The ability to condition on more predicates enables us to incorporate more kinds
 % Knowledge of a domain is often generative in the form of step-by-step causal mechanisms, or declarative in the form of facts. 
 % For example, predicates can be used to refine an uninformative prior into one which more closely resembles reality.
 For example, probabilistic variants of inverse rendering  \cite{marschner1998inverse,kulkarni2015deep} require a prior distribution over three dimensional scenes.
-Although some geometric knowledge is easily expressed generatively, such as the fact that light sources are typically above \cite{lightfromabove},
- others are much easier to express declaratively, such as the fact that rigid bodies do not intersect.
-Declarative facts can be presented as predicates.
+Some forms of knowledge, such as the fact that rigid bodies do not intersect, are easier to express declaratively as predicates, than constructively in a generative model.
+% Probability theory fully specifies how , but 
+
+% Declarative facts can be presented as predicates.
 % A prior over geometric configurations conditioned on the fact that rigid bodies do not intersect,  will yield better posterior inferences than otherwise, since implausible configurations are eliminated.
 % Instead, we would ideally simply condition on it being true, concentrating probability mass on physically plausible geometric configurations, ultimately to yield more accurate posterior inferences in the inverse graphics problem.
 
 Predicates can also represent observations that restrict variables to sets rather than single values.
 For example, a medical practitioner may observe that a patient is hypoglycemic, i.e., that their glucose levels have fallen below a critical value.
-Given a model relating physiological factors to glucose levels \citep{levine2017offline,murata2004probabilistic}, this observation can be realized as a predicate that maps a time series of glucose values to true if and only if it falls below the threshold.
-Crucially, the occurrence of hypoglycemia does not need to appear as an explicit variable in the model.
+Given a model over glucose levels \citep{levine2017offline,murata2004probabilistic}, this observation can be realized as a predicate that maps a time series of glucose values to 1 if and only if it falls below the threshold; the occurrence of hypoglycemia need not to appear as an explicit variable in the model apriori.
+Probability theory uniformly supports conditioning on both concrete glucose values and predicates over glucose values to infer posterior beliefs over causal physiological factors,  but sampling from models conditioned on most predicates remains elusive. 
 
 Sampling from models conditioned on most predicates is challenging due to the lack of a tractable likelihood function.
 The likelihood function quantifies the extent to which values of latent variables are consistent with observations, and is deemed intractable if it is normalized by intractable integrals or summations.
@@ -43,8 +44,8 @@ In this paper we present \emph{predicate exchange}:
 a likelihood-free method to sample from distributions conditioned on predicates from a broad class.
 It is composed of two parts:
 \begin{enumerate}
-\item \textbf{Predicate Relaxation} constructs soft predicates which return values in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$. $\soft{\lor}$ and $\neg$.
-\item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo method originating in statistical physics, that simulates Markov chains at different temperatures.  Predicate relaxation is parameterized by a temperature which controls the amount of approximation introduced.  We use replica exchange to draw samples from the unrelaxed model. 
+\item \textbf{Predicate Relaxation} constructs soft predicates which return values in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$. $\soft{\lor}$ and $\neg$.  Softened predicates approximate their hard counterparts.
+\item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo method that simulates Markov chains at different temperatures.  Predicate relaxation is parameterized by a temperature which controls the amount of approximation introduced.  We use replica exchange to draw samples from the unrelaxed model. 
 \end{enumerate}
 
 % WTP? Show that soft Boolean is useful for (i) tractability of inference show that rather th	an 
