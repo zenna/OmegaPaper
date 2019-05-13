@@ -1,33 +1,40 @@
 
 \section{Experiments}\label{experiments}
 
-\paragraph{Experimental Setup} In our experiments, for finite dimensional continuous models we use the No U-Turn Sampler \cite{hoffman2014no}, a variant of Hamiltonion Monte Carlo (HMC).
+\paragraph{Experimental Setup}Replica exchange requires a within chain MCMC algorithm.
+For finite dimensional continuous models we use the No U-Turn Sampler \cite{hoffman2014no}, a variant of Hamiltonion Monte Carlo (HMC).
 We use reverse-mode automatic differentiation \cite{griewank2008evaluating} to compute the negative log gradient of $f$, which is required for HMC.
 For other models we use standard Metropolis Hastings by defining proposals on elements in the dictionary.
 In particular we use the single site Metropolis Hastings (SSMH) \cite{wingate2011lightweight} which modifies a single random variable at a time.
 
+Replica exchange has a number of hyper-parameters: the number of parallel chains, the corresponding temperatures, the swapping schedule.
+Several good practices are outlined in \cite{earl2005parallel}.  In practice, we logarithmically space $\alpha$ between a lower and upper bound (e.g., $\log_{10}(\alpha_1) = 5$ to $\log_{10}(\alpha_M) = -5$), and swap states of chains that are adjacent in temperature ($\alpha_1$ with $\alpha_2$, $\alpha_2$ with $\alpha_3$, etc) periodically.
+
 
 \paragraph{Small Models}
-In Figures \ref{fig:density} we use conditioning to truncate a normal distribution. Figure  \ref{gridn} shows histograms of samples from a uniform prior  $[-1, 1]^2$ conditioned on a variety of predicates.  While simple, these examples can be challenging due to discontinuities in the approximate posterior.
+In Figure \ref{fig:density} we use conditioning to truncate a normal distribution. Figure  \ref{gridn} shows histograms of samples from a uniform prior  $[-1, 1]^2$ conditioned on a variety of predicates.  While simple, these examples can be challenging due to discontinuities in the approximate posterior.
+
+% \begin{figure}[!htb]
+% 	\centering
+% 	\includegraphics[width=0.9\linewidth]{swapmats}
+% 	\caption{Analysis of Replica Exchange}
+% 	\label{swapmats}
+% \end{figure}	
+
 
 \begin{figure}[!htb]
 	\centering
-	\includegraphics[width=0.9\linewidth]{swapmats}
-	\caption{Analysis of Replica Exchange}
-	\label{swapmats}
-\end{figure}	
-
-
-\begin{figure}[!htb]
-	\centering
-	\includegraphics[width=0.9\linewidth]{gridn5}
-	\caption{Samples from models (left column) from different procedures: (SSMH) Single Site Metropolis Hastings, (HMC) Hamiltonian Monte Carlo, (PE) Predicate-Exchange.}
+	\includegraphics[width=0.9\linewidth]{gridn5clean}
+	\caption{Samples from models using different procedures.  Each model is $x,y \sim \unif{-1,1}$ conditioned from top to bottom on (i) $x \soft{=} y$, (ii) $|x| \soft{>} |y|$, (iii) $x^2 \soft{=} y^2$, and (iv) $\sin(kx)\cos(kx) \soft{>} 0.9999$.
+	Inference procedures are: Single Site Metropolis Hastings (SSMH), Hamiltonian Monte Carlo (HMC), and Predicate-Exchange (PE) using HMC and SSMH within chain.}
 	\label{gridn}
 \end{figure}	
 
 \begin{figure}[!htb]
 \centering
-\includegraphics[width=1\linewidth,trim={0.5cm, .3cm, .5cm, .1cm}, clip]{truncated}
+\includegraphics[width=0.55\linewidth,trim={0.5cm, .3cm, .5cm, .1cm}, clip]{truncated}
+\includegraphics[width=0.35\linewidth]{swapmats2}
+
 % \fbox{\includegraphics[width=1\linewidth,trim={0.5cm, .3cm, .5cm, .1cm}, clip]{truncated}}
 
 % \begin{minipage}{0.45\linewidth}
@@ -71,8 +78,8 @@ $r(scene) = i_{obs} \land \textrm{nointersect}(scene)$.
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.9\linewidth]{jampy.pdf}
-	\caption{ Top row: raytraces of scenes, Bottom row: heatmap of intersections.  The observed scene (left) has no intersections, without the $\textrm{nointersect}$ condition, intersections occur  (right row).  Conditioning on $\textrm{nointersect}$ eliminates intersections (middle).}
+	\includegraphics[width=0.9\linewidth]{jampy2.pdf}
+	\caption{Inverse rendering with and without no-intersection constraints.  Top row: raytraced scenes.  Bottom row: heatmap of intersections. (middle) and (right) scenes are samples from posterior over scenes having observed image on left.  The observed scene has no intersections.  Without the no-intersection condition (right), intersections occur.  Conditioning on intersection eliminates intersections (middle).}
 	\label{fig:invrtmcmc}
 \end{figure}
 
@@ -122,8 +129,8 @@ with only a short observed time-series.
 \begin{figure}[!htb]
 	\centering
     %\fbox{\includegraphics[width=0.30\linewidth, trim={1.cm, 0.1cm, 1.3cm, .5cm}, clip]{rnnsamples-no-tie-py}}
-	\includegraphics[width=0.45\linewidth, trim={1.cm, 0.1cm, 1.3cm, .5cm}, clip]{rnnsamples-no-tie-py}
-	\includegraphics[width=.45\linewidth, trim={1.cm, 0.1cm, 1.3cm, .5cm}, clip]{rnnsamples-py}
+	\includegraphics[width=0.8\linewidth, trim={1.cm, 0.1cm, 1.3cm, .5cm}, clip]{rnnsamples-no-tie-py}
+	\includegraphics[width=0.8\linewidth, trim={1.cm, 0.1cm, 1.3cm, .5cm}, clip]{rnnsamples-py}
 	%\fbox{\includegraphics[width=0.30\linewidth, trim={1.cm, 0.1cm, 1.3cm, .5cm}, clip]{rnnsamples-py}}
 	%\fbox{\includegraphics[width=0.30\linewidth, trim={1.cm, 0.0cm, 1.0cm, .5cm}, clip]{delta_mse}}
 	\includegraphics[width=0.9\linewidth, trim={0.7cm, 0.0cm, .7cm, .1cm}, clip]{mse}
@@ -179,13 +186,13 @@ with only a short observed time-series.
 
 \paragraph{Benchmarks}
 To quantitatively compare predicate exchange with existing approaches we constructed an artificial problem that scales in difficulty.
-Let $\cM = (X_1, \dots, X_d)$ where $X_i \sim \mathcal{N}(0,1)$ conditioned on an $\epsilon$ thick ring:
+Let $\vect{X} = (X_1, \dots, X_d)$ where $X_i \sim \mathcal{N}(0,1)$ conditioned on an $\epsilon$ thick ring:
 \begin{equation}
 l(\textbf{x}) = 1 < |\textbf{x}| < 1 + \epsilon
 \end{equation}
 
-Table \ref{results} compares the sample average of particle Gibbs, sequential Monte Carlo (SMC), rejection Sampling (RS), and predicate exchange (PE).
-Since these methods are generally not exact, given model parameters $\textbf{m}$, we (i) compute $d = \rho(m< A)$ where $A$ is the conditioning set using the methods developed for predicate exchange, then condition a normal distribution centered on $d$ on 0 and $\sigma^2 = 1/(2\alpha)$.
+Table \ref{results} compares the sample average of particle Gibbs (PG), sequential Monte Carlo (SMC), rejection Sampling (RS), and predicate exchange (PE) to the theoretical average of 0.
+Since these methods are generally not exact, given model parameters $\vect{x}$, using the methods developed for predicate exchange we (i) compute $d = \rho(\vect{x}, A)$ where $A$ is the conditioning set, then condition a normal distribution: $\mathcal{N}(d, 1/(2\alpha))$.
 Predicate exchange  compares favourably in most scenarios.
 
 

@@ -8,14 +8,15 @@ Conventionally, this predicate is the equality of observable variables to data.
 Predicates outside of this class have received significantly less attention, partly because it makes the inference problem significantly more challenging, and partly because conditioning on data has proven sufficient to accommodate many applications.
 Nevertheless, there are many more predicates outside this class than inside; our inability to condition on them is a major limitation.
 
-The ability to condition on predicates would enable us to incorporate declarative domain knowledge into generative models.
+% Expanding the class of predicates we can condition on, expands the kinds of declarative domain knowledge we can incorporate into generative models.
+The ability to condition on more predicates enables us to incorporate more kinds of domain knowledge into generative models declaratively.
 % The kinds of predicates that can be conditioned on determines the kinds of declarative knowledge that can be expressed.
 % Knowledge of a domain is often generative in the form of step-by-step causal mechanisms, or declarative in the form of facts. 
 % For example, predicates can be used to refine an uninformative prior into one which more closely resembles reality.
 For example, probabilistic variants of inverse rendering  \cite{marschner1998inverse,kulkarni2015deep} require a prior distribution over three dimensional scenes.
-Some forms of knowledge are are easily expressed generatively, such as the fact that light sources are generally above \cite{lightfromabove}.
-Others are much easier to express declaratively, such as the fact that rigid bodies do not intersect.
-De	clarative facts can be presented as predicates.
+Although some geometric knowledge is easily expressed generatively, such as the fact that light sources are typically above \cite{lightfromabove},
+ others are much easier to express declaratively, such as the fact that rigid bodies do not intersect.
+Declarative facts can be presented as predicates.
 % A prior over geometric configurations conditioned on the fact that rigid bodies do not intersect,  will yield better posterior inferences than otherwise, since implausible configurations are eliminated.
 % Instead, we would ideally simply condition on it being true, concentrating probability mass on physically plausible geometric configurations, ultimately to yield more accurate posterior inferences in the inverse graphics problem.
 

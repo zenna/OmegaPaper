@@ -93,6 +93,12 @@ Concretely, $\pi$ is any nullary program that contains the statements:
 
 Example Program \ref{prog:ex1} illustrates a simple conditioned model.
 
+\paragraph{Names}Names passed to random primitives identify independent random draws, and are not the same as variables names in the host programming language.
+In Example Program 1, $x$ and $y$ are independent because they use different names $n_x$ and $n_y$.
+Special care must be taken when a program has loops or is recursive, for example by appending the loop counter to the name.
+
+
+
 \subsection{Tracked Soft Execution}
 Predicate exchange relies on $\textrm{softexecute}$
 (Algorithm \ref{alg:softexecute}), which formalizes the soft execution of a program $\pi$ in the context of dictionary $\mathbb{D}$, at temperature $\alpha$.
@@ -126,7 +132,7 @@ $\textrm{softexecute}$ simulates $\pi$ but within a context where (i) variables 
 \begin{enumerate}
   \item $\textrm{rand}(\tau, n, \theta_1, ...\theta_n)$ returns $\mathbb{D}(n)$ if $n \in \mathbb{D}$, and in compliance with Equation \ref{productprob} updates $p_\mathbb{D}$ with the conditional density. If $n$ is not a key in $\mathbb{D}$, the distribution is sampled from and $\mathbb{D}(n)$ is updated with this value.  
   \item $a \text{ op } b$ and $\textrm{op } a$ for $\textrm{op} \in \{>, <, =, \land, \lor, \neg\}$ are replaced with the softened counter-parts $\soft{\textrm{ op }} \in \{\soft{>}, \soft{<}, \soft{=}, \soft{\land}, \soft{\lor}, \soft{\neg}\}$.
-  \item $\cond(y)$ updates $\softv{\lk}_\mathbb{D}$ with $\softv{\lk}_\mathbb{D} \soft{\land} y$. $y \in [0,1]$ due to soft primitive operators.  
+  \item $\cond(y)$ updates $\softv{\lk}_\mathbb{D}$ with $\softv{\lk}_\mathbb{D} \soft{\land} y$. $y$ will be a soft Boolean value rather than a Boolean due to substitution of primitives with soft primitives.  
 \end{enumerate}
 
 $\textrm{softexecute}$ returns a real value for the approximate posterior of $f$ as a function of the dictionary $\mathbb{D}$.
@@ -205,6 +211,12 @@ $\textrm{softexecute}$ returns a real value for the approximate posterior of $f$
 
 $\textrm{predexchange}$ (Algorithm \ref{alg:predexchange}) performs replica exchange using $\textrm{softexectute}$ to derive approximate posterior values.
 It takes as input an MCMC algorithm, which simulates a Markov Chain by manipulating elements of the $\mathbb{D}$.
+
+To illustrate, consider drawing two samples. 
+For example, consider $\textrm{softexecute}(\pi, \alpha, \mathbb{D})$ where $\pi$ is Example Program 1, $\alpha$ is 1 and $\mathbb{D}$ is empty.
+Lines 1 and 2 will draw two independent values $(v_x, v_y)$ from the standard normal distributions, and update (i) the prior term $p_\mathbb{D}$ with update $\mathbb{D}$ with these values such that $\mathbb{D}(n_x) \mapsto v_x$ and $\mathbb{D}(n_y) \mapsto v_y$.  $\textrm{cond}$ on line 3 will update the approximate likelihood term to $x \soft{>} y$.
+The returns approximate posterior will thus be
+
 
 % Rep
 % Each dictionary should contains all the information required to access values of variables of interest, either explicitly as values in the dictionary, or derivable with the simulator $\pi$. 
