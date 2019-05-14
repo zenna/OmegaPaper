@@ -8,7 +8,7 @@ Together, these form the foundation of the relaxation and conditional sampling f
 % To condition a model on a predicate we develop \emph{predicate exchange}, a likelihood-free inference procedure. 
 Given a model (a collection of random variables)  $\vect{X} = (X_1, X_2, \dots, X_n)$ and a predicate $\lk$ which maps a model realization  $\vect{x} = (x_1, x_2, \dots, x_n)$ to 0 or 1, predicate exchange samples from the posterior distribution of $\vect{X}$ conditioned on $\ell$ through two steps:
 \begin{enumerate}
-\item \textbf{Predicate Relaxation} constructs a soft predicate $\soft{\lk}$ from $\lk$. $\soft{\lk}$ maps a model realization $\vect{x} \in \xp$ to a value in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$, $\soft{\lor}$ and $\neg$.
+\item \textbf{Predicate Relaxation} constructs a soft predicate $\soft{\lk}$ from $\lk$. $\soft{\lk}$ maps a model realization $\vect{x} \in \xp$ to a value in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$, $\soft{\lor}$ and $\soft{neg}$.
 $\soft{\lk}$ is 1 iff $\lk$ is 1, but otherwise takes nonzero values denoting the degree to which $\lk$ is satisfied.
 % The relaxation is parameterized by a temperature.
 % Predicate relaxation allows us to apply likelihood based MCMC inference procedures.

@@ -31,7 +31,7 @@ Probability theory treats conditioning on predicates and concrete observations u
 The likelihood function quantifies the extent to which values of latent variables are consistent with observations, and is deemed intractable if it is normalized by intractable integrals or summations.
 This can occur, for example, if we condition random variables that are deterministic transformations of other random variables (e.g., the occurrence of hypoglycemia in the example above, or the mean of a collection of variables).	
 Alternatively, if the model is generative, i.e. specified as a stochastic simulation, the likelihood is not explicitly available even when the condition is a conventional observation.
-The numerous effective likelihood-based sampling \citep{andrieu2003introduction} and variational  \citep{jordan1999introduction, ranganath2014black} methods are often inapplicable as a result.
+The numerous effective likelihood-based sampling \citep{andrieu2003introduction} and variational  \citep{jordan1999introduction, ranganath2014black} methods are inapplicable as a result.
 
 % Even likelihood free inference procedures \cite{} are by themselves unable to accomodate most predicates.
 % \todo{WHY?}
@@ -45,7 +45,7 @@ In this paper we present \emph{predicate exchange}:
 a likelihood-free method to sample from distributions conditioned on predicates from a broad class.
 It is composed of two parts:
 \begin{enumerate}
-\item \textbf{Predicate Relaxation} constructs soft predicates which return values in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$. $\soft{\lor}$ and $\neg$.  Softened predicates approximate their hard counterparts.
+\item \textbf{Predicate Relaxation} constructs soft predicates which return values in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$. $\soft{\lor}$ and $\soft{\neg}$.  Softened predicates approximate their hard counterparts.
 \item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo method that simulates Markov chains at different temperatures.  Predicate relaxation is parameterized by a temperature which controls the amount of approximation introduced.  We use replica exchange to draw samples from the unrelaxed model. 
 \end{enumerate}
 
@@ -59,11 +59,18 @@ This allows us to use predicates to represent knowledge that has complex Boolean
 Continuing the previous example, we may know that a person is \emph{not} hypoglycemic, or that they are hypoglycemic \emph{or} hyperglycemic, or \emph{neither}.
 In order to relax complex predicates, we construct a soft Boolean algebra with continuous counterparts to equality, inequalities and logical connectives.
 
-Soft predicates resemble likelihood functions; they both return real values that measure the consistency of values of variables.
-To perform inference we take this analogy literally by replacing the likelihood term in a posterior with a soft predicate.
-This yields an \emph{approximate posterior} which can be sampled from using existing likelihood based inference procedures.
-The approximate posterior diverges from the true posterior as an increasing function of the temperature parameter used in predicate relaxation.
-To sample from the true posterior we augment replica exchange -- which simulates several Markov chains at different temperatures in parallel -- with an accept-reject phase. 
+% Soft predicates resemble likelihood functions; they both return real values that measure the consistency of values of variables.
+To perform inference we replace the likelihood term in the Bayesian posterior with a soft predicate.
+This yields an \emph{approximate posterior} which we sample from using Markov Chain Monte Carlo.
+However, relaxed predicates can still induce complex, multimodal posteriors.
+Increasing the temperature smooths the approximate posterior, but also causes it to diverge from the true posterior.
+We use replica exchange to mitigate the trade off. 
+Replica exchange simulates low temperature chains -- which explore vasts regions of the sample space -- in parallel with high temperature chain -- which sample accurately from localized regions.
+We augment replica exchange with an accept-reject phase, which allows us to use approximate posteriors to sample from the true posterior.
+
+
+% The approximate posterior diverges from the true posterior as an increasing function of the temperature parameter used in predicate relaxation.
+% To sample from the true posterior we augment replica exchange -- which simulates several Markov chains at different temperatures in parallel -- with an accept-reject phase. 
 
 
 % This degree to which a is is determined by a notion of distance.
