@@ -118,7 +118,7 @@ Figure \ref{negationimg} illustrates this issue.
 
 \begin{figure}
 \includegraphics[width=\linewidth]{negation.eps}
-\caption{The problem of negation.  In all figures, soft (blue) and hard (red, dashed) predicates as a function of $x$.  Left: $x \soft{>} 0$ approximates $x > 0$. Middle:  the standard approach to continuous negation $(1- (x \soft{>} 0))$ violates relaxation criteria (iii). Right: the desired outcome of soft negation of $x \soft{>} 0$.}\label{negationimg}
+\caption{The problem of negation.  All figures: soft (blue) and hard (red, dashed) predicates as a function of $x$.  Left: $x \soft{>} 0$ approximates $x > 0$. Middle:  the standard approach to continuous negation $(1- (x \soft{>} 0))$ violates relaxation criteria (iii). Right: the desired outcome of soft negation of $x \soft{>} 0$.}\label{negationimg}
 \end{figure}
 
 
@@ -214,7 +214,7 @@ In Bayesian inference this is the posterior, dictated by Bayes' theorem as the p
 Approximate inference using soft predicates takes a similar form.
 
 \begin{definition}
-Let $\vect{X} = (X_1, \dots, X_n)$ be a model, $\lk$ be a predicate that conditions $\vect{X}$, and  $\vect{x}$ be a realization of $\vect{X}$.
+Let $\vect{X}$ be a model, $\lk$ be a predicate that conditions $\vect{X}$, and  $\vect{x}$ be a realization of $\vect{X}$.
 Assuming a prior density $p$, the approximate posterior $f$ is the product:
 \begin{equation}\label{fpm}
 f(\vect{x}) = p(\vect{x}) \cdot \softv{\lk}(\vect{x})
@@ -225,8 +225,7 @@ This is modulated by the temperature $\alpha$ used in the  relaxation kernels wh
 At maximum temperature $\soft{\lk}$ has no effect, and the approximate posterior $f$ is equal to the prior $p$.
 At zero temperature, $f$ recovers the true posterior since parameter values which violate the condition are given zero weight.
 
-For illustration, let $\vect{X} = (X_1, X_2)$ be a model where $X_{1,2} \sim \mathcal{N}(0, 1)$.
-If the model is conditioned on $X_1 + X_2 = 0$, the approximate posterior is:
+For illustration, if $X_{1,2} \sim \mathcal{N}(0, 1)$ constitute a model conditioned on $X_1 + X_2 = 0$, the approximate posterior is:
 \begin{equation}\label{approxposterior}
 f_\alpha(x_1, x_2) = \mathcal{N}_{0,1}(x_1) \cdot \mathcal{N}_{0,1}(x_2) \cdot k_\alpha(\rho(x_1 + x_2, 0)) 
 \end{equation}
