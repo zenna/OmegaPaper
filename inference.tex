@@ -1,4 +1,6 @@
 \section{Predicate Exchange}
+In this section we formalize the construction of $\soft{\lk}$ from $\lk$, and sampling from models conditioned on $\soft{\lk}$.
+
 
 % Predicate exchange is /a procedure to sample from a model conditioned on a predicate.
 % To condition a model on a predicate we develop \emph{predicate exchange}, a likelihood-free inference procedure. 
@@ -11,7 +13,6 @@ $\soft{\lk}$ is 1 iff $\lk$ is 1, but otherwise takes nonzero values denoting th
 \item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo procedure that simulates several replicas  of the model conditioned on $\soft{\lk}$ at different temperatures, ultimately in order to condition on $\lk$. 
 \end{enumerate}
 
-In this section we formalize the construction of $\soft{\lk}$ from $\lk$, and sampling from models conditioned on $\soft{\lk}$.
 
 \subsection{Predicate Relaxation}\label{predexchange}
 
@@ -69,8 +70,8 @@ The distance $\rho(\vect{x}, A) = \inf \left\{\rho(\vect{x}, a) \mid a \in A\rig
 % d_{p}((x_{1},\ldots ,x_{n}),(y_{1},\ldots ,y_{n}))=\|\left(d_{X_{1}}(x_{1},y_{1}),\ldots ,d_{X_{n}}(x_{n},y_{n})\right)\|_{p}}
 % $$
 
-\paragraph{Relaxation Kernels} A relaxation kernel $k_\alpha$ bounds distances from $\mathbb{R}$ to the unit interval, and is paramterized by temperature $\alpha$.
-A relaxation kernel is valid if soft-predicates constructed with it satisfy the aforementioned relaxation axioms.
+\paragraph{Relaxation Kernels}A relaxation kernel $k_\alpha$ maps a distance in $\mathbb{R}$ to the unit interval, and is parameterized by temperature $\alpha$.
+A relaxation kernel is valid if soft predicates constructed with it satisfy the aforementioned relaxation axioms.
 One such kernel, which we restrict our attention to, is the squared exponential kernel:
 \begin{equation}
 k_{\alpha}(r) = \exp\left(-\frac{r^2}{\alpha}\right)
@@ -142,15 +143,19 @@ Consequently, when used to condition in replica exchange, $a_1$ and not $a_0$ ar
 % \end{enumerate}
 % \end{definition}
 
-\begin{figure}
+% \begin{figure}
   \begin{align*}
-  x \dsoft{=} y &= (\text{if } x = y  \text{ then } \exp(-1/\alpha) \text{ else } 1, k_\alpha(\rho(x, y)))\\
+  x \dsoft{=} y &= (a_0, k_\alpha(\rho(x, y))) \text{where} a = \begin{cases}
+    \ex(1/\alpha) & \text{ if } x = y\\
+    1             & \text{otherwise}
+  \end{cases}\\
+  % (\text{if } x = y  \text{ then } \exp(-1/\alpha) \text{ else } 1, k_\alpha(\rho(x, y)))\\
   x \dsoft{>} y &= (k_\alpha(\rho(x, [-\infty, y])), k_\alpha(\rho(x, [y, \infty])))\\
   x \dsoft{<} y &= (k_\alpha(\rho(y, [x, \infty])), k_\alpha(\rho(y, [-\infty, x])))\\
   \end{align*}
-  \caption{Two-sided soft primitive numerical primitives}
-\label{softw}
-\end{figure}
+  % \caption{Two-sided soft primitive numerical primitives}
+% \label{softw}
+% \end{figure}
   
 
 
@@ -198,7 +203,7 @@ Assuming a prior density $p$, the approximate posterior $f$ is the product:
 f(\vect{x}) = p(\vect{x}) \cdot \softv{\lk}(\vect{x})
   \end{equation}
 \end{definition}
-$\soft{\lk}$ down weights parameter values which violate $\lk$ by the degree to which they violate it. 
+$\soft{\lk}$ downweights parameter values which violate $\lk$ by the degree to which they violate it. 
 This is modulated by the temperature $\alpha$ used in the  relaxation kernels which constitute $\soft{\lk}$.
 At maximum temperature $\soft{\lk}$ has no effect, and the approximate posterior $f$ is equal to the prior $p$.
 At zero temperature, $f$ recovers the true posterior since parameter values which violate the condition are given zero weight.
@@ -220,9 +225,9 @@ For instance, consider two uniformly distributed random variables $x \sim \unif(
 and predicates $p_x$, $p_y$ defined as $x \soft{=} 0$ and $y \soft{=} 0$ respectively.
 The expectation of a soft predicate quantifies the degree to which it is true, and is a non-decreasing function of temperature.
 The prior expectation of $p_x$ is significantly larger than that of $p_y$.
-because values far from the 0 are more likely under $y$.
+because values far from zero are more likely under $y$.
 
-This disparity persists if model is conditioned.
+This disparity persists if the model is conditioned.
 Figure \ref{scaling} shows samples from the model conditioned on $p_x \soft{\lor} p_y$, and a disparity in the histograms of the marginals of $p_x$ and $p_y$.
 The disparity decreases with decreasing temperature, and disappears at zero.
 Still, it is undesirable in practice because it means that the approximation error is distributed unevenly.
