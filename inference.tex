@@ -1,8 +1,4 @@
 \section{Predicate Exchange}
-In this section we motivate and formalize the relaxation of predicates expressed as compositions of simple functions.
-In addition, the latter part of this section defines what it means to condition on a soft predicate.
-Together, these form the foundation of the relaxation and conditional sampling from probabilistic programs in Section \ref{implement}.
-% and concretized within probabilistic programs in the Section \ref{implement}.
 
 % Predicate exchange is /a procedure to sample from a model conditioned on a predicate.
 % To condition a model on a predicate we develop \emph{predicate exchange}, a likelihood-free inference procedure. 
@@ -14,6 +10,12 @@ $\soft{\lk}$ is 1 iff $\lk$ is 1, but otherwise takes nonzero values denoting th
 % Predicate relaxation allows us to apply likelihood based MCMC inference procedures.
 \item  \textbf{Replica Exchange} is a Markov Chain Monte Carlo procedure that simulates several replicas  of the model conditioned on $\soft{\lk}$ at different temperatures, ultimately in order to condition on $\lk$. 
 \end{enumerate}
+
+In this section we motivate and formalize the relaxation of predicates expressed as compositions of simple functions.
+In addition, the latter part of this section defines what it means to condition on a soft predicate.
+Together, these form the foundation of the relaxation and conditional sampling from probabilistic programs in Section \ref{implement}.
+% and concretized within probabilistic programs in the Section \ref{implement}.
+
 
 
 \subsection{Predicate Relaxation}\label{predexchange}
@@ -48,21 +50,21 @@ $\softv{\lk} : \xp \to [0, 1]$ parameterized by $\alpha \in [0, \infty)$ is a re
 
 % \todo{Explain motivate each of these desiderata}
 
-\paragraph{Distance Based Satisfiability}
-To construct $\soft{\lk}$ we assume $\xp$ has a metric, and define $\softv{\lk}(\vect{x})$ -- the degree to which $\vect{x}$ satisfies $\lk$ -- as the \emph{distance} from $\vect{x}$ to an element in $\xp$ that satisfies $\ell$.
-In general there are several values which satisfy $\ell$ and several corresponding distances.
-Naturally, we are interested in the smallest distance, since it indicates the smallest change we could make to $\vect{x}$ to satisfy $\lk$.
-With respect to a metric $\rho$, we refer to the soft predicate that maps $\vect{x}$ to the distance to the closest satisfying element in $\xp$ as the \emph{tightest} relaxation of $\ell$:
-
-\begin{definition}
-Let $\rho$ be a metric on $\xp$, $k_\alpha$ be a relaxation kernel (described below) which bounds distances to $[0, 1]$, and $A = \{\vect{x} \mid \lk(\vect{x}) = 1\}$ be the satisfying set.
+\paragraph{Similarity Based Satisfiability}
+% We use distance to concretize and define $\softv{\lk}(\vect{x})$ -- the degree to which $\vect{x}$ satisfies $\lk$ -- as the \emph{similarity} between $\vect{x}$ and an element in $\xp$ that satisfies $\ell$.
+There is a straightforward, but generally incomputable, construction of $\softv{\lk}$ that satisfies the relaxation axioms.
+% Generally, To construct $\soft{\lk}$ we assume $\xp$ has a metric, and define $\softv{\lk}(\vect{x})$ -- the degree to which $\vect{x}$ satisfies $\lk$ -- as the \emph{similarity} between $\vect{x}$ and an element in $\xp$ that satisfies $\ell$.
+% In general there are several values which satisfy $\ell$ and several corresponding similarities.
+% Naturally, we are interested in the most similar, since it indicates the smallest change we could make to $\vect{x}$ to satisfy $\lk$.
+% With respect to a metric $\rho$, we refer to the soft predicate that maps $\vect{x}$ to the similarity between $\vect{x}$ and the the most similar satisfying element in $\xp$ as the \emph{tightest} relaxation of $\lk$:
+Let $\rho$ be a metric on $\xp$, $k_\alpha$ be a relaxation kernel (described below) which maps distances in $\mathbb{R}$ to similarities in $[0, 1]$, and $A = \{\vect{x} \mid \lk(\vect{x}) = 1\}$ be the satisfying set.
 The predicate $\softv{\lk}_{\inf}(\vect{x})$ is the tightest relaxation of $\ell$, defined as:
 \begin{equation}\label{eq;linf}
 \softv{\lk}_{\inf}(\vect{x}) = k_\alpha(\rho(\vect{x}, A))
 \end{equation}
 The distance $\rho(\vect{x}, A) = \inf \left\{\rho(\vect{x}, a) \mid a \in A\right\}$ is the smallest distance between $\vect{x}$ and any element of $A$.
+
 % As shown in the Section \ref{implement}, $\soft{\lk}_{\inf}$ can be difficult to compute.
-\end{definition}
 
 % \paragraph{Product Metrics}The metric $\rho$ is parameterized by the type of input.
 % For canonical spaces such as $\mathbb{R}$ and $\mathbb{N}$ we default to the Euclidean distance. 
@@ -94,7 +96,8 @@ k_{\alpha}(r) = \exp\left(-\frac{r^2}{\alpha}\right)
 
 
 \paragraph{Soft Primitives}
-To relax complex programs we first define relaxations for numerical and logical primitives.
+The distance $\rho(x, A)$ from a point to the satisfying set is in general incomputable.
+To relax complex programs we instead rely on composition, but first define relaxations for numerical and logical primitives.
 Soft equality is straightforward: $x \soft{=} y$ is defined as $k_\alpha(\rho(x, y))$.
 A soft inequality such as $x \soft{>} y$ is a function of the amount by which $x$ must be increased (or $y$ decreased) until $x > y$ is true.
 This is the distance between $x$ and the interval $[y, \infty]$, where the distance between a point and any interval $[a, b]$ is the smallest distance between $x$ and any element in $[a, b]$, and therefore 0 if $x \in [a, b]$:
