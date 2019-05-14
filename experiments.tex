@@ -28,6 +28,7 @@ In Figure \ref{fig:density} we use conditioning to truncate a normal distributio
 	\caption{Samples from models using different procedures.  Each model is $x,y \sim \unif(-1,1)$ conditioned on (i) $x \soft{=} y$, (ii) $|x| \soft{>} |y|$, (iii) $x^2 \soft{=} y^2$ and (iv) $\sin(kx)\cos(kx) \soft{>} 0.9999$.
 	Inference procedures are: Single Site Metropolis Hastings (SSMH), Hamiltonian Monte Carlo (HMC), and Predicate-Exchange (PE) using HMC and SSMH within chain.}
 	\label{gridn}
+	\vspace{-1em}
 \end{figure}	
 
 \begin{figure}[!htb]
@@ -56,6 +57,7 @@ In Figure \ref{fig:density} we use conditioning to truncate a normal distributio
 % 	\end{minipage}
 	\caption{Left: Kernel density estimation from samples of Gaussian truncated to $[0, 1]$ through conditioning. Shown at different temperatures. Right: transitions between different temperatures of replica exchange.  For each matrix, value in row $i$ and column $j$ is the fraction of times replica exchange swapped a state at temperature $i$ to temperature $j$.  Temperature is lowest at 4 and increases exponentially to 1.  Clockwise, starting top-left: transition counts are accumulated for the first, second, third and fourth quarters of simulation.}
 	\label{fig:density}
+	\vspace{-.5em}
 \end{figure}
 
 
@@ -86,6 +88,7 @@ Figure \ref{fig:invrtmcmc} visualizes conditional samples.
 	\includegraphics[width=0.9\linewidth]{jampy2.pdf}
 	\caption{Inverse rendering with and without no-intersection constraints.  Top row: raytraced scenes.  Bottom row: red pixels denote the existence of an intersection between spheres at that point.  (middle) and (right) scenes are samples from posterior over scenes having observed image on left.  The observed scene has no intersections.  Without the no-intersection condition (right), intersections occur.  Conditioning on intersection eliminates intersections (middle).}
 	\label{fig:invrtmcmc}
+	\vspace{-1em}
 \end{figure}
 
 
@@ -142,6 +145,7 @@ with only a short observed time-series.
 		
 		\caption{Top: Actual (dotted) and predicted trajectories that were learned using a partial trajectory. Center: Distribution of predicted trajectories learned only using the first ten data points and a tie with a secondary patient. Bottom, top: MSE when tie is present.  Bottom, bottom: without tie.  Tying expectations has dramatic influence on prediction error, while as more data is observed, the effect of tying decreases.}
 		\label{fig:rnn-samples}
+		\vspace{-1em}
 \end{figure}
 
 
@@ -222,8 +226,9 @@ Predicate exchange  compares favourably in most scenarios.
  \end{tabular}
  \label{results}
  \caption{Comparison of expectations of samples from $d$ dimensional ring.  Theoretical value is 0 in all cases.}
- \end{center}
+\end{center}
+\vspace{-2em}
 \end{figure}
-
+% \vspace{-5em}
 
   
