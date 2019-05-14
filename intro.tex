@@ -83,7 +83,8 @@ We augment replica exchange with an accept-reject phase, which allows us to use 
 Predicate exchange addresses a shortcoming of probabilistic programming languages,
 which have vastly expanded the class of probabilistic models that can be expressed, but still restrict the kinds of predicates that can be conditioned on to those which result in a tractable likelihood.
 In a similar vein to  \cite{wingate2011lightweight} we provide a light-weight implementation that modulates the execution of a stochastic simulation based model to perform inference.
-This means predicate exchange is easily incorporated into existing probabilistic languages. 
+This means predicate exchange is easily incorporated into existing probabilistic languages.
+For a concrete implementation, we build predicate exchange into the \textsc{Omega} probabilistic programming language\footnote{\textsc{Omega} is open-source software available github.com/zenna/Omega.jl} \cite{rcd},
 
 % In these cases, a soft predicate may underestimate the degree to which values of latent variables are consistent with the predicate, which can negatively affect inference in practice.
 

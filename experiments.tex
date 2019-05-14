@@ -54,7 +54,7 @@ In Figure \ref{fig:density} we use conditioning to truncate a normal distributio
 % %	\fbox{\includegraphics[width=.16\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{100-0}}
 % %	\fbox{\includegraphics[width=.16\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{1000-0}}				
 % 	\end{minipage}
-	\caption{Left: Kernel density estimation from samples of Gaussian truncated to $[0, 1]$ through conditioning. Shown at different temperatures. Right: transitions between different temperatures of replica exchange.  For each matrix, value in row $i$ and column $j$ is the fraction of times replica exchange swapped state at temperature $i$ to temperature $j$.  Temperature is lowest at 4 and increases logarithmically to 1.  Clockwise, starting top-left: transition counts are accumulated for the first, second, third and fourth quarters of simulation.}
+	\caption{Left: Kernel density estimation from samples of Gaussian truncated to $[0, 1]$ through conditioning. Shown at different temperatures. Right: transitions between different temperatures of replica exchange.  For each matrix, value in row $i$ and column $j$ is the fraction of times replica exchange swapped a state at temperature $i$ to temperature $j$.  Temperature is lowest at 4 and increases exponentially to 1.  Clockwise, starting top-left: transition counts are accumulated for the first, second, third and fourth quarters of simulation.}
 	\label{fig:density}
 \end{figure}
 
