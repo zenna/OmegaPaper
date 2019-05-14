@@ -4,7 +4,7 @@
 % To condition a model on a predicate we develop \emph{predicate exchange}, a likelihood-free inference procedure. 
 Given a model (a collection of random variables)  $\vect{X} = (X_1, X_2, \dots, X_n)$ and a predicate $\lk$ which maps a model realization  $\vect{x} = (x_1, x_2, \dots, x_n)$ to 0 or 1, predicate exchange samples from the posterior distribution of $\vect{X}$ conditioned on $\ell$ through two steps:
 \begin{enumerate}
-\item \textbf{Predicate Relaxation} constructs a soft predicate $\soft{\lk}$ from $\lk$. $\soft{\lk}$ maps a model realization $\vect{x} \in \xp$ to a value in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$, $\soft{\lor}$ and $\soft{neg}$.
+\item \textbf{Predicate Relaxation} constructs a soft predicate $\soft{\lk}$ from $\lk$. $\soft{\lk}$ maps a model realization $\vect{x}$ in a realization space $\xp$ to a value in a continuous Boolean algebra: the unit interval $[0, 1]$ with continuous logical connectives $\soft{\land}$, $\soft{\lor}$ and $\soft{\neg}$.
 $\soft{\lk}$ is 1 iff $\lk$ is 1, but otherwise takes nonzero values denoting the degree to which $\lk$ is satisfied.
 % The relaxation is parameterized by a temperature.
 % Predicate relaxation allows us to apply likelihood based MCMC inference procedures.
@@ -22,7 +22,7 @@ Together, these form the foundation of the relaxation and conditional sampling f
 
 Our objective is to construct a soft predicate $\soft{\lk}$ that introduces approximations into $\lk$ to make inference more tractable.
 We refer to $\soft{\lk}$ as a \emph{relaxation} of $\lk$.
-Informally, these approximations mean that while conditioning on $\lk$ eliminates a set of possible values, conditioning on $\soft{\lk}$ only makes them less likely.
+Informally, these approximations mean that while conditioning on $\lk$ eliminates a set of values, conditioning on $\soft{\lk}$ makes them less likely.
 % Formally, $\soft{Y}$ approximates
 % the sense that \todo{IN WHICH WAY?}when viewed as a likelihood function on model parameters, $\soft{\lk}$ has a broader support, assigning nonzero weights to parameter values which have zero weight under $\lk$.
 
@@ -58,7 +58,7 @@ There is a straightforward, but generally incomputable, construction of $\softv{
 % Naturally, we are interested in the most similar, since it indicates the smallest change we could make to $\vect{x}$ to satisfy $\lk$.
 % With respect to a metric $\rho$, we refer to the soft predicate that maps $\vect{x}$ to the similarity between $\vect{x}$ and the the most similar satisfying element in $\xp$ as the \emph{tightest} relaxation of $\lk$:
 Let $\rho$ be a metric on $\xp$, $k_\alpha$ be a relaxation kernel (described below) which maps distances in $\mathbb{R}$ to similarities in $[0, 1]$, and $A = \{\vect{x} \mid \lk(\vect{x}) = 1\}$ be the satisfying set.
-The predicate $\softv{\lk}_{\inf}(\vect{x})$ is the tightest relaxation of $\ell$, defined as:
+The predicate $\softv{\lk}_{\inf}(\vect{x})$ is a relaxation of $\ell$:
 \begin{equation}\label{eq;linf}
 \softv{\lk}_{\inf}(\vect{x}) = k_\alpha(\rho(\vect{x}, A))
 \end{equation}
@@ -128,6 +128,7 @@ In other words, $\soft{\lk}$ is a one-sided approximation.
 To resolve this, we use \emph{two-sided} soft primitives which yield a pair $(a_0, a_1)$ where $a_0, a_0 \in [0, 1]$.
 $a_1$ is consistent with $\lk$ on $1$, just as before, while $a_0$ is consistent with $\neg \lk$ on $1$.
 For example if $x \dsoft{>} 0$ evaluates to $(a_0, a_1)$, then $a_1$ is 1 iff $x > 0$ (Figure \ref{negationimg} (a)) and $a_0$ is 1 iff $x \leq 0$ (Figure \ref{negationimg} (c)).
+Two-sided soft equality and inequalities are defined as:
 
 {\small
 \begin{equation}
@@ -143,9 +144,8 @@ x \dsoft{<} y &= (k_\alpha(\rho(y, [x, \infty])), k_\alpha(\rho(y, [-\infty, x])
 \end{equation}
 }  % \caption{Two-sided soft primitive numerical primitives}
 
-Two-sided soft conjunction and soft disjunction follow De Morgan's laws.
-Soft negation then simply swaps the elements of $(a_0, a_1)$ to yield $(a_1, a_0)$.
-A complete two-sided soft logic are below:
+Two-sided soft conjunction and soft disjunction follow De Morgan's laws, and
+soft negation simply swaps the elements of $(a_0, a_1)$ to yield $(a_1, a_0)$:
 
 {\small
 \begin{equation}  
@@ -160,7 +160,7 @@ A complete two-sided soft logic are below:
 
 Conditioning does not treat the outputs of a predicate symmetrically.
 Rather, it restricts the model to values which produce 1.
-Consequently, when used to condition in replica exchange, $a_1$ and not $a_0$ are used in the target density.
+Consequently, when used to condition in replica exchange, $a_1$ and not $a_0$ is used in the target density.
 
 % \begin{definition}
 % The function $\softv{Y} : \Omega \to [0, 1]^2$ parameterized by $\alpha \in [0, \infty)$ is a two-sided relaxation of a $Y: \Omega \to \{0, 1\}$ if:
