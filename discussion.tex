@@ -1,15 +1,22 @@
 \section{Discussion}
 In this work we expanded the class of predicates that probabilistic models can be conditioned on in practice.
-
-Control flow remains a challenge, and is related to the path explosion problem in program analysis.
-Various strategies have been developed \cite{cadar2008exe, sen2005cute} to mitigate this, largely for automated tested.
-Future work is to explore the extent to which these concepts can be adapted to the probabilistic domain.
-
-There are several inference strategies other than replica exchange MCMC that could exploit predicate relaxation.
-Maximum posterior inference is the most immediate option, which entails maximizing Equation \ref{fpm}.
-
-% Black-box inference methods have gained significant traction due to how general, flexible, a vs grey box
+This pushes predicates more into the domain of constraint solves.
+However, it remains difficult to delineate which predicates are amenable to our method.
+% In future work, we intend to characterise this 
 
 Equality conditions on continuous variables indicate sets of zero measure.
 This is problematic because the probability of proposing a satisfying state in a Markov chain becomes zero.
 In these cases predicate exchange must sample at a minimum temperature strictly greater than zero, which is approximate.
+
+Hard predicates provide a single bit of information.
+Predicate relaxation effectively increases the quantity of information available to inference procedures to a single real value.
+% Future research is to extend this further, possibly by providing a candidate change that 
+
+Control flow remains a challenge, and is related to the path explosion problem in program analysis \cite{cadar2008exe, sen2005cute}.
+Future work is to adapt program analysis solutions to this problem.
+
+% There are several inference strategies other than replica exchange MCMC that could exploit predicate relaxation.
+% Maximum posterior inference is the most immediate option, which entails maximizing Equation \ref{fpm}.
+
+% Black-box inference methods have gained significant traction due to how general, flexible, a vs grey box
+

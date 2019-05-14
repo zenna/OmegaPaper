@@ -11,17 +11,11 @@ A variety of approaches in this general regime  \cite{beaumont2002approximate,si
 Marjoram et al. \yrcite{marjoram2003markov} simulated Markov Chains according to the prior, but applied the same summary statistic based filtering to yield approximate posterior samples.
 A small tolerance leads to a high rate of rejected simulations, whereas a large tolerance results in an unacceptable approximation error.
 Among several solutions are dynamically decreasing the tolerance \cite{toni2008approximate}, importance reweighting samples based on distance \cite{wegmann2009efficient}, adapting the tolerance based on distance \cite{del2012adaptive,lenormand2013adaptive}, as well as annealing the tolerance as a temperature parameter \cite{albert2015simulated}.
+Predicate exchange targets simulation models and uses distance metrics, but does not require summary statistics.
 
-% Despite widespread use in physics, replica exchange  has seen only limited application to Bayesian inference problems.
-% In a notable exception \cite{habeck2005replica} reparametrize both the prior and likelihood terms in the Bayesian posterior with two extra parameters, which independently control the influence of the likelihood function, and replace the prior
-% $\pi(\theta)$ by $\pi(\theta; q) \propto \exp(-\beta E(\theta; q))$, where $E$  Tsallis generalization  
-% Baragatti et al. \cite{baragatti2013likelihood} construct an parallel chains where the temperature of each chain is set at the tolerance parameter.
-
-
-Predicate exchange targets simulation models and uses distance metrics, but performs asymptotically exact inference without summary statistics.
-A recent approach \cite{graham2017asymptotically}  with similar objectives develops a Hamiltonian Monte Carlo variant, using a quasi-Newton method during leap-frog integration to exactly solve the observation constraint.
-This is limited to differentiable models conditioned with equality.
-Predicate exchange is not limited to differentiable models, but must be approximate when the condition is of measure zero.
+% A recent approach \cite{graham2017asymptotically}  with similar objectives develops a Hamiltonian Monte Carlo variant, using a quasi-Newton method during leap-frog integration to exactly solve the observation constraint.
+% This is limited to differentiable models conditioned with equality.
+% Predicate exchange is not limited to differentiable models, but must be approximate when the condition is of measure zero.
 
 % PPLS
 Probabilistic logics such as ProbLog \cite{richardson2006markov} and Markov logic networks \cite{de2007problog} extend first order logic to express both models and conditions.
