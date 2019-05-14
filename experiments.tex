@@ -61,7 +61,7 @@ In Figure \ref{fig:density} we use conditioning to truncate a normal distributio
 
 
 \paragraph{Inverse Ray Tracing}
-In this example we sample from a posterior distribution over scenes conditioned an observed rendering.  A scene $s$ is a set of $n \sim \textrm{poisson}(\lambda = 3)$ spheres.
+In this example we sample from a posterior distribution over scenes conditioned on an observed rendering.  A scene $s$ is a set of $n \sim \textrm{poisson}(\lambda = 3)$ spheres.
 A sphere is parameterized by color, reflectance, emission color, transparency, radius and position, all with a uniform prior.
 Let $r$ be a ray tracing function that maps scenes to image, $i_{obs}$ be an observed image, and $\textrm{nointersect}$ be a predicate that maps a scene to 1 iff any spheres intersect.
 The prior $s$ is conditioned on the conjunction of the inverse rendering and the no-intersection constraints:
