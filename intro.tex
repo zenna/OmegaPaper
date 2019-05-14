@@ -65,7 +65,7 @@ This yields an \emph{approximate posterior} which we sample from using Markov Ch
 However, relaxed predicates can still induce complex, multimodal posteriors.
 Increasing the temperature smooths the approximate posterior, but also causes it to diverge from the true posterior.
 We use replica exchange to mitigate the trade off. 
-Replica exchange simulates low temperature chains -- which explore vasts regions of the sample space -- in parallel with high temperature chain -- which sample accurately from localized regions.
+Replica exchange simulates high temperature chains -- which explore vasts regions of the sample space -- in parallel with low temperature chain -- which sample accurately from localized regions.
 We augment replica exchange with an accept-reject phase, which allows us to use approximate posteriors to sample from the true posterior.
 
 
