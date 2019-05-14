@@ -6,13 +6,10 @@ Various strategies have been developed \cite{cadar2008exe, sen2005cute} to mitig
 Future work is to explore the extent to which these concepts can be adapted to the probabilistic domain.
 
 There are several inference strategies other than replica exchange MCMC that could exploit predicate relaxation.
-Maximum posterior inference is the most immediate option, which would entail maximizing equation \ref{fpm}.
+Maximum posterior inference is the most immediate option, which entails maximizing Equation \ref{fpm}.
 
 % Black-box inference methods have gained significant traction due to how general, flexible, a vs grey box
 
-Our approach comes with certain limitations.
 Equality conditions on continuous variables indicate sets of zero measure.
 This is problematic because the probability of proposing a satisfying state in a Markov chain becomes zero.
 In these cases predicate exchange must sample at a minimum temperature strictly greater than zero, which is approximate.
-Another limitation occurs if a predicate has branches (e.g., if-then-else statements) such that the execution path taken depends on uncertainty in the model.
-Such branches make it more difficult to estimate how close values of variables are to satisfying a predicate.
