@@ -55,7 +55,7 @@ We concretize this concept in terms of distance: a realization of the model is a
 % To construct a soft predicate we assume the model has a metric, and informally, a variable values satisfy a predicate more if they are closer to the satisfying set.  define the degree to which a value satisfies a predicate in terms of a distance from an element in $\xp$ that satisfies.
 
 Conventional predicates exist in a Boolean algebra; they can be conjoined, disjoined and negated.
-This allows us to use predicates to represent knowledge that has complex Boolean structure.
+This enables predicates to represent knowledge that has complex Boolean structure.
 Continuing the previous example, we may know that a person is \emph{not} hypoglycemic, or that they are hypoglycemic \emph{or} hyperglycemic, or \emph{neither}.
 To be able to relax complex predicates, we construct a soft Boolean algebra with continuous counterparts to equality, inequalities and logical connectives.
 
@@ -65,7 +65,7 @@ This yields an \emph{approximate posterior} which we sample from using Markov Ch
 However, relaxed predicates can still induce complex, multimodal posteriors.
 Increasing the temperature smooths the approximate posterior, but also causes it to diverge from the true posterior.
 We use replica exchange to mitigate the trade off. 
-Replica exchange simulates high temperature chains -- which explore vasts regions of the sample space -- in parallel with low temperature chain -- which sample accurately from localized regions.
+Replica exchange simulates high temperature chains -- which explore vasts regions of the sample space -- in parallel with low temperature chains which sample accurately from localized regions.
 We augment replica exchange with an accept-reject phase, which allows us to use approximate posteriors to sample from the true posterior.
 
 

@@ -49,10 +49,12 @@ $\softv{\lk} : \xp \to [0, 1]$ parameterized by $\alpha \in [0, \infty)$ is a re
 \end{definition}
 
 % \todo{Explain motivate each of these desiderata}
+Axioms (i) and (ii) allow us to vary the fidelity to which $\softv{\ell}$ approximates $\ell$, and axiom (iii) prevents $\softv{\ell}$ from deviating from $\ell$ on values which satisfy $\ell$.
+These axioms allow us to construct a sampling procedure that (i) samples accurately from local regions, but also (ii) explores large parts of the realization space, and (iii) in some cases can sample from the true posterior without approximation.
 
 \paragraph{Similarity Based Satisfiability}
 % We use distance to concretize and define $\softv{\lk}(\vect{x})$ -- the degree to which $\vect{x}$ satisfies $\lk$ -- as the \emph{similarity} between $\vect{x}$ and an element in $\xp$ that satisfies $\ell$.
-There is a straightforward, but generally incomputable, construction of $\softv{\lk}$ that satisfies the relaxation axioms.
+There is a straightforward construction of $\softv{\lk}$ that satisfies the relaxation axioms.
 % Generally, To construct $\soft{\lk}$ we assume $\xp$ has a metric, and define $\softv{\lk}(\vect{x})$ -- the degree to which $\vect{x}$ satisfies $\lk$ -- as the \emph{similarity} between $\vect{x}$ and an element in $\xp$ that satisfies $\ell$.
 % In general there are several values which satisfy $\ell$ and several corresponding similarities.
 % Naturally, we are interested in the most similar, since it indicates the smallest change we could make to $\vect{x}$ to satisfy $\lk$.
@@ -96,8 +98,8 @@ k_{\alpha}(r) = \exp\left(-\frac{r^2}{\alpha}\right)
 
 
 \paragraph{Soft Primitives}
-The distance $\rho(x, A)$ from a point to the satisfying set is in general incomputable.
-To relax complex programs we instead rely on composition, but first define relaxations for numerical and logical primitives.
+Unfortunately, $\softv{\lk}_{\inf}$ is in general incomputable since the distance $\rho(x, A)$ from a point to the satisfying set is incomputable.
+Instead, to relax $\ell$ we relax the primitive functions it is composed of, which boil down to a small set of numerical and logical primitives.
 Soft equality is straightforward: $x \soft{=} y$ is defined as $k_\alpha(\rho(x, y))$.
 A soft inequality such as $x \soft{>} y$ is a function of the amount by which $x$ must be increased (or $y$ decreased) until $x > y$ is true.
 This is the distance between $x$ and the interval $[y, \infty]$, where the distance between a point and any interval $[a, b]$ is the smallest distance between $x$ and any element in $[a, b]$, and therefore 0 if $x \in [a, b]$:
@@ -221,19 +223,18 @@ Assuming a prior density $p$, the approximate posterior $f$ is the product:
 f(\vect{x}) = p(\vect{x}) \cdot \softv{\lk}(\vect{x})
   \end{equation}
 \end{definition}
-$\soft{\lk}$ downweights parameter values which violate $\lk$ by the degree to which they violate it. 
-This is modulated by the temperature $\alpha$ used in the  relaxation kernels which constitute $\soft{\lk}$.
-At maximum temperature $\soft{\lk}$ has no effect, and the approximate posterior $f$ is equal to the prior $p$.
-At zero temperature, $f$ recovers the true posterior since parameter values which violate the condition are given zero weight.
 
 For illustration, if $X_{1,2} \sim \mathcal{N}(0, 1)$ constitute a model conditioned on $X_1 + X_2 = 0$, the approximate posterior is:
 \begin{equation}\label{approxposterior}
 f_\alpha(x_1, x_2) = \mathcal{N}_{0,1}(x_1) \cdot \mathcal{N}_{0,1}(x_2) \cdot k_\alpha(\rho(x_1 + x_2, 0)) 
 \end{equation}
+$\soft{\lk}$ downweights parameter values which violate $\lk$ by the degree to which they violate it.
+This is modulated by the temperature $\alpha$ used in the  relaxation kernels which constitute $\soft{\lk}$.
+At maximum temperature $\soft{\lk}$ has no effect, and the approximate posterior $f$ is equal to the prior $p$.
+At zero temperature, $f$ recovers the true posterior since parameter values which violate the condition are given zero weight.
+$\alpha$ trades-off between tractability of inference and the fidelity of the approximation.
+If $\alpha$ is too high $\soft{\lk}$ will diverge too greatly from $\lk$. If it is too low, convergence will be slow.
 
-%  q
-The temperature parameter trades off between tractability of inference and the fidelity of the approximation.
-If the temperature is too high $\soft{\lk}$ will diverge too greatly from $\lk$. If it is too low, convergence will be slow.
 
 \paragraph{Balancing Different Constraints}
 At a fixed, nonzero temperature, the scales of variables affects their influence on
