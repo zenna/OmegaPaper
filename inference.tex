@@ -77,8 +77,8 @@ The distance $\rho(\vect{x}, A) = \inf \left\{\rho(\vect{x}, a) \mid a \in A\rig
 % $$
 
 \paragraph{Relaxation Kernels}A relaxation kernel $k_\alpha$ maps a distance in $\mathbb{R}$ to the unit interval, and is parameterized by temperature $\alpha$.
-A relaxation kernel is valid if soft predicates constructed with it satisfy the aforementioned relaxation axioms.
-One such kernel, which we restrict our attention to, is the squared exponential kernel:
+% A relaxation kernel is valid if soft predicates constructed with it satisfy the aforementioned relaxation axioms.
+One kernel, which we restrict our attention to, is the squared exponential kernel:
 \begin{equation}
 k_{\alpha}(r) = \exp\left(-\frac{r^2}{\alpha}\right)
 \end{equation}
@@ -100,6 +100,7 @@ k_{\alpha}(r) = \exp\left(-\frac{r^2}{\alpha}\right)
 \paragraph{Soft Primitives}
 Unfortunately, $\softv{\lk}_{\inf}$ is in general incomputable since the distance $\rho(x, A)$ from a point to the satisfying set is incomputable.
 Instead, to relax $\ell$ we relax the primitive functions it is composed of, which boil down to a small set of numerical and logical primitives.
+
 Soft equality is straightforward: $x \soft{=} y$ is defined as $k_\alpha(\rho(x, y))$.
 A soft inequality such as $x \soft{>} y$ is a function of the amount by which $x$ must be increased (or $y$ decreased) until $x > y$ is true.
 This is the distance between $x$ and the interval $[y, \infty]$, where the distance between a point and any interval $[a, b]$ is the smallest distance between $x$ and any element in $[a, b]$, and therefore 0 if $x \in [a, b]$:
@@ -113,7 +114,7 @@ This is the distance between $x$ and the interval $[y, \infty]$, where the dista
 \end{equation}
 Soft conjunction $\soft{\land}$ and disjunction $\soft{\lor}$ take the $\min$ and $\max$ respectively, which is standard.
 Soft negation, on the other hand, introduces complications.
-In continuous logics \cite{kimmig2012short}, the negation of $a \in [0, 1]$ is $1 - a$.
+In most continuous logics, the negation of $a \in [0, 1]$ is $1 - a$.
 However, as shown in Figure \ref{negationimg} (b), this violates criteria (iii) of predicate relaxation since there are values which satisfy the hard predicate $\neg(x > 0)$ which do take a value of 1 in $1 - (x \soft{>} 0)$.
 Figure \ref{negationimg} illustrates this issue.
 
@@ -160,7 +161,7 @@ soft negation simply swaps the elements of $(a_0, a_1)$ to yield $(a_1, a_0)$:
 \end{equation}
 }
 
-Conditioning does not treat the outputs of a predicate symmetrically.
+In probability theory, conditioning does not treat the outputs of a predicate symmetrically.
 Rather, it restricts the model to values which produce 1.
 Consequently, when used to condition in replica exchange, $a_1$ and not $a_0$ is used in the target density.
 
@@ -214,7 +215,7 @@ Let $a$ and $b$ be predicates, and $\circ$ denote a binary logical operator.  If
 We use soft predicates as approximate likelihoods for Markov Chain Monte Carlo sampling.
 MCMC algorithms require a function $f$ that is proportional to the the target density.
 In Bayesian inference this is the posterior, dictated by Bayes' theorem as the product of the likelihood and the prior.
-Approximate inference using soft predicates takes a similar form.
+Inference using soft predicates has a similar form.
 
 \begin{definition}
 Let $\vect{X}$ be a model, $\lk$ be a predicate that conditions $\vect{X}$, and  $\vect{x}$ be a realization of $\vect{X}$.
@@ -230,9 +231,9 @@ f_\alpha(x_1, x_2) = \mathcal{N}_{0,1}(x_1) \cdot \mathcal{N}_{0,1}(x_2) \cdot k
 \end{equation}
 $\soft{\lk}$ downweights parameter values which violate $\lk$ by the degree to which they violate it.
 This is modulated by the temperature $\alpha$ used in the  relaxation kernels which constitute $\soft{\lk}$.
-At maximum temperature $\soft{\lk}$ has no effect, and the approximate posterior $f$ is equal to the prior $p$.
-At zero temperature, $f$ recovers the true posterior since parameter values which violate the condition are given zero weight.
-$\alpha$ trades-off between tractability of inference and the fidelity of the approximation.
+As $\alpha$ tends to infinity $\soft{\lk}$ has no effect, and the approximate posterior $f$ is equal to the prior $p$.
+As $\alpha$ tends to zero, $f$ recovers the true posterior since parameter values which violate the condition are given zero weight.
+Between these extremes, $\alpha$ trades-off between tractability of inference and the fidelity of the approximation.
 If $\alpha$ is too high $\soft{\lk}$ will diverge too greatly from $\lk$. If it is too low, convergence will be slow.
 
 
@@ -246,7 +247,7 @@ The prior expectation of $p_x$ is significantly larger than that of $p_y$.
 because values far from zero are more likely under $y$.
 
 This disparity persists if the model is conditioned.
-Figure \ref{scaling} shows samples from the model conditioned on $p_x \soft{\lor} p_y$, and a disparity in the histograms of the marginals of $p_x$ and $p_y$.
+Figure \ref{scaling} shows samples from the model conditioned on $p_x \soft{\lor} p_y$, and differing histograms of the marginals of $p_x$ and $p_y$.
 The disparity decreases with decreasing temperature, and disappears at zero.
 Still, it is undesirable in practice because it means that the approximation error is distributed unevenly.
 
@@ -270,8 +271,8 @@ E_{p_{\alpha, \gamma_2}}[p_1] = E_{p_{\alpha, \gamma_2}}[\gamma_2 p_2]
 \end{align*}
 % Does such a gamma_2 always exist? Maybe rewrite it as
 % an optimization problem over gamma to enforce a solution?
-In practice, we set $\gamma_2$ using an exponential moving
-average of the $p_1$ values over the $p_2$ values.
+In practice, we find $\gamma_2$ that minimizes $||E_{p_{\alpha, \gamma_2}}[p_1] - E_{p_{\alpha, \gamma_2}}[\gamma_2 p_2]||$, using exponential moving
+averages to approximate the expectations.
 Figure \ref{scaling} visualizes the problem of unbalanced constraints, as well as corrections to $\gamma$.
 
 

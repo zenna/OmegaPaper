@@ -8,7 +8,7 @@ For other models we use standard Metropolis Hastings by defining proposals on el
 In particular we use the single site Metropolis Hastings (SSMH) \cite{wingate2011lightweight} which modifies a single random variable at a time.
 
 Replica exchange has a number of hyper-parameters: the number of parallel chains, the corresponding temperatures, the swapping schedule.
-Several good practices are outlined in \cite{earl2005parallel}.  In practice, we logarithmically space $\alpha$ between a lower and upper bound (e.g., $\log_{10}(\alpha_1) = 5$ to $\log_{10}(\alpha_M) = -5$), and swap states of chains that are adjacent in temperature ($\alpha_1$ with $\alpha_2$, $\alpha_2$ with $\alpha_3$, etc) periodically.
+Several good practices are outlined in \cite{earl2005parallel}.  In practice, we simulate four chains with $\alpha$ logarithmically spaced between $\log_{10}(\alpha_1) = 5$ and $\log_{10}(\alpha_M) = -5$, and swap states that are adjacent in temperature ($\alpha_1$ with $\alpha_2$, $\alpha_2$ with $\alpha_3$, etc) every 10 iterations.
 
 
 \paragraph{Small Models}
@@ -203,7 +203,7 @@ Let $X_i \sim \mathcal{N}(0,1)$ in a $d$-dimensional model $\vect{X} = (X_1, \do
 Table \ref{results} compares the sample average of particle Gibbs (PG), sequential Monte Carlo (SMC), rejection sampling (RS) and predicate exchange (PE), varying both $\epsilon$ and $d$.
 The theoretical expectation of all models is 0.
 Among these methods, predicate exchange is unique in its support for inference with predicates, which makes direct comparison difficult.
-For all inference procedures we use predicate relaxation to compute $d = \softv{\lk}_\epsilon(\vect{x})$, and sample from $\vect{X}$ conditioned on $\mathcal{N}(d, 1/(2\alpha)) = 1$, where $\alpha$ is the lowest temperature used in predicate exchange.
+For all other inference procedures we use predicate relaxation to compute $d = \softv{\lk}_\epsilon(\vect{x})$, and sample from $\vect{X}$ conditioned on $\mathcal{N}(d, 1/(2\alpha)) = 1$, where $\alpha$ is the lowest temperature used in predicate exchange.
 Predicate exchange  compares favourably in most scenarios.
 
 
@@ -224,8 +224,8 @@ Predicate exchange  compares favourably in most scenarios.
 	RS & 0.003 & timedout & timedout & timedout \\
 	\hline
  \end{tabular}
+ \caption{Comparison of expectations of samples from $d$ dimensional, $\epsilon$-thick ring.  Theoretical value is 0 in all cases.}
  \label{results}
- \caption{Comparison of expectations of samples from $d$ dimensional ring.  Theoretical value is 0 in all cases.}
 \end{center}
 \vspace{-2em}
 \end{figure}

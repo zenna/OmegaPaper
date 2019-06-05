@@ -1,20 +1,19 @@
 \section{Discussion}
 In this work we expanded the class of predicates that probabilistic models can be conditioned on in practice.
 This pushes predicates exchange into the domain of constraint solvers.
-However, it remains difficult to delineate which predicates are amenable to our method.
-% In future work, we intend to characterise this 
+Precisely which kinds of predicates are suitable for relaxation in practice remains an open question.
 
 Equality conditions on continuous variables indicate sets of zero measure.
 This is problematic because the probability of proposing a satisfying state in a Markov chain becomes zero.
-In these cases predicate exchange must sample at a minimum temperature strictly greater than zero, which is approximate.
+In these cases predicate exchange samples at a minimum temperature greater than zero, which is approximate.
 
-Control flow remains a challenge, and is related to the path explosion problem in program analysis \cite{cadar2008exe, sen2005cute}.
+The problem of unexplored program paths due to control flow is related to the path explosion problem in program analysis \cite{cadar2008exe, sen2005cute}.
 Future work is to adapt program analysis solutions to this problem.
 
 
 Hard predicates provide a single bit of information.
-Predicate relaxation effectively increases the quantity of information available to inference procedures to a single real value.
-We anticipate that increasing this further would lead to novel approaches to inference.
+Predicate relaxation effectively increases the quantity of information available to inference procedures to a real value.
+We anticipate that continuing to extract more kinds of information from models could lead to novel sampling methods.
 
 
 % There are several inference strategies other than replica exchange MCMC that could exploit predicate relaxation.

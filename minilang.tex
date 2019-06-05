@@ -88,10 +88,10 @@ Concretely, $\pi$ is any nullary program that contains the statements:
 
 \begin{enumerate}
   \item $\textrm{rand}(n, \tau, \theta_1, ...,\theta_n)$ returns a random sample from $p_\tau(\; \cdot \mid \theta_1, ..., \theta_n)$.  $n$ is a unique name described below.
-  \item $\cond(y)$ conditions $\pi$.  It throws an error if $y \in \{0, 1\}$ is 0, and otherwise allows simulation to resume with no effect.
+  \item $\cond(y)$ conditions $\pi$.  It throws an error if $y \in \{0, 1\}$ is 0, and otherwise allows the execution to resume.
 \end{enumerate}
 
-Example Programs \ref{prog:ex1} and \ref{prog:ex2} illustrate conditioned models.
+Example Programs 1 and 2 illustrate conditioned models.
 
 Names (e.g. $n_x$) passed to $\textrm{rand}$ are not the same as variable names (e.g. $x$) in the host programming language.
 If two distinct names are used, the samples output from $\textrm{rand}$ will be independent or conditionally independent.
@@ -102,14 +102,14 @@ A simple solution is to append the the loop counter to the name.
 
 \subsection{Tracked Soft Execution}
 Predicate exchange relies on $\textrm{softexecute}$
-(Algorithm \ref{alg:softexecute}), which formalizes the soft execution of a program $\pi$ in the context of dictionary $\mathbb{D}$, at temperature $\alpha$.
-$\mathbb{D}$ is a mutable mapping from a name to value.
+(Algorithm \ref{alg:softexecute}), which formalizes the soft execution of a program $\pi$  at temperature $\alpha$ in the context of dictionary $\mathbb{D}$.
+$\mathbb{D}$ is a mutable mapping from a name to a value.
 In the context of a particular dictionary, the simulation of a program is deterministic.
 This allows the simulation of $\pi$ to be modulated by controlling the elements of $\mathbb{D}$.
 
 
 $\textrm{softexecute}$ computes the prior term $p$ as the product of random choices in the program. 
-That is, let $\pi_{k \mid x_1, ..., x_{k-1}}$ be the k'th random primitive encountered in while executing $\pi$, $x_k$ be the value it takes, and $x$ denote the set of all values of all random primitives constructed in the simulation of $\pi$, $p(x)$ is then the product:
+That is, let $\pi_{k \mid x_1, ..., x_{k-1}}$ be the k'th random primitive encountered while executing $\pi$, $x_k$ be the value it takes, and $x$ denote the set of all values of all random primitives constructed in the simulation of $\pi$, $p(x)$ is then the product:
 \begin{equation}\label{productprob}
 p(x) = \prod_{k=1}^K p_\tau(x_k \mid \theta_1,..., \theta_n )
 \end{equation}
@@ -127,25 +127,25 @@ The parameters $\theta_1,..,\theta_n$ may be fixed values or depend on values of
 % \end{exprogram}
 
 
-\begin{figure}[t]
+\begin{figure}[tb]
   \centering
-  \begin{subfigure}[tb]{4cm}
+  \begin{subfigure}[t]{4cm}
+    \vskip 0pt
       \begin{algorithmic}
       \STATE \textbf{Example Program 1}
       \STATE 1. $x = \textrm{rand}(n_x, \mathcal{N}, 0, 1)$
       \STATE 2. $y = \textrm{rand}(n_y, \mathcal{N}, 0, 1)$
-      \STATE 3. $\cond(x > y)$
+      \STATE 3. $\cond(x < y)$
       \STATE 4. {\bfseries Return:} $(x, y)$
       \end{algorithmic}
   \end{subfigure}%
   \hfill
-  \begin{subfigure}[tb]{4cm}
+  \begin{subfigure}[t]{4cm}
+    \vskip 0pt
       \begin{algorithmic}
       \STATE \textbf{Example Program 2}
       \STATE $x = \textrm{rand}(n_x, \mathcal{N}, 0, 1)$
-      \IF {$x > 0$}
-      \STATE $\cond(x = 1)$
-      \ELSE
+      \IF {$x < 0$}
       \STATE $\cond(x = -100)$
       \ENDIF
       \STATE {\bfseries Return:} $x$
@@ -154,84 +154,60 @@ The parameters $\theta_1,..,\theta_n$ may be fixed values or depend on values of
   \end{subfigure}
 \end{figure}
 
-% \begin{minipage}[t]{4cm}
-% \begin{exprogram}
-% % \caption{}
-% % \label{prog:ex1}
-% \begin{algorithmic}
-% \STATE $x = \textrm{rand}(n_x, \mathcal{N}, 0, 1)$
-% \STATE $y = \textrm{rand}(n_y, \mathcal{N}, 0, 1)$
-% \STATE $\cond(x > y)$
-% \STATE {\bfseries Return:} $(x, y)$
-% \end{algorithmic}
-% \end{exprogram}
-% \end{minipage}%
-% \begin{minipage}[t]{4cm}
-% \begin{exprogram}
-% % \caption{}
-% % \label{prog:ex1}
-% \begin{algorithmic}
-% \STATE $x = \textrm{rand}(n_x, \mathcal{N}, 0, 1)$
-% \STATE $y = \textrm{rand}(n_y, \mathcal{N}, 0, 1)$
-% \STATE $\cond(x > y)$
-% \STATE {\bfseries Return:} $(x, y)$
-% \end{algorithmic}
-% \end{exprogram}
-% \end{minipage}
-
 \begin{figure}
 \begin{center}
   \begin{tabular}{ |c|c|c|c| } 
    \hline
-   L & $\mathbb{D}$ &  $p_\mathbb{D}$ & $\softv{\ell}_\mathbb{D}$ \\
+   L & $\mathbb{D}$ &  $p_\mathbb{D}$ & $\log(\softv{\ell}_\mathbb{D})$ \\
    \hline
-   $1$ & $\emptyset$ & $1$ & $1$ \\ 
-   $2$ & $ n_x \mapsto 0.92$ & $0.26$ & $1$ \\ 
-   $3$ &  $n_x, n_y \mapsto 0.92, 0.02$ & $p_\mathcal{N}(0.92) = 0.1$ & $1$ \\
-   $4$ & $n_x, n_y \mapsto 0.92, 0.02$ & 0.1$p_\mathcal{N}(0.01)=0.1$ & $-900$ \\ 
+   $1$ & $\emptyset$ & $1$ & $0$ \\ 
+   $2$ & $ n_x \mapsto 0.9$ & $p_\mathcal{N}(0.9) = 0.3$ & $0$ \\ 
+   $3$ &  $n_x, n_y \mapsto 0.9, 0.2$ & $0.3 p_\mathcal{N}(0.2) = 0.1$ & $0$ \\
+   $4$ & $n_x, n_y \mapsto 0.9, 0.2$ & $0.1$ & $-700$ \\ 
    \hline
   \end{tabular}
 \end{center}
-\caption{softexecute on Example Program 1 at $\alpha = 0.001$.  Each row shows $\mathbb{D}$,  $p_\mathbb{D}$ and $\softv{\ell}_\mathbb{D}$ prior to executing line L.}
+\caption{softexecute on Example Program 1.  Each row shows $\mathbb{D}$,  $p_\mathbb{D}$ and $\log(\softv{\ell}_\mathbb{D})$ just prior to executing line L.  $p_\mathcal{N}$ denotes standard normal pdf.  The final value of $\log(\softv{\ell}_\mathbb{D})$ is $0.9 \softv{<} 0.2$ at $\alpha = 0.001$.}
+\label{table:sofex}
 \end{figure}
 
 
 $\textrm{softexecute}$ executes $\pi$ but within a context where (i) variables $\lk_\mathbb{D}$ and $p_\mathbb{D}$ accumulate prior and approximate posterior values, and (ii) the following operators are redefined:
 
 \begin{enumerate}
-  \item $\textrm{rand}(\tau, n, \theta_1, ...\theta_n)$ returns $\mathbb{D}(n)$ if $n$ is a key in $\mathbb{D}$ (denoted $n \in \mathbb{D}$), and in compliance with Equation \ref{productprob} updates $p_\mathbb{D}$ with the conditional density. If $n \notin \mathbb{D}$, the distribution is sampled from and $\mathbb{D}(n)$ is updated with this value.  
+  \item $\textrm{rand}(\tau, n, \theta_1, ...\theta_n)$ returns $\mathbb{D}(n)$ if $n$ is a key in $\mathbb{D}$ (denoted $n \in \mathbb{D}$), and updates $p_\mathbb{D}$ according to Equation \ref{productprob}. If $n \notin \mathbb{D}$, the distribution is sampled from and $\mathbb{D}(n)$ is updated with this value.  
   \item $a \text{ op } b$ and $\textrm{op } a$ for $\textrm{op} \in \{>, <, =, \land, \lor, \neg\}$ are replaced with the softened counter-parts $\soft{\textrm{ op }} \in \{\soft{>}, \soft{<}, \soft{=}, \soft{\land}, \soft{\lor}, \soft{\neg}\}$.
-  \item $\cond(y)$ updates $\softv{\lk}_\mathbb{D}$ with $\softv{\lk}_\mathbb{D} \soft{\land} y$. $y$ will be a soft Boolean value rather than a Boolean due to substitution of primitives with soft primitives.
+  \item $\cond(y)$ updates $\softv{\lk}_\mathbb{D}$ with $\softv{\lk}_\mathbb{D} \soft{\land} y$. $y$ will be a soft Boolean rather than a Boolean due to substitution of primitives with soft primitives as per the previous step.
 \end{enumerate}
 
-$\textrm{softexecute}$ returns a real value for the approximate posterior of $f$ as a function of the dictionary $\mathbb{D}$.
+$\textrm{softexecute}$ returns a value for the approximate posterior as a function of $\mathbb{D}$.  Figure \ref{table:sofex} vizualises its progression.
 
 \paragraph{Control Flow}
 Programs often have control flow.
-If a branch condition is controlled by a soft Boolean, softexecute follows the path taken by the unrelaxed program.  That is, if $a$ is a soft Boolean, \textbf{if} $a$ \textbf{then} $b$ \textbf{else} $c$ evaluates $b$ iff $a = 1$.
+If a branch condition is controlled by a soft Boolean, softexecute follows the path taken by the unrelaxed program.  That is, if $a$ is a soft Boolean, \textbf{if} $a$ \textbf{then} $b$ evaluates $b$ iff $a = 1$.
 One consequence of this is that there may be unexplored paths which would, if explored, produce values that are closer to or in the satisfying set.
 % $\textrm{softexecute}$ is ignorant of these other possibilities.
-For illustration, if $x = -0.01$ in Example Program \ref{prog:ex2},
- the condition fails and \textrm{softexecute} will evaluate $x \soft{=} -100$. However, with only a small change to $x$ the condition passes, and the path taken has has no conditions.
+For illustration, if $x = -0.01$ in Example Program 2,
+ the condition succeeds and \textrm{softexecute} will evaluate $x \soft{=} -100$. However, with only a small change to $x$ the condition fails, and the path taken has has no conditions.
 %  This is significantly larger than if the true branch were taken.
 % These may cause $\textrm{softexecute}$ to return a value that is significantly less than $\soft{\lk}_{\inf}$ does.
 
 % These may cause $\textrm{softexecute}$ to return a value that is significantly less than $\soft{\lk}_{\inf}$.
 
 
-\begin{exprogram}[tb]
-\caption{}
-\label{prog:ex2}
-\begin{algorithmic}
-\STATE $x = \textrm{rand}(n_x, \mathcal{N}, 0, 1)$
-\IF {$x > 0$}
-\STATE $\cond(x = 1)$
-\ELSE
-\STATE $\cond(x = -100)$
-\ENDIF
-\STATE {\bfseries Return:} $x$
-\end{algorithmic}
-\end{exprogram}
+% \begin{exprogram}[tb]
+% \caption{}
+% \label{prog:ex2}
+% \begin{algorithmic}
+% \STATE $x = \textrm{rand}(n_x, \mathcal{N}, 0, 1)$
+% \IF {$x > 0$}
+% \STATE $\cond(x = 1)$
+% \ELSE
+% \STATE $\cond(x = -100)$
+% \ENDIF
+% \STATE {\bfseries Return:} $x$
+% \end{algorithmic}
+% \end{exprogram}
 
 
 
