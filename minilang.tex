@@ -76,9 +76,9 @@
 
 % \subsection{A Lightweight Implementation}\label{rng}
 
-In this section we describe a generic, lightweight implementation of predicate exchange.
+In this section we describe an implementation of predicate exchange.
 Our approach resembles \citep{wingate2011lightweight, milch20071} as a language independent layer that can sit on top of existing programming languages and modeling formalisms.
-Our objective is twofold: (i) to compute the prior term $p$, approximate likelihood term $\softv{\lk}$, and approximate posterior term $f$ (Equation \ref{approxposterior}) from an arbitrary simulator $\pi$, and (ii) to perform replica exchange MCMC to sample from the true posterior.
+Our objective is twofold: (i) to compute the prior term $p$, approximate likelihood term $\softv{\lk}$, and approximate posterior term $f$ (Equation \ref{approxposterior}) from an arbitrary simulator $\pi$, and (ii) to perform replica exchange MCMC to sample from the posterior.
 
 We define a simulator $\pi$ as a program composed of deterministic and stochastic procedures, but where all randomness comes from a set of known random primitives.
 Primitives correspond to primitive parametric distribution families, such as the uniform or normal distribution.
@@ -91,9 +91,9 @@ Concretely, $\pi$ is any nullary program that contains the statements:
   \item $\cond(y)$ conditions $\pi$.  It throws an error if $y \in \{0, 1\}$ is 0, and otherwise allows simulation to resume with no effect.
 \end{enumerate}
 
-Example Program \ref{prog:ex1} illustrates a simple conditioned model.
+Example Programs \ref{prog:ex1} and \ref{prog:ex2} illustrate conditioned models.
 
-\paragraph{Names} Names (e.g. $n_x$) passed to $\textrm{rand}$ are not the same as variable names (e.g. $x$) in the host programming language.
+Names (e.g. $n_x$) passed to $\textrm{rand}$ are not the same as variable names (e.g. $x$) in the host programming language.
 If two distinct names are used, the samples output from $\textrm{rand}$ will be independent or conditionally independent.
 Care must be taken when a program has loops to avoid inadvertently reusing the same name.
 A simple solution is to append the the loop counter to the name.
@@ -115,30 +115,85 @@ p(x) = \prod_{k=1}^K p_\tau(x_k \mid \theta_1,..., \theta_n )
 \end{equation}
 The parameters $\theta_1,..,\theta_n$ may be fixed values or depend on values of other random primitives in $\pi$.
 
-\begin{exprogram}[tb]
-\caption{}
-\label{prog:ex1}
-\begin{algorithmic}
-\STATE $x = \textrm{rand}(n_x, \mathcal{N}, 0, 1)$
-\STATE $y = \textrm{rand}(n_y, \mathcal{N}, 0, 1)$
-\STATE $\cond(x > y)$
-\STATE {\bfseries Return:} $(x, y)$
-\end{algorithmic}
-\end{exprogram}
+% \begin{exprogram}[tb]
+% \caption{}
+% \label{prog:ex1}
+% \begin{algorithmic}
+% \STATE $x = \textrm{rand}(n_x, \mathcal{N}, 0, 1)$
+% \STATE $y = \textrm{rand}(n_y, \mathcal{N}, 0, 1)$
+% \STATE $\cond(x > y)$
+% \STATE {\bfseries Return:} $(x, y)$
+% \end{algorithmic}
+% \end{exprogram}
 
 
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[tb]{4cm}
+      \begin{algorithmic}
+      \STATE \textbf{Example Program 1}
+      \STATE 1. $x = \textrm{rand}(n_x, \mathcal{N}, 0, 1)$
+      \STATE 2. $y = \textrm{rand}(n_y, \mathcal{N}, 0, 1)$
+      \STATE 3. $\cond(x > y)$
+      \STATE 4. {\bfseries Return:} $(x, y)$
+      \end{algorithmic}
+  \end{subfigure}%
+  \hfill
+  \begin{subfigure}[tb]{4cm}
+      \begin{algorithmic}
+      \STATE \textbf{Example Program 2}
+      \STATE $x = \textrm{rand}(n_x, \mathcal{N}, 0, 1)$
+      \IF {$x > 0$}
+      \STATE $\cond(x = 1)$
+      \ELSE
+      \STATE $\cond(x = -100)$
+      \ENDIF
+      \STATE {\bfseries Return:} $x$
+      \end{algorithmic}
+      % \end{exprogram}
+  \end{subfigure}
+\end{figure}
+
+% \begin{minipage}[t]{4cm}
+% \begin{exprogram}
+% % \caption{}
+% % \label{prog:ex1}
+% \begin{algorithmic}
+% \STATE $x = \textrm{rand}(n_x, \mathcal{N}, 0, 1)$
+% \STATE $y = \textrm{rand}(n_y, \mathcal{N}, 0, 1)$
+% \STATE $\cond(x > y)$
+% \STATE {\bfseries Return:} $(x, y)$
+% \end{algorithmic}
+% \end{exprogram}
+% \end{minipage}%
+% \begin{minipage}[t]{4cm}
+% \begin{exprogram}
+% % \caption{}
+% % \label{prog:ex1}
+% \begin{algorithmic}
+% \STATE $x = \textrm{rand}(n_x, \mathcal{N}, 0, 1)$
+% \STATE $y = \textrm{rand}(n_y, \mathcal{N}, 0, 1)$
+% \STATE $\cond(x > y)$
+% \STATE {\bfseries Return:} $(x, y)$
+% \end{algorithmic}
+% \end{exprogram}
+% \end{minipage}
+
+\begin{figure}
 \begin{center}
   \begin{tabular}{ |c|c|c|c| } 
    \hline
-   line no. & $\mathbb{D}$ &  $p_\mathbb{D}$ & $\softv{\ell}_\mathbb{D}$ \\
+   L & $\mathbb{D}$ &  $p_\mathbb{D}$ & $\softv{\ell}_\mathbb{D}$ \\
    \hline
    $1$ & $\emptyset$ & $1$ & $1$ \\ 
-   $2$ & $ n_x \mapsto 0.924$ & $0.26$ & $1$ \\ 
-   $3$ &  $n_x \mapsto 0.924, n_y \mapsto 0.022$ & $0.104$ & $1$ \\
-   $4$ & $n_x \mapsto 0.924, n_y \mapsto 0.022$ & $0.104$ & $-900$ \\ 
+   $2$ & $ n_x \mapsto 0.92$ & $0.26$ & $1$ \\ 
+   $3$ &  $n_x, n_y \mapsto 0.92, 0.02$ & $p_\mathcal{N}(0.92) = 0.1$ & $1$ \\
+   $4$ & $n_x, n_y \mapsto 0.92, 0.02$ & 0.1$p_\mathcal{N}(0.01)=0.1$ & $-900$ \\ 
    \hline
   \end{tabular}
 \end{center}
+\caption{softexecute on Example Program 1 at $\alpha = 0.001$.  Each row shows $\mathbb{D}$,  $p_\mathbb{D}$ and $\softv{\ell}_\mathbb{D}$ prior to executing line L.}
+\end{figure}
 
 
 $\textrm{softexecute}$ executes $\pi$ but within a context where (i) variables $\lk_\mathbb{D}$ and $p_\mathbb{D}$ accumulate prior and approximate posterior values, and (ii) the following operators are redefined:
@@ -147,17 +202,18 @@ $\textrm{softexecute}$ executes $\pi$ but within a context where (i) variables $
   \item $\textrm{rand}(\tau, n, \theta_1, ...\theta_n)$ returns $\mathbb{D}(n)$ if $n$ is a key in $\mathbb{D}$ (denoted $n \in \mathbb{D}$), and in compliance with Equation \ref{productprob} updates $p_\mathbb{D}$ with the conditional density. If $n \notin \mathbb{D}$, the distribution is sampled from and $\mathbb{D}(n)$ is updated with this value.  
   \item $a \text{ op } b$ and $\textrm{op } a$ for $\textrm{op} \in \{>, <, =, \land, \lor, \neg\}$ are replaced with the softened counter-parts $\soft{\textrm{ op }} \in \{\soft{>}, \soft{<}, \soft{=}, \soft{\land}, \soft{\lor}, \soft{\neg}\}$.
   \item $\cond(y)$ updates $\softv{\lk}_\mathbb{D}$ with $\softv{\lk}_\mathbb{D} \soft{\land} y$. $y$ will be a soft Boolean value rather than a Boolean due to substitution of primitives with soft primitives.
-  \item A control flow branch that depends on a soft Boolean takes the true side.
 \end{enumerate}
 
 $\textrm{softexecute}$ returns a real value for the approximate posterior of $f$ as a function of the dictionary $\mathbb{D}$.
 
 \paragraph{Control Flow}
-Programs may have control flow, such as if-then-else statements.
-If a branch condition depends on an uncertain value, there may be unexplored paths which would, if explored, produce values that are closer to the satisfying set.
-$\textrm{softexecute}$ is ignorant of these other possibilities.
-For illustration, if $x = -1$ in Example Program \ref{prog:ex2},
- the condition fails, and \textrm{softexecute} will yield $x \soft{=} -100$. This is significantly larger than if the true branch were taken.
+Programs often have control flow.
+If a branch condition is controlled by a soft Boolean, softexecute follows the path taken by the unrelaxed program.  That is, if $a$ is a soft Boolean, \textbf{if} $a$ \textbf{then} $b$ \textbf{else} $c$ evaluates $b$ iff $a = 1$.
+One consequence of this is that there may be unexplored paths which would, if explored, produce values that are closer to or in the satisfying set.
+% $\textrm{softexecute}$ is ignorant of these other possibilities.
+For illustration, if $x = -0.01$ in Example Program \ref{prog:ex2},
+ the condition fails and \textrm{softexecute} will evaluate $x \soft{=} -100$. However, with only a small change to $x$ the condition passes, and the path taken has has no conditions.
+%  This is significantly larger than if the true branch were taken.
 % These may cause $\textrm{softexecute}$ to return a value that is significantly less than $\soft{\lk}_{\inf}$ does.
 
 % These may cause $\textrm{softexecute}$ to return a value that is significantly less than $\soft{\lk}_{\inf}$.
