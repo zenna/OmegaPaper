@@ -55,7 +55,7 @@ In Figure \ref{fig:density} we use conditioning to truncate a normal distributio
 % %	\fbox{\includegraphics[width=.16\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{100-0}}
 % %	\fbox{\includegraphics[width=.16\linewidth, trim={1.7cm, 1.6cm, 1.3cm, 1.5cm}, clip]{1000-0}}				
 % 	\end{minipage}
-	\caption{Left: Kernel density estimation from samples of Gaussian truncated to $[0, 1]$ through conditioning. Shown at different temperatures. Right: transitions between different temperatures of replica exchange.  For each matrix, value in row $i$ and column $j$ is the fraction of times replica exchange swapped a state at temperature $i$ to temperature $j$.  Temperature is lowest at 4 and increases exponentially to 1.  Clockwise, starting top-left: transition counts are accumulated for the first, second, third and fourth quarters of simulation.}
+	\caption{Left: Normalized histogram of samples of Gaussian truncated to $[0, 1]$ through conditioning, at varying temperatures. Right: transitions between different temperatures of replica exchange.  For each matrix, value in row $i$ and column $j$ is the fraction of times replica exchange swapped a state at temperature $i$ to temperature $j$.  Temperature is lowest at 4 and increases exponentially to 1.  Clockwise, starting top-left: transition counts are accumulated for the first, second, third and fourth quarters of simulation.}
 	\label{fig:density}
 	\vspace{-.5em}
 \end{figure}
@@ -63,7 +63,7 @@ In Figure \ref{fig:density} we use conditioning to truncate a normal distributio
 
 
 \paragraph{Inverse Ray Tracing}
-In this example we sample from a posterior distribution over scenes conditioned on an observed rendering.  A scene $s$ is a set of $n \sim \textrm{poisson}(\lambda = 3)$ spheres.
+In this example (Figure \ref{fig:invrtmcmc}) we sample from a posterior over scenes conditioned on an observed rendering.  A scene $s$ is a set of $n \sim \textrm{poisson}(\lambda = 3)$ spheres.
 A sphere is parameterized by color, reflectance, emission color, transparency, radius and position, all with a uniform prior.
 Let $r$ be a ray tracing function that maps scenes to image, $i_{obs}$ be an observed image, and $\textrm{nointersect}$ be a predicate that maps a scene to 1 iff any spheres intersect.
 The prior $s$ is conditioned on the conjunction of the inverse rendering and the no-intersection constraints:
@@ -72,7 +72,6 @@ The prior $s$ is conditioned on the conjunction of the inverse rendering and the
 (r(s) = i_{obs}) \land \textrm{nointersect}(s)
 \end{equation}
 
-Figure \ref{fig:invrtmcmc} visualizes conditional samples.
 % \begin{figure}
 % 	\centering
 % 	\includegraphics[width=0.9\linewidth]{invg2.pdf}
@@ -83,26 +82,27 @@ Figure \ref{fig:invrtmcmc} visualizes conditional samples.
 % 	\label{fig:invrtmcmc}
 % \end{figure}
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.9\linewidth]{jampy2.pdf}
-	\caption{Inverse rendering with and without no-intersection constraints.  Top row: raytraced scenes.  Bottom row: red pixels denote the existence of an intersection between spheres at that point.  (middle) and (right) scenes are samples from posterior over scenes having observed image on left.  The observed scene has no intersections.  Without the no-intersection condition (right), intersections occur.  Conditioning on intersection eliminates intersections (middle).}
-	\label{fig:invrtmcmc}
-	\vspace{-1em}
-\end{figure}
-
 
 \paragraph{Glucose Model}
 Type 2 diabetes is a prevalent and costly condition.
 Keeping blood glucose within normal limits helps prevent the
-long-term complications of Type 2 diabetes like diabetic neuropathy and diabetic retinopathy \citep{brownlee2006glycemic}. Models to predict the trajectories of blood glucose aid in keeping glucose within
-normal limits \citep{zeevi2015personalized}. Traditional models have been built from compositions of differential equations \citep{albers2017personalized,levine2017offline} whose parameters are estimated separately for each patient. An alternative approach would be to use a flexible sequence model like an RNN. The problem with this approach is that an RNN can extrapolate to glucose values incompatible with human physiology. This is especially a problem where we have patients with only a few blood glucose measurements. To build an RNN model that respects physiology, we condition on it.
+long-term complications of Type 2 diabetes \citep{brownlee2006glycemic}. Models to predict the trajectories of blood glucose aid in keeping glucose within
+normal limits \citep{zeevi2015personalized}. Traditional models have been built from compositions of differential equations \citep{albers2017personalized,levine2017offline} whose parameters are estimated separately for each patient. An alternative approach is to use a flexible sequence model like an RNN. The problem with this approach is that an RNN can extrapolate to glucose values incompatible with human physiology. This is especially a problem where we have patients with only a few blood glucose measurements. To build an RNN model that respects physiology, we condition on it.
 
 We compare the independent RNN model to the one with declarative knowledge on a second patient from Physionet \citep{moody2001physionet}.
 Figure \ref{fig:rnn-samples} plots the results performed on more than 300 pairs of patients.
 We see that the conditional model simulates
 more realistic glucose dynamics for the patient 
 with only a short observed time-series.
+
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.9\linewidth]{jampy2.pdf}
+	\caption{Inverse rendering with and without no-intersection constraints.  Top row: raytraced scenes.  Bottom row: red pixels denote the existence of an intersection between spheres at that point.  Middle and right scenes are samples from posterior over scenes given observed image on left.  The observed scene has no intersections.  Without the no-intersection condition (right), intersections occur.  Conditioning on no-intersection eliminates intersections (middle).}
+	\label{fig:invrtmcmc}
+	\vspace{-1em}
+\end{figure}
 
 % 1) Glucose modeling is a real problem \cite, \cite. 
 % 2) Models have focused on ODEs \cite \cite 
@@ -194,7 +194,7 @@ with only a short observed time-series.
 
 
 \paragraph{Benchmarks}
-To quantitatively compare predicate exchange with existing approaches we constructed an artificial problem that scales in difficulty.
+To compare predicate exchange with existing approaches we constructed a problem that scales in difficulty.
 Let $X_i \sim \mathcal{N}(0,1)$ in a $d$-dimensional model $\vect{X} = (X_1, \dots, X_d)$ conditioned on an $\epsilon$-thick ring:
 \begin{equation}
 \lk_\epsilon(\vect{x}) = 1 < |\vect{x}| < 1 + \epsilon

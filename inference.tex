@@ -229,7 +229,7 @@ For illustration, if $X_{1,2} \sim \mathcal{N}(0, 1)$ constitute a model conditi
 \begin{equation}\label{approxposterior}
 f_\alpha(x_1, x_2) = \mathcal{N}_{0,1}(x_1) \cdot \mathcal{N}_{0,1}(x_2) \cdot k_\alpha(\rho(x_1 + x_2, 0)) 
 \end{equation}
-$\soft{\lk}$ downweights parameter values which violate $\lk$ by the degree to which they violate it.
+$\soft{\lk}$ downweights parameter values by the degree to which they violate $\lk$.
 This is modulated by the temperature $\alpha$ used in the  relaxation kernels which constitute $\soft{\lk}$.
 As $\alpha$ tends to infinity $\soft{\lk}$ has no effect, and the approximate posterior $f$ is equal to the prior $p$.
 As $\alpha$ tends to zero, $f$ recovers the true posterior since parameter values which violate the condition are given zero weight.

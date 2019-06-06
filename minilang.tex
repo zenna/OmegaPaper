@@ -167,7 +167,7 @@ The parameters $\theta_1,..,\theta_n$ may be fixed values or depend on values of
    \hline
   \end{tabular}
 \end{center}
-\caption{softexecute on Example Program 1.  Each row shows $\mathbb{D}$,  $p_\mathbb{D}$ and $\log(\softv{\ell}_\mathbb{D})$ just prior to executing line L.  $p_\mathcal{N}$ denotes standard normal pdf.  The final value of $\log(\softv{\ell}_\mathbb{D})$ is $0.9 \softv{<} 0.2$ at $\alpha = 0.001$.}
+\caption{softexecute on Example Program 1.  Each row shows $\mathbb{D}$,  $p_\mathbb{D}$ and $\log(\softv{\ell}_\mathbb{D})$ just prior to executing line L.  $p_\mathcal{N}$ denotes standard normal pdf.  The final value of $\log(\softv{\ell}_\mathbb{D})$ is $0.9 \softv{<} 0.2 = 700$ at $\alpha = 0.001$.}
 \label{table:sofex}
 \end{figure}
 
@@ -184,11 +184,12 @@ $\textrm{softexecute}$ returns a value for the approximate posterior as a functi
 
 \paragraph{Control Flow}
 Programs often have control flow.
-If a branch condition is controlled by a soft Boolean, softexecute follows the path taken by the unrelaxed program.  That is, if $a$ is a soft Boolean, \textbf{if} $a$ \textbf{then} $b$ evaluates $b$ iff $a = 1$.
-One consequence of this is that there may be unexplored paths which would, if explored, produce values that are closer to or in the satisfying set.
+If a branch condition depends on a soft Boolean, softexecute follows the path taken by the unrelaxed program.  That is, if $a$ is a soft Boolean, \textbf{if} $a$ \textbf{then} $b$ evaluates $b$ iff $a = 1$.
+One consequence of this is that there may be unexplored paths which would, if explored, produce values that are closer to or within the satisfying set.
 % $\textrm{softexecute}$ is ignorant of these other possibilities.
 For illustration, if $x = -0.01$ in Example Program 2,
- the condition succeeds and \textrm{softexecute} will evaluate $x \soft{=} -100$. However, with only a small change to $x$ the condition fails, and the path taken has has no conditions.
+ the branch condition succeeds and \textrm{softexecute} will evaluate $x \soft{=} -100$. However, with only a small change to $x$, the branch condition fails, and the path taken has has no conditions.
+ $\softv{\ell}$ therefore overapproximates the change required to satisfy $\ell$.
 %  This is significantly larger than if the true branch were taken.
 % These may cause $\textrm{softexecute}$ to return a value that is significantly less than $\soft{\lk}_{\inf}$ does.
 
