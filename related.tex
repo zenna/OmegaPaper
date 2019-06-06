@@ -17,13 +17,15 @@ Predicate exchange targets simulation models and uses distance metrics, but does
 % This is limited to differentiable models conditioned with equality.
 % Predicate exchange is not limited to differentiable models, but must be approximate when the condition is of measure zero.
 
+Existing work relaxing programs includes \cite{chaudhuri2010smooth} which extends Gaussian smoothing to programs, and \cite{ritchie2015generating} which defines soft-equality within an HMC sampler.
+Predicate exchange is not bound to HMC, provides a complete soft algebra, and can sample from the true posterior in non-measure cases.
+
 % PPLS
-Probabilistic logics such as ProbLog \cite{richardson2006markov} and Markov logic networks \cite{de2007problog} extend first order logic to express both models and conditions.
-Of particular note, probabilistic soft logic (PSL) \cite{brocheler2012probabilistic,kimmig2012short} uses continuous logic to encode graded beliefs.
+Probabilistic logics such as ProbLog \cite{richardson2006markov} and Markov logic networks \cite{de2007problog} extend first order logic with probabilities.
+Probabilistic soft logic (PSL) \cite{brocheler2012probabilistic,kimmig2012short} uses continuous logic to encode graded beliefs.
 For example, $\text{isfriend(Alice, Bob)} \to 0.9$ denotes a strong friendship between Alice and Bob.
-The primary distinction between PSL and predicate exchange is in the semantics of the soft predicates.
-In predicate exchange, relaxation is used solely to make inference more tractable; soft Boolean values are used only within the sampling process and do not appear in the resulting samples themselves.
-In addition, predicate exchange is motivated by probabilistic programming languages for generative models, such as ~\citep{milch20071, wood2014new,mansinghka2014venture,goodman2008church}, rather than purely declarative logic based languages.
+In contrast, predicate exchange uses relaxation solely to make inference more tractable; soft Boolean values only exist within the sampling process and not in the resulting samples themselves.
+In addition, predicate exchange is motivated by languages for generative models, such as ~\citep{milch20071, wood2014new,mansinghka2014venture,goodman2008church}, rather than logic based languages.
 
 
 Several continuous \cite{levin2000continuous} and fuzzy \cite{klir1995fuzzy} logics apply model-theoretic tools to metric structures.

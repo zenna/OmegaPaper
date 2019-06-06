@@ -167,7 +167,7 @@ The parameters $\theta_1,..,\theta_n$ may be fixed values or depend on values of
    \hline
   \end{tabular}
 \end{center}
-\caption{softexecute on Example Program 1.  Each row shows $\mathbb{D}$,  $p_\mathbb{D}$ and $\log(\softv{\ell}_\mathbb{D})$ just prior to executing line L.  $p_\mathcal{N}$ denotes standard normal pdf.  The final value of $\log(\softv{\ell}_\mathbb{D})$ is $0.9 \softv{<} 0.2 = 700$ at $\alpha = 0.001$.}
+\caption{softexecute on Program 1.  Each row shows $\mathbb{D}$,  $p_\mathbb{D}$ and $\log(\softv{\ell}_\mathbb{D})$ just prior to executing line L.  $p_\mathcal{N}$ denotes standard normal pdf.  Final $\log(\softv{\ell}_\mathbb{D})$ is $0.9 \soft{<} 0.2$, which is $-700$ at $\alpha = 0.001$.}
 \label{table:sofex}
 \end{figure}
 
@@ -176,7 +176,7 @@ $\textrm{softexecute}$ executes $\pi$ but within a context where (i) variables $
 
 \begin{enumerate}
   \item $\textrm{rand}(\tau, n, \theta_1, ...\theta_n)$ returns $\mathbb{D}(n)$ if $n$ is a key in $\mathbb{D}$ (denoted $n \in \mathbb{D}$), and updates $p_\mathbb{D}$ according to Equation \ref{productprob}. If $n \notin \mathbb{D}$, the distribution is sampled from and $\mathbb{D}(n)$ is updated with this value.  
-  \item $a \text{ op } b$ and $\textrm{op } a$ for $\textrm{op} \in \{>, <, =, \land, \lor, \neg\}$ are replaced with the softened counter-parts $\soft{\textrm{ op }} \in \{\soft{>}, \soft{<}, \soft{=}, \soft{\land}, \soft{\lor}, \soft{\neg}\}$.
+  \item $a \text{ op } b$ and $\textrm{op } a$ for $\textrm{op} \in \{>, <, =, \land, \lor, \neg\}$ are replaced with soft versions $\soft{\textrm{ op }} \in \{\soft{>}, \soft{<}, \soft{=}, \soft{\land}, \soft{\lor}, \soft{\neg}\}$.
   \item $\cond(y)$ updates $\softv{\lk}_\mathbb{D}$ with $\softv{\lk}_\mathbb{D} \soft{\land} y$. $y$ will be a soft Boolean rather than a Boolean due to substitution of primitives with soft primitives as per the previous step.
 \end{enumerate}
 
@@ -189,7 +189,7 @@ One consequence of this is that there may be unexplored paths which would, if ex
 % $\textrm{softexecute}$ is ignorant of these other possibilities.
 For illustration, if $x = -0.01$ in Example Program 2,
  the branch condition succeeds and \textrm{softexecute} will evaluate $x \soft{=} -100$. However, with only a small change to $x$, the branch condition fails, and the path taken has has no conditions.
- $\softv{\ell}$ therefore overapproximates the change required to satisfy $\ell$.
+ $\softv{\ell}$ therefore over approximates the change required to satisfy $\ell$.
 %  This is significantly larger than if the true branch were taken.
 % These may cause $\textrm{softexecute}$ to return a value that is significantly less than $\soft{\lk}_{\inf}$ does.
 
