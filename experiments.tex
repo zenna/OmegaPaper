@@ -66,8 +66,7 @@ In Figure \ref{fig:density} we use conditioning to truncate a normal distributio
 In this example (Figure \ref{fig:invrtmcmc}) we sample from a posterior over scenes conditioned on an observed rendering.  A scene $s$ is a set of $n \sim \textrm{poisson}(\lambda = 3)$ spheres.
 A sphere is parameterized by color, reflectance, emission color, transparency, radius and position, all with a uniform prior.
 Let $r$ be a ray tracing function that maps scenes to image, $i_{obs}$ be an observed image, and $\textrm{nointersect}$ be a predicate that maps a scene to 1 iff any spheres intersect.
-The prior $s$ is conditioned on the conjunction of the inverse rendering and the no-intersection constraints:
-
+The prior $s$ is conditioned on the conjunction of the inverse rendering and the no-intersection constraint:
 \begin{equation}
 (r(s) = i_{obs}) \land \textrm{nointersect}(s)
 \end{equation}
@@ -143,7 +142,7 @@ with only a short observed time-series.
 	%\fbox{\includegraphics[width=0.30\linewidth, trim={1.cm, 0.0cm, 1.0cm, .5cm}, clip]{delta_mse}}
 	\includegraphics[width=0.7\linewidth, trim={0.7cm, 0.0cm, .7cm, .1cm}, clip]{mse2}
 		
-		\caption{Top: Actual (dotted) and predicted trajectories that were learned using a partial trajectory. Center: Distribution of predicted trajectories learned only using the first ten data points and a tie with a secondary patient. Bottom, top: MSE when tie is present.  Bottom, bottom: without tie.  Tying expectations has dramatic influence on prediction error, while as more data is observed, the effect of tying decreases.}
+		\caption{Top: Actual (dotted) and predicted trajectories learned using a partial trajectory. Center: Distribution of predicted trajectories learned using only the first ten data points and a tie with a secondary patient. Bottom: MSE when (above) tie is present, and (below) without tie.  Tying expectations has a dramatic influence on prediction error. As more data is observed, the effect decreases.}
 		\label{fig:rnn-samples}
 		\vspace{-1em}
 \end{figure}

@@ -101,11 +101,11 @@ A simple solution is to append the the loop counter to the name.
 
 
 \subsection{Tracked Soft Execution}
-Predicate exchange relies on $\textrm{softexecute}$
+Predicate exchange uses $\textrm{softexecute}$
 (Algorithm \ref{alg:softexecute}), which formalizes the soft execution of a program $\pi$  at temperature $\alpha$ in the context of dictionary $\mathbb{D}$.
 $\mathbb{D}$ is a mutable mapping from a name to a value.
-In the context of a particular dictionary, the simulation of a program is deterministic.
-This allows the simulation of $\pi$ to be modulated by controlling the elements of $\mathbb{D}$.
+In the context of a particular $\mathbb{D}$, the execution of $\pi$ is deterministic.
+This allows the execution of $\pi$ to be modulated by controlling the elements of $\mathbb{D}$.
 
 
 $\textrm{softexecute}$ computes the prior term $p$ as the product of random choices in the program. 
@@ -167,7 +167,7 @@ The parameters $\theta_1,..,\theta_n$ may be fixed values or depend on values of
    \hline
   \end{tabular}
 \end{center}
-\caption{softexecute on Program 1.  Each row shows $\mathbb{D}$,  $p_\mathbb{D}$ and $\log(\softv{\ell}_\mathbb{D})$ just prior to executing line L.  $p_\mathcal{N}$ denotes standard normal pdf.  Final $\log(\softv{\ell}_\mathbb{D})$ is $0.9 \soft{<} 0.2$, which is $-700$ at $\alpha = 0.001$.}
+\caption{softexecute on Program 1.  Each row shows $\mathbb{D}$,  $p_\mathbb{D}$ and $\log(\softv{\ell}_\mathbb{D})$ just prior to executing line L.  $p_\mathcal{N}$ denotes standard normal pdf.  The final $\log(\softv{\ell}_\mathbb{D})$ is $0.9 \soft{<} 0.2$, which is $-700$ at $\alpha = 0.001$.}
 \label{table:sofex}
 \end{figure}
 
@@ -260,6 +260,11 @@ For illustration, if $x = -0.01$ in Example Program 2,
 $\textrm{predexchange}$ (Algorithm \ref{alg:predexchange}) performs replica exchange using $\textrm{softexecute}$ to compute approximate posterior values.
 It takes as input an MCMC algorithm, which simulates a Markov Chain by manipulating elements of the $\mathbb{D}$.
 
+predexchange rejects samples which are outside the satisfying set.
+If the chains converge, resulting samples are distributed according to the true, unrelaxed posterior.
+This is because axiom (iii) enforces that all chains at all temperatures are equivalent when restricted to the satisfying set, and the accept-reject phase carries out this restriction explicitly.
+Rejection sampling will fail in cases where the constraint is of measure-zero (which happens when equalities are used), since the probability of proposing a satisfying value falls to zero.  In these cases we perform approximate inference by skipping the reject phase and taking samples from the highest temperature chain.
+
 % To illustrate, consider drawing two samples. 
 % For example, consider $\textrm{softexecute}(\pi, \alpha, \mathbb{D})$ where $\pi$ is Example Program 1, $\alpha$ is 1 and $\mathbb{D}$ is empty.
 % Lines 1 and 2 will draw two independent values $(v_x, v_y)$ from the standard normal distributions, and update (i) the prior term $p_\mathbb{D}$ with update $\mathbb{D}$ with these values such that $\mathbb{D}(n_x) \mapsto v_x$ and $\mathbb{D}(n_y) \mapsto v_y$.  $\textrm{cond}$ on line 3 will update the approximate likelihood term to $x \soft{>} y$.
@@ -285,7 +290,7 @@ It takes as input an MCMC algorithm, which simulates a Markov Chain by manipulat
     \STATE { $\mathbb{D}_1,...,\mathbb{D}_q \deqq $ $q$ mcmc samples at temp $\alpha_i$}, from $\mathbb{D}^{\textrm{init}}_i$
     \STATE $\mathbb{D}^{\textrm{init}}_i \deqq \mathbb{D}_q$
     \FOR{$j=1$ {\bfseries to} $q$}
-      \IF {$f_{\alpha_1}(\mathbb{D}_j) = 1$}
+      \IF {$f_{\alpha = \infty}(\mathbb{D}_j) \ne 0$}
         \STATE append $\mathbb{D}_j$ to $\mathcal{D}$
       \ENDIF
     \ENDFOR

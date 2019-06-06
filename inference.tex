@@ -50,7 +50,7 @@ $\softv{\lk} : \xp \to [0, 1]$ parameterized by $\alpha \in [0, \infty)$ is a re
 
 % \todo{Explain motivate each of these desiderata}
 Axioms (i) and (ii) allow us to vary the fidelity to which $\softv{\ell}$ approximates $\ell$, and axiom (iii) prevents $\softv{\ell}$ from deviating from $\ell$ on values which satisfy $\ell$.
-These axioms allow us to construct a sampling procedure that (i) samples accurately from local regions, but also (ii) explores large parts of the realization space, and (iii) in some cases can sample from the true posterior without approximation.
+These axioms allow us to construct a sampling procedure that (i) samples accurately from local regions, but also (ii) explores large parts of the realization space, and (iii) in non measure-zero cases can sample from the true posterior without approximation.
 
 \paragraph{Similarity Based Satisfiability}
 % We use distance to concretize and define $\softv{\lk}(\vect{x})$ -- the degree to which $\vect{x}$ satisfies $\lk$ -- as the \emph{similarity} between $\vect{x}$ and an element in $\xp$ that satisfies $\ell$.
@@ -99,7 +99,9 @@ k_{\alpha}(r) = \exp\left(-\frac{r^2}{\alpha}\right)
 
 \paragraph{Soft Primitives}
 Unfortunately, $\softv{\lk}_{\inf}$ is in general incomputable since the distance $\rho(x, A)$ from a point to the satisfying set is incomputable.
-Instead, to relax $\ell$ we relax the primitive functions it is composed of, which boil down to a small set of numerical and logical primitives.
+Instead, to relax $\ell$ we relax the functions it is composed of, which boil down to a set of numerical and logical primitives.
+For instance the predicate $(x > y) \lor \neg(x^2 = 2)$ is relaxed by $(x \soft{>} y) \soft{\lor} \softv{\neg}(x^2 \soft{=} 2)$, where $\soft{>}$, $\soft{<}$, $\soft{=}$, $\soft{\lor}$, $\soft{\land}$ and $\soft{\neg}$ are as follows.
+
 
 Soft equality is straightforward: $x \soft{=} y$ is defined as $k_\alpha(\rho(x, y))$.
 A soft inequality such as $x \soft{>} y$ is a function of the amount by which $x$ must be increased (or $y$ decreased) until $x > y$ is true.
@@ -199,15 +201,15 @@ Consequently, when used to condition in replica exchange, $a_1$ and not $a_0$ is
 % \end{tabular}
 % \end{center}
 
-\paragraph{Composition of Soft Primitives} We can construct $\soft{\lk}$ from $\lk$ compositionally, by substituting primitive predicates (equality, inequalities and logical operators) with soft counterparts.
-% Here we describe the relaxation of predicates defined as compositions of primitive functions, and in section \ref{} we provide an implementation amenable to programs.
-For instance the predicate $(x > y) \lor \neg(x^2 = 2)$ is relaxed by $(x \soft{>} y) \soft{\lor} \softv{\neg}(x^2 \soft{=} 2)$.
-% In general, we use $\soft{p}$ to denote a relaxation of a predicate $p$.
+% \paragraph{Composition of Soft Primitives} We can construct $\soft{\lk}$ from $\lk$ compositionally, by substituting primitive predicates (equality, inequalities and logical operators) with soft counterparts.
+% % Here we describe the relaxation of predicates defined as compositions of primitive functions, and in section \ref{} we provide an implementation amenable to programs.
+% For instance the predicate $(x > y) \lor \neg(x^2 = 2)$ is relaxed by $(x \soft{>} y) \soft{\lor} \softv{\neg}(x^2 \soft{=} 2)$.
+% % In general, we use $\soft{p}$ to denote a relaxation of a predicate $p$.
 
-\begin{proposition}Relaxation criteria are preserved under composition.
-Let $a$ and $b$ be predicates, and $\circ$ denote a binary logical operator.  If $\softv{a}, \softv{b}$ and $\soft{\circ}$ are respective valid relaxations.  Then $\softv{a} \soft{\circ} \softv{b}$ is a relaxation of $a \circ b$.
-\end{proposition}
-% \emph{proof} Prove it.
+% \begin{proposition}Relaxation criteria are preserved under composition.
+% Let $a$ and $b$ be predicates, and $\circ$ denote a binary logical operator.  If $\softv{a}, \softv{b}$ and $\soft{\circ}$ are respective valid relaxations.  Then $\softv{a} \soft{\circ} \softv{b}$ is a relaxation of $a \circ b$.
+% \end{proposition}
+% % \emph{proof} Prove it.
 
 
 
